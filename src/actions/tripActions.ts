@@ -1,0 +1,176 @@
+"use server";
+
+import prisma from "@/lib/prisma";
+import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
+
+/**
+ * Sync user from Supabase to Prisma DB if they don't exist.
+ */
+export async function syncUser() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) throw new Error("Unauthorized");
+    const userId = user.id;
+
+    const email = user.email ?? `unknown-${userId}@example.com`;
+
+    try {
+        await prisma.user.upsert({
+            where: { id: userId },
+            update: { email }, // keep email synced
+            create: {
+                id: userId,
+                email,
+                role: "Admin",
+            },
+        });
+    } catch (e: any) {
+        if (e.code === 'P2002') {
+            const fallbackEmail = `${userId}-${email}`;
+            await prisma.user.upsert({
+                where: { id: userId },
+                update: { email: fallbackEmail },
+                create: {
+                    id: userId,
+                    email: fallbackEmail,
+                    role: "Admin",
+                },
+            });
+        } else {
+            throw e;
+        }
+    }
+
+    return userId;
+}
+
+export async function createTrip(formData: FormData) {
+    const userId = await syncUser();
+
+    const name = formData.get("name") as string;
+    const startDateStr = formData.get("startDate") as string;
+    const endDateStr = formData.get("endDate") as string;
+    const locationUrl = formData.get("locationUrl") as string | null;
+    const locationImageUrl = formData.get("locationImageUrl") as string | null;
+
+    if (!name || !startDateStr || !endDateStr) {
+        throw new Error("Missing required fields");
+    }
+
+    // Set time to noon to avoid timezone shift issues
+    const startDate = new Date(startDateStr + "T12:00:00");
+    const endDate = new Date(endDateStr + "T12:00:00");
+
+    const trip = await prisma.trip.create({
+        data: {
+            name,
+            startDate,
+            endDate,
+            locationUrl,
+            locationImageUrl,
+            ownerId: userId,
+        } as any,
+    });
+
+    revalidatePath("/");
+    return trip;
+}
+
+export async function getTrips() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id;
+
+    // If not logged in, return an empty array
+    if (!userId) return [];
+
+    // Sync user here just to guarantee user row exists early in the journey
+    await syncUser().catch(() => null);
+
+    const trips = await prisma.trip.findMany({
+        where: {
+            OR: [
+                { ownerId: userId },
+                { members: { some: { userId } } }
+            ]
+        } as any,
+        orderBy: { startDate: "asc" },
+    });
+
+    return trips;
+}
+
+export async function updateTrip(tripId: string, formData: FormData) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id;
+
+    if (!userId) throw new Error("Unauthorized");
+
+    const name = formData.get("name") as string;
+    const startDateStr = formData.get("startDate") as string;
+    const endDateStr = formData.get("endDate") as string;
+    const locationUrl = formData.get("locationUrl") as string | null;
+    const locationImageUrl = formData.get("locationImageUrl") as string | null;
+
+    if (!name || !startDateStr || !endDateStr) {
+        throw new Error("Missing required fields");
+    }
+
+    const startDate = new Date(startDateStr + "T12:00:00");
+    const endDate = new Date(endDateStr + "T12:00:00");
+
+    const trip = await prisma.trip.update({
+        where: { id: tripId, ownerId: userId },
+        data: {
+            name,
+            startDate,
+            endDate,
+            locationUrl,
+            locationImageUrl,
+        } as any,
+    });
+
+    revalidatePath("/");
+    revalidatePath(`/trips/${tripId}`);
+    return trip;
+}
+
+export async function joinTrip(tripId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id;
+
+    if (!userId) throw new Error("Unauthorized");
+    await syncUser().catch(() => null);
+
+    // Check if trip exists
+    const trip = await prisma.trip.findUnique({
+        where: { id: tripId },
+    });
+    if (!trip) throw new Error("Trip not found");
+
+    if (trip.ownerId === userId) {
+        return tripId; // Already owner
+    }
+
+    await (prisma as any).tripMember.upsert({
+        where: {
+            tripId_userId: {
+                tripId,
+                userId,
+            }
+        },
+        update: {}, // if exists, do nothing
+        create: {
+            tripId,
+            userId,
+        }
+    });
+
+    revalidatePath("/");
+    revalidatePath(`/trips/${tripId}`);
+    return tripId;
+}

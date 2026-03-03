@@ -1,0 +1,606 @@
+
+> vibecheck-2.0@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.50.156:3000
+- Environments: .env.local, .env
+
+✓ Starting...
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+✓ Ready in 414ms
+ GET /login 200 in 1062ms (compile: 967ms, proxy.ts: 2ms, render: 92ms)
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 200 in 3.2s (compile: 1112ms, proxy.ts: 538ms, render: 1510ms)
+ GET /login 200 in 13ms (compile: 1527µs, proxy.ts: 1827µs, render: 10ms)
+✓ Compiled in 12ms
+[DEBUG_OUTFITS] [
+  {
+    "id": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+    "tripId": "8d076ac8-9359-4c51-b516-fb7083fd0739",
+    "dayNumber": 1,
+    "description": null,
+    "isPrivate": false,
+    "userId": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+    "user": {
+      "email": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3-keishia@arno.tt",
+      "role": "Admin"
+    },
+    "comments": [],
+    "products": [
+      {
+        "id": "1760a9d0-6d10-4b7e-adda-c652cce30b7b",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.azazie.com/products/azazie-rue-espresso-a-line-halter-chiffon-floor-length-bridesmaid-dress/72430427?srsltid=AfmBOoqGVy2uDFe9AjE6L4dCbYlWqw-FXuxRUUxJR22ixUylUgzn-dGy",
+        "name": "bridesmaid dress",
+        "category": "dress",
+        "tags": [],
+        "notes": null
+      },
+      {
+        "id": "6c3ca6a1-5f6e-4062-b840-e1ec3cb8f950",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.dolcevita.com/products/mylee-heels-cognac-leather?_gl=1*1yq3auh*_up*MQ..*_gs*MQ..&gclid=CjwKCAiAh5XNBhAAEiwA_Bu8FdRv8Oyt4l6LznHvF2AZ5t9G0M8AIcuCaFw-_8DHoWVju1aWvJoFsxoCusQQAvD_BwE&gbraid=0AAAAADbRCIX4iXetL3Dqq_dTssRwc5_xr",
+        "name": "nude heels",
+        "category": "shoes",
+        "tags": [],
+        "notes": null
+      }
+    ]
+  }
+]
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 200 in 1460ms (compile: 26ms, proxy.ts: 407ms, render: 1026ms)
+✓ Compiled in 13ms
+✓ Compiled in 12ms
+✓ Compiled in 12ms
+✓ Compiled in 9ms
+ GET /login 200 in 16ms (compile: 3ms, proxy.ts: 4ms, render: 10ms)
+✓ Compiled in 9ms
+[DEBUG_OUTFITS] [
+  {
+    "id": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+    "tripId": "8d076ac8-9359-4c51-b516-fb7083fd0739",
+    "dayNumber": 1,
+    "description": null,
+    "isPrivate": false,
+    "userId": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+    "user": {
+      "email": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3-keishia@arno.tt",
+      "role": "Admin"
+    },
+    "comments": [],
+    "products": [
+      {
+        "id": "1760a9d0-6d10-4b7e-adda-c652cce30b7b",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.azazie.com/products/azazie-rue-espresso-a-line-halter-chiffon-floor-length-bridesmaid-dress/72430427?srsltid=AfmBOoqGVy2uDFe9AjE6L4dCbYlWqw-FXuxRUUxJR22ixUylUgzn-dGy",
+        "name": "bridesmaid dress",
+        "category": "dress",
+        "tags": [],
+        "notes": null
+      },
+      {
+        "id": "6c3ca6a1-5f6e-4062-b840-e1ec3cb8f950",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.dolcevita.com/products/mylee-heels-cognac-leather?_gl=1*1yq3auh*_up*MQ..*_gs*MQ..&gclid=CjwKCAiAh5XNBhAAEiwA_Bu8FdRv8Oyt4l6LznHvF2AZ5t9G0M8AIcuCaFw-_8DHoWVju1aWvJoFsxoCusQQAvD_BwE&gbraid=0AAAAADbRCIX4iXetL3Dqq_dTssRwc5_xr",
+        "name": "nude heels",
+        "category": "shoes",
+        "tags": [],
+        "notes": null
+      }
+    ]
+  }
+]
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 200 in 1358ms (compile: 2ms, proxy.ts: 364ms, render: 992ms)
+[DEBUG_OUTFITS] [
+  {
+    "id": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+    "tripId": "8d076ac8-9359-4c51-b516-fb7083fd0739",
+    "dayNumber": 1,
+    "description": null,
+    "isPrivate": false,
+    "userId": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+    "user": {
+      "email": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3-keishia@arno.tt",
+      "role": "Admin"
+    },
+    "comments": [],
+    "products": [
+      {
+        "id": "1760a9d0-6d10-4b7e-adda-c652cce30b7b",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.azazie.com/products/azazie-rue-espresso-a-line-halter-chiffon-floor-length-bridesmaid-dress/72430427?srsltid=AfmBOoqGVy2uDFe9AjE6L4dCbYlWqw-FXuxRUUxJR22ixUylUgzn-dGy",
+        "name": "bridesmaid dress",
+        "category": "dress",
+        "tags": [],
+        "notes": null
+      },
+      {
+        "id": "6c3ca6a1-5f6e-4062-b840-e1ec3cb8f950",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.dolcevita.com/products/mylee-heels-cognac-leather?_gl=1*1yq3auh*_up*MQ..*_gs*MQ..&gclid=CjwKCAiAh5XNBhAAEiwA_Bu8FdRv8Oyt4l6LznHvF2AZ5t9G0M8AIcuCaFw-_8DHoWVju1aWvJoFsxoCusQQAvD_BwE&gbraid=0AAAAADbRCIX4iXetL3Dqq_dTssRwc5_xr",
+        "name": "nude heels",
+        "category": "shoes",
+        "tags": [],
+        "notes": null
+      }
+    ]
+  }
+]
+⨯ TypeError: Cannot read properties of undefined (reading '1')
+    at <unknown> (src/components/calendar/CalendarClientWrapper.tsx:71:56)
+    at Array.map (<anonymous>)
+    at CalendarClientWrapper (src/components/calendar/CalendarClientWrapper.tsx:70:27)
+  69 |                 <div className="flex flex-col gap-16">
+  70 |                     {days.map((dayNum) => {
+> 71 |                         const dayOutfits = outfitsByDay[dayNum] || [];
+     |                                                        ^
+  72 |
+  73 |                         // Calculate the actual date for this slot
+  74 |                         const currentDate = new Date(tripStartDate); {
+  digest: '1012944867'
+}
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 500 in 2.3s (compile: 38ms, proxy.ts: 326ms, render: 1972ms)
+ GET / 200 in 728ms (compile: 222ms, proxy.ts: 124ms, render: 381ms)
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+✓ Compiled in 9ms
+ GET / 200 in 1194ms (compile: 1809µs, proxy.ts: 182ms, render: 1011ms)
+[DEBUG_OUTFITS] [
+  {
+    "id": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+    "tripId": "8d076ac8-9359-4c51-b516-fb7083fd0739",
+    "dayNumber": 1,
+    "description": null,
+    "isPrivate": false,
+    "userId": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+    "user": {
+      "email": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3-keishia@arno.tt",
+      "role": "Admin"
+    },
+    "comments": [],
+    "products": [
+      {
+        "id": "1760a9d0-6d10-4b7e-adda-c652cce30b7b",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.azazie.com/products/azazie-rue-espresso-a-line-halter-chiffon-floor-length-bridesmaid-dress/72430427?srsltid=AfmBOoqGVy2uDFe9AjE6L4dCbYlWqw-FXuxRUUxJR22ixUylUgzn-dGy",
+        "name": "bridesmaid dress",
+        "category": "dress",
+        "tags": [],
+        "notes": null
+      },
+      {
+        "id": "6c3ca6a1-5f6e-4062-b840-e1ec3cb8f950",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.dolcevita.com/products/mylee-heels-cognac-leather?_gl=1*1yq3auh*_up*MQ..*_gs*MQ..&gclid=CjwKCAiAh5XNBhAAEiwA_Bu8FdRv8Oyt4l6LznHvF2AZ5t9G0M8AIcuCaFw-_8DHoWVju1aWvJoFsxoCusQQAvD_BwE&gbraid=0AAAAADbRCIX4iXetL3Dqq_dTssRwc5_xr",
+        "name": "nude heels",
+        "category": "shoes",
+        "tags": [],
+        "notes": null
+      }
+    ]
+  }
+]
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 200 in 1047ms (compile: 41ms, proxy.ts: 186ms, render: 820ms)
+ GET /login 200 in 18ms (compile: 3ms, proxy.ts: 5ms, render: 10ms)
+✓ Compiled in 10ms
+[DEBUG_OUTFITS] [
+  {
+    "id": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+    "tripId": "8d076ac8-9359-4c51-b516-fb7083fd0739",
+    "dayNumber": 1,
+    "description": null,
+    "isPrivate": false,
+    "userId": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+    "user": {
+      "email": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3-keishia@arno.tt",
+      "role": "Admin"
+    },
+    "comments": [],
+    "products": [
+      {
+        "id": "1760a9d0-6d10-4b7e-adda-c652cce30b7b",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.azazie.com/products/azazie-rue-espresso-a-line-halter-chiffon-floor-length-bridesmaid-dress/72430427?srsltid=AfmBOoqGVy2uDFe9AjE6L4dCbYlWqw-FXuxRUUxJR22ixUylUgzn-dGy",
+        "name": "bridesmaid dress",
+        "category": "dress",
+        "tags": [],
+        "notes": null
+      },
+      {
+        "id": "6c3ca6a1-5f6e-4062-b840-e1ec3cb8f950",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.dolcevita.com/products/mylee-heels-cognac-leather?_gl=1*1yq3auh*_up*MQ..*_gs*MQ..&gclid=CjwKCAiAh5XNBhAAEiwA_Bu8FdRv8Oyt4l6LznHvF2AZ5t9G0M8AIcuCaFw-_8DHoWVju1aWvJoFsxoCusQQAvD_BwE&gbraid=0AAAAADbRCIX4iXetL3Dqq_dTssRwc5_xr",
+        "name": "nude heels",
+        "category": "shoes",
+        "tags": [],
+        "notes": null
+      }
+    ]
+  }
+]
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 200 in 1247ms (compile: 44ms, proxy.ts: 167ms, render: 1035ms)
+✓ Compiled in 15ms
+ GET / 200 in 1296ms (compile: 1534µs, proxy.ts: 179ms, render: 1116ms)
+[DEBUG_OUTFITS] [
+  {
+    "id": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+    "tripId": "8d076ac8-9359-4c51-b516-fb7083fd0739",
+    "dayNumber": 1,
+    "description": null,
+    "isPrivate": false,
+    "userId": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+    "user": {
+      "email": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3-keishia@arno.tt",
+      "role": "Admin"
+    },
+    "comments": [],
+    "products": [
+      {
+        "id": "1760a9d0-6d10-4b7e-adda-c652cce30b7b",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.azazie.com/products/azazie-rue-espresso-a-line-halter-chiffon-floor-length-bridesmaid-dress/72430427?srsltid=AfmBOoqGVy2uDFe9AjE6L4dCbYlWqw-FXuxRUUxJR22ixUylUgzn-dGy",
+        "name": "bridesmaid dress",
+        "category": "dress",
+        "tags": [],
+        "notes": null
+      },
+      {
+        "id": "6c3ca6a1-5f6e-4062-b840-e1ec3cb8f950",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.dolcevita.com/products/mylee-heels-cognac-leather?_gl=1*1yq3auh*_up*MQ..*_gs*MQ..&gclid=CjwKCAiAh5XNBhAAEiwA_Bu8FdRv8Oyt4l6LznHvF2AZ5t9G0M8AIcuCaFw-_8DHoWVju1aWvJoFsxoCusQQAvD_BwE&gbraid=0AAAAADbRCIX4iXetL3Dqq_dTssRwc5_xr",
+        "name": "nude heels",
+        "category": "shoes",
+        "tags": [],
+        "notes": null
+      }
+    ]
+  }
+]
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 200 in 1263ms (compile: 39ms, proxy.ts: 321ms, render: 903ms)
+✓ Compiled in 25ms
+ GET / 200 in 1310ms (compile: 3ms, proxy.ts: 260ms, render: 1046ms)
+[DEBUG_OUTFITS] [
+  {
+    "id": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+    "tripId": "8d076ac8-9359-4c51-b516-fb7083fd0739",
+    "dayNumber": 1,
+    "description": null,
+    "isPrivate": false,
+    "userId": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+    "user": {
+      "email": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3-keishia@arno.tt",
+      "role": "Admin"
+    },
+    "comments": [],
+    "products": [
+      {
+        "id": "1760a9d0-6d10-4b7e-adda-c652cce30b7b",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.azazie.com/products/azazie-rue-espresso-a-line-halter-chiffon-floor-length-bridesmaid-dress/72430427?srsltid=AfmBOoqGVy2uDFe9AjE6L4dCbYlWqw-FXuxRUUxJR22ixUylUgzn-dGy",
+        "name": "bridesmaid dress",
+        "category": "dress",
+        "tags": [],
+        "notes": null
+      },
+      {
+        "id": "6c3ca6a1-5f6e-4062-b840-e1ec3cb8f950",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.dolcevita.com/products/mylee-heels-cognac-leather?_gl=1*1yq3auh*_up*MQ..*_gs*MQ..&gclid=CjwKCAiAh5XNBhAAEiwA_Bu8FdRv8Oyt4l6LznHvF2AZ5t9G0M8AIcuCaFw-_8DHoWVju1aWvJoFsxoCusQQAvD_BwE&gbraid=0AAAAADbRCIX4iXetL3Dqq_dTssRwc5_xr",
+        "name": "nude heels",
+        "category": "shoes",
+        "tags": [],
+        "notes": null
+      }
+    ]
+  }
+]
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 200 in 1001ms (compile: 60ms, proxy.ts: 110ms, render: 832ms)
+ GET / 200 in 1258ms (compile: 1552µs, proxy.ts: 303ms, render: 954ms)
+[DEBUG_OUTFITS] [
+  {
+    "id": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+    "tripId": "8d076ac8-9359-4c51-b516-fb7083fd0739",
+    "dayNumber": 1,
+    "description": null,
+    "isPrivate": false,
+    "userId": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+    "user": {
+      "email": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3-keishia@arno.tt",
+      "role": "Admin"
+    },
+    "comments": [],
+    "products": [
+      {
+        "id": "1760a9d0-6d10-4b7e-adda-c652cce30b7b",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.azazie.com/products/azazie-rue-espresso-a-line-halter-chiffon-floor-length-bridesmaid-dress/72430427?srsltid=AfmBOoqGVy2uDFe9AjE6L4dCbYlWqw-FXuxRUUxJR22ixUylUgzn-dGy",
+        "name": "bridesmaid dress",
+        "category": "dress",
+        "tags": [],
+        "notes": null
+      },
+      {
+        "id": "6c3ca6a1-5f6e-4062-b840-e1ec3cb8f950",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.dolcevita.com/products/mylee-heels-cognac-leather?_gl=1*1yq3auh*_up*MQ..*_gs*MQ..&gclid=CjwKCAiAh5XNBhAAEiwA_Bu8FdRv8Oyt4l6LznHvF2AZ5t9G0M8AIcuCaFw-_8DHoWVju1aWvJoFsxoCusQQAvD_BwE&gbraid=0AAAAADbRCIX4iXetL3Dqq_dTssRwc5_xr",
+        "name": "nude heels",
+        "category": "shoes",
+        "tags": [],
+        "notes": null
+      }
+    ]
+  }
+]
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 200 in 927ms (compile: 3ms, proxy.ts: 110ms, render: 814ms)
+ GET / 200 in 511ms (compile: 1259µs, proxy.ts: 117ms, render: 393ms)
+⨯ Error [PrismaClientValidationError]: 
+Invalid `{imported module ./src/lib/prisma.ts}["default"].trip.create()` invocation in
+/Users/keishia/Documents/GitHub/vibecheck-2.0/.next/dev/server/chunks/ssr/_e33eb2c1._.js:152:157
+
+  149 // Set time to noon to avoid timezone shift issues
+  150 const startDate = new Date(startDateStr + "T12:00:00");
+  151 const endDate = new Date(endDateStr + "T12:00:00");
+→ 152 const trip = await {imported module ./src/lib/prisma.ts}["default"].trip.create({
+        data: {
+          name: "vietnam",
+          startDate: new Date("2026-04-08T19:00:00.000Z"),
+          endDate: new Date("2026-04-21T19:00:00.000Z"),
+          locationUrl: "https://www.google.com/maps/place/Namia+River+Retreat+-+Wellness+Inclusive+Resort+Hoi+An/@15.8812907,108.3041292,13z/data=!4m13!1m2!2m1!1sriver+retreat+hoi+an!3m9!1s0x67e040e78e5bf107:0xdd96543af728770d!5m2!4m1!1i2!8m2!3d15.87487!4d108.3496332!15sChRyaXZlciByZXRyZWF0IGhvaSBhbpIBBWhvdGVs4AEA!16s%2Fg%2F11vyx6j1pp?entry=ttu&g_ep=EgoyMDI2MDMwMS4xIKXMDSoASAFQAw%3D%3D",
+          ~~~~~~~~~~~
+          ownerId: "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+      ?   id?: String,
+      ?   outfits?: OutfitUncheckedCreateNestedManyWithoutTripInput,
+      ?   members?: TripMemberUncheckedCreateNestedManyWithoutTripInput
+        }
+      })
+
+Unknown argument `locationUrl`. Available options are marked with ?.
+    at <unknown> (src/actions/tripActions.ts:65:36)
+    at async createTrip (src/actions/tripActions.ts:65:18)
+  63 |     const endDate = new Date(endDateStr + "T12:00:00");
+  64 |
+> 65 |     const trip = await prisma.trip.create({
+     |                                    ^
+  66 |         data: {
+  67 |             name,
+  68 |             startDate, {
+  clientVersion: '7.4.2',
+  digest: '804315601'
+}
+ POST / 500 in 1297ms (compile: 3ms, proxy.ts: 183ms, render: 1111ms)
+ GET /login 200 in 17ms (compile: 4ms, proxy.ts: 5ms, render: 8ms)
+✓ Compiled in 24ms
+ GET / 200 in 673ms (compile: 1295µs, proxy.ts: 115ms, render: 557ms)
+⨯ Error [PrismaClientValidationError]: 
+Invalid `{imported module ./src/lib/prisma.ts}["default"].trip.create()` invocation in
+/Users/keishia/Documents/GitHub/vibecheck-2.0/.next/dev/server/chunks/ssr/_e33eb2c1._.js:152:157
+
+  149 // Set time to noon to avoid timezone shift issues
+  150 const startDate = new Date(startDateStr + "T12:00:00");
+  151 const endDate = new Date(endDateStr + "T12:00:00");
+→ 152 const trip = await {imported module ./src/lib/prisma.ts}["default"].trip.create({
+        data: {
+          name: "vietnam",
+          startDate: new Date("2026-04-08T19:00:00.000Z"),
+          endDate: new Date("2026-04-21T19:00:00.000Z"),
+          locationUrl: "https://www.google.com/maps/place/Namia+River+Retreat+-+Wellness+Inclusive+Resort+Hoi+An/@15.8812907,108.3041292,13z/data=!4m13!1m2!2m1!1sriver+retreat+hoi+an!3m9!1s0x67e040e78e5bf107:0xdd96543af728770d!5m2!4m1!1i2!8m2!3d15.87487!4d108.3496332!15sChRyaXZlciByZXRyZWF0IGhvaSBhbpIBBWhvdGVs4AEA!16s%2Fg%2F11vyx6j1pp?entry=ttu&g_ep=EgoyMDI2MDMwMS4xIKXMDSoASAFQAw%3D%3D",
+          ~~~~~~~~~~~
+          ownerId: "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+      ?   id?: String,
+      ?   outfits?: OutfitUncheckedCreateNestedManyWithoutTripInput,
+      ?   members?: TripMemberUncheckedCreateNestedManyWithoutTripInput
+        }
+      })
+
+Unknown argument `locationUrl`. Available options are marked with ?.
+    at <unknown> (src/actions/tripActions.ts:65:36)
+    at async createTrip (src/actions/tripActions.ts:65:18)
+  63 |     const endDate = new Date(endDateStr + "T12:00:00");
+  64 |
+> 65 |     const trip = await prisma.trip.create({
+     |                                    ^
+  66 |         data: {
+  67 |             name,
+  68 |             startDate, {
+  clientVersion: '7.4.2',
+  digest: '804315601'
+}
+ POST / 500 in 834ms (compile: 1580µs, proxy.ts: 137ms, render: 696ms)
+[DEBUG_OUTFITS] [
+  {
+    "id": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+    "tripId": "8d076ac8-9359-4c51-b516-fb7083fd0739",
+    "dayNumber": 1,
+    "description": null,
+    "isPrivate": false,
+    "userId": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+    "user": {
+      "email": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3-keishia@arno.tt",
+      "role": "Admin"
+    },
+    "comments": [],
+    "products": [
+      {
+        "id": "1760a9d0-6d10-4b7e-adda-c652cce30b7b",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.azazie.com/products/azazie-rue-espresso-a-line-halter-chiffon-floor-length-bridesmaid-dress/72430427?srsltid=AfmBOoqGVy2uDFe9AjE6L4dCbYlWqw-FXuxRUUxJR22ixUylUgzn-dGy",
+        "name": "bridesmaid dress",
+        "category": "dress",
+        "tags": [],
+        "notes": null
+      },
+      {
+        "id": "6c3ca6a1-5f6e-4062-b840-e1ec3cb8f950",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.dolcevita.com/products/mylee-heels-cognac-leather?_gl=1*1yq3auh*_up*MQ..*_gs*MQ..&gclid=CjwKCAiAh5XNBhAAEiwA_Bu8FdRv8Oyt4l6LznHvF2AZ5t9G0M8AIcuCaFw-_8DHoWVju1aWvJoFsxoCusQQAvD_BwE&gbraid=0AAAAADbRCIX4iXetL3Dqq_dTssRwc5_xr",
+        "name": "nude heels",
+        "category": "shoes",
+        "tags": [],
+        "notes": null
+      }
+    ]
+  }
+]
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 200 in 1391ms (compile: 59ms, proxy.ts: 190ms, render: 1142ms)
+✓ Compiled in 8ms
+ GET / 200 in 1837ms (compile: 47ms, proxy.ts: 641ms, render: 1148ms)
+✓ Compiled in 16ms
+ GET / 200 in 1041ms (compile: 1838µs, proxy.ts: 315ms, render: 724ms)
+ GET / 200 in 895ms (compile: 1823µs, proxy.ts: 202ms, render: 692ms)
+ GET /login 200 in 20ms (compile: 7ms, proxy.ts: 1857µs, render: 11ms)
+✓ Compiled in 11ms
+ GET / 200 in 1063ms (compile: 1285µs, proxy.ts: 181ms, render: 881ms)
+[DEBUG_OUTFITS] [
+  {
+    "id": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+    "tripId": "8d076ac8-9359-4c51-b516-fb7083fd0739",
+    "dayNumber": 1,
+    "description": null,
+    "isPrivate": false,
+    "userId": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+    "user": {
+      "email": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3-keishia@arno.tt",
+      "role": "Admin"
+    },
+    "comments": [],
+    "products": [
+      {
+        "id": "1760a9d0-6d10-4b7e-adda-c652cce30b7b",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.azazie.com/products/azazie-rue-espresso-a-line-halter-chiffon-floor-length-bridesmaid-dress/72430427?srsltid=AfmBOoqGVy2uDFe9AjE6L4dCbYlWqw-FXuxRUUxJR22ixUylUgzn-dGy",
+        "name": "bridesmaid dress",
+        "category": "dress",
+        "tags": [],
+        "notes": null
+      },
+      {
+        "id": "6c3ca6a1-5f6e-4062-b840-e1ec3cb8f950",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.dolcevita.com/products/mylee-heels-cognac-leather?_gl=1*1yq3auh*_up*MQ..*_gs*MQ..&gclid=CjwKCAiAh5XNBhAAEiwA_Bu8FdRv8Oyt4l6LznHvF2AZ5t9G0M8AIcuCaFw-_8DHoWVju1aWvJoFsxoCusQQAvD_BwE&gbraid=0AAAAADbRCIX4iXetL3Dqq_dTssRwc5_xr",
+        "name": "nude heels",
+        "category": "shoes",
+        "tags": [],
+        "notes": null
+      }
+    ]
+  }
+]
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 200 in 1309ms (compile: 47ms, proxy.ts: 159ms, render: 1104ms)
+ GET / 200 in 528ms (compile: 2ms, proxy.ts: 166ms, render: 360ms)
+✓ Compiled in 11ms
+⨯ Error [PrismaClientValidationError]: 
+Invalid `{imported module ./src/lib/prisma.ts}["default"].trip.create()` invocation in
+/Users/keishia/Documents/GitHub/vibecheck-2.0/.next/dev/server/chunks/ssr/_e33eb2c1._.js:152:157
+
+  149 // Set time to noon to avoid timezone shift issues
+  150 const startDate = new Date(startDateStr + "T12:00:00");
+  151 const endDate = new Date(endDateStr + "T12:00:00");
+→ 152 const trip = await {imported module ./src/lib/prisma.ts}["default"].trip.create({
+        data: {
+          name: "vietnam",
+          startDate: new Date("2026-04-10T19:00:00.000Z"),
+          endDate: new Date("2026-04-13T19:00:00.000Z"),
+          locationUrl: "https://www.google.com/maps/place/Namia+River+Retreat+-+Wellness+Inclusive+Resort+Hoi+An/@15.8812907,108.3041292,13z/data=!4m13!1m2!2m1!1sriver+retreat+hoi+an!3m9!1s0x67e040e78e5bf107:0xdd96543af728770d!5m2!4m1!1i2!8m2!3d15.87487!4d108.3496332!15sChRyaXZlciByZXRyZWF0IGhvaSBhbpIBBWhvdGVs4AEA!16s%2Fg%2F11vyx6j1pp?entry=ttu&g_ep=EgoyMDI2MDMwMS4xIKXMDSoASAFQAw%3D%3D",
+          ~~~~~~~~~~~
+          ownerId: "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+      ?   id?: String,
+      ?   outfits?: OutfitUncheckedCreateNestedManyWithoutTripInput,
+      ?   members?: TripMemberUncheckedCreateNestedManyWithoutTripInput
+        }
+      })
+
+Unknown argument `locationUrl`. Available options are marked with ?.
+    at <unknown> (src/actions/tripActions.ts:65:36)
+    at async createTrip (src/actions/tripActions.ts:65:18)
+  63 |     const endDate = new Date(endDateStr + "T12:00:00");
+  64 |
+> 65 |     const trip = await prisma.trip.create({
+     |                                    ^
+  66 |         data: {
+  67 |             name,
+  68 |             startDate, {
+  clientVersion: '7.4.2',
+  digest: '1104640785'
+}
+ POST / 500 in 1208ms (compile: 1134µs, proxy.ts: 184ms, render: 1023ms)
+ GET /login 200 in 14ms (compile: 3ms, proxy.ts: 1752µs, render: 9ms)
+✓ Compiled in 33ms
+ GET / 200 in 1195ms (compile: 3ms, proxy.ts: 338ms, render: 854ms)
+[DEBUG_OUTFITS] [
+  {
+    "id": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+    "tripId": "8d076ac8-9359-4c51-b516-fb7083fd0739",
+    "dayNumber": 1,
+    "description": null,
+    "isPrivate": false,
+    "userId": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+    "user": {
+      "email": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3-keishia@arno.tt",
+      "role": "Admin"
+    },
+    "comments": [],
+    "products": [
+      {
+        "id": "1760a9d0-6d10-4b7e-adda-c652cce30b7b",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.azazie.com/products/azazie-rue-espresso-a-line-halter-chiffon-floor-length-bridesmaid-dress/72430427?srsltid=AfmBOoqGVy2uDFe9AjE6L4dCbYlWqw-FXuxRUUxJR22ixUylUgzn-dGy",
+        "name": "bridesmaid dress",
+        "category": "dress",
+        "tags": [],
+        "notes": null
+      },
+      {
+        "id": "6c3ca6a1-5f6e-4062-b840-e1ec3cb8f950",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.dolcevita.com/products/mylee-heels-cognac-leather?_gl=1*1yq3auh*_up*MQ..*_gs*MQ..&gclid=CjwKCAiAh5XNBhAAEiwA_Bu8FdRv8Oyt4l6LznHvF2AZ5t9G0M8AIcuCaFw-_8DHoWVju1aWvJoFsxoCusQQAvD_BwE&gbraid=0AAAAADbRCIX4iXetL3Dqq_dTssRwc5_xr",
+        "name": "nude heels",
+        "category": "shoes",
+        "tags": [],
+        "notes": null
+      }
+    ]
+  }
+]
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 200 in 983ms (compile: 54ms, proxy.ts: 103ms, render: 825ms)
+ GET / 200 in 1189ms (compile: 3ms, proxy.ts: 176ms, render: 1010ms)
+ GET /login 200 in 26ms (compile: 5ms, proxy.ts: 4ms, render: 17ms)
+ GET /login 200 in 11ms (compile: 1221µs, proxy.ts: 2ms, render: 7ms)
+✓ Compiled in 11ms
+ GET / 200 in 1098ms (compile: 61ms, proxy.ts: 163ms, render: 875ms)
+ GET / 200 in 981ms (compile: 1425µs, proxy.ts: 117ms, render: 863ms)
+[DEBUG_OUTFITS] [
+  {
+    "id": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+    "tripId": "8d076ac8-9359-4c51-b516-fb7083fd0739",
+    "dayNumber": 1,
+    "description": null,
+    "isPrivate": false,
+    "userId": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3",
+    "user": {
+      "email": "d8102c14-ebff-4f16-89ad-8f0ab49c8de3-keishia@arno.tt",
+      "role": "Admin"
+    },
+    "comments": [],
+    "products": [
+      {
+        "id": "1760a9d0-6d10-4b7e-adda-c652cce30b7b",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.azazie.com/products/azazie-rue-espresso-a-line-halter-chiffon-floor-length-bridesmaid-dress/72430427?srsltid=AfmBOoqGVy2uDFe9AjE6L4dCbYlWqw-FXuxRUUxJR22ixUylUgzn-dGy",
+        "name": "bridesmaid dress",
+        "category": "dress",
+        "tags": [],
+        "notes": null
+      },
+      {
+        "id": "6c3ca6a1-5f6e-4062-b840-e1ec3cb8f950",
+        "outfitId": "bf486dfa-7817-4ef3-a599-74ba049957b4",
+        "imageUrl": "https://www.dolcevita.com/products/mylee-heels-cognac-leather?_gl=1*1yq3auh*_up*MQ..*_gs*MQ..&gclid=CjwKCAiAh5XNBhAAEiwA_Bu8FdRv8Oyt4l6LznHvF2AZ5t9G0M8AIcuCaFw-_8DHoWVju1aWvJoFsxoCusQQAvD_BwE&gbraid=0AAAAADbRCIX4iXetL3Dqq_dTssRwc5_xr",
+        "name": "nude heels",
+        "category": "shoes",
+        "tags": [],
+        "notes": null
+      }
+    ]
+  }
+]
+ GET /trips/8d076ac8-9359-4c51-b516-fb7083fd0739 200 in 980ms (compile: 52ms, proxy.ts: 116ms, render: 812ms)

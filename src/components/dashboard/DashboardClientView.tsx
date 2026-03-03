@@ -1,0 +1,62 @@
+"use client";
+
+import { useState } from "react";
+import CreateTripModal from "@/components/CreateTripModal";
+import EditTripModal from "@/components/EditTripModal";
+
+import Link from "next/link";
+
+export default function DashboardClientView({ trips }: { trips: any[] }) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingTrip, setEditingTrip] = useState<any>(null);
+
+    return (
+        <>
+            <div className="flex items-end justify-between mb-8">
+                <h2 className="text-3xl font-light tracking-tight text-[#59524A]">Current Trips</h2>
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="px-5 py-2 text-sm font-medium transition-all bg-[#D1C3B4] text-[#3C3833] rounded-full hover:bg-[#C2B2A1]"
+                >
+                    + Create New Trip
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+
+                {/* Dynamic Map of the database trips */}
+                {trips.map((trip) => (
+                    <div key={trip.id} className="relative group block">
+                        <Link href={`/trips/${trip.id}`} className="relative overflow-hidden h-48 border border-[#EAE5DF] rounded-xl bg-white transition-all shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group block">
+                            <div className="absolute inset-0 p-6 flex flex-col justify-end bg-gradient-to-t from-white via-white/80 to-transparent z-10">
+                                <h3 className="text-xl font-medium tracking-wide text-[#3C3833]">{trip.name}</h3>
+                                <p className="text-sm text-[#8A827A]">
+                                    {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()}
+                                </p>
+                            </div>
+                            <div className="absolute inset-0 bg-[#A69B90] opacity-0 group-hover:opacity-5 transition-opacity"></div>
+                        </Link>
+
+                        {/* Edit Button overlay */}
+                        <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setEditingTrip(trip);
+                                }}
+                                className="px-3 py-1.5 text-xs font-medium text-[#8A827A] border border-[#EAE5DF] bg-white rounded-md shadow-sm hover:bg-[#FCFAF8] hover:text-[#3C3833] transition-colors"
+                            >
+                                Edit
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <CreateTripModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <EditTripModal isOpen={!!editingTrip} onClose={() => setEditingTrip(null)} trip={editingTrip} />
+        </>
+    );
+}

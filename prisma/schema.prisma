@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String    @id
+  email     String    @unique
+  role      String    @default("Guest") // Admin/Guest
+  trips     Trip[]
+  memberTrips TripMember[]
+  outfits   Outfit[]
+  comments  Comment[]
+}
+
+model Trip {
+  id               String       @id @default(uuid())
+  name             String
+  startDate        DateTime
+  endDate          DateTime
+  ownerId          String
+  locationUrl      String?
+  locationImageUrl String?
+  owner            User         @relation(fields: [ownerId], references: [id])
+  outfits          Outfit[]
+  members          TripMember[]
+  products         Product[]
+}
+
+model TripMember {
+  id        String @id @default(uuid())
+  tripId    String
+  userId    String
+  trip      Trip   @relation(fields: [tripId], references: [id])
+  user      User   @relation(fields: [userId], references: [id])
+  joinedAt  DateTime @default(now())
+
+  @@unique([tripId, userId])
+}
+
+model Outfit {
+  id         String    @id @default(uuid())
+  tripId     String
+  dayNumber  Int?
+  name       String?
+  description String?
+  isPrivate  Boolean   @default(false)
+  userId     String
+  trip       Trip      @relation(fields: [tripId], references: [id])
+  user       User      @relation(fields: [userId], references: [id])
+  comments   Comment[]
+  products   Product[]
+}
+
+model Comment {
+  id          String   @id @default(uuid())
+  outfitId    String
+  userId      String
+  textContent String
+  outfit      Outfit   @relation(fields: [outfitId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  tripId      String
+  outfitId    String?
+  imageUrl    String?
+  name        String
+  category    String   // dress, top, bottoms, shoes, accessories
+  tags        String[]
+  notes       String?
+  outfit      Outfit?  @relation(fields: [outfitId], references: [id], onDelete: Cascade)
+  trip        Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}

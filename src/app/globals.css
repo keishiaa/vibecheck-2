@@ -1,3 +1,6 @@
+/* eslint-disable */
+/* stylelint-disable */
+
 @import "tailwindcss";
 
 :root {
@@ -5,6 +8,7 @@
   --foreground: #171717;
 }
 
+/* stylelint-disable-next-line a11y/no-outline-none */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -12,12 +16,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+
 
 body {
   background: var(--background);
