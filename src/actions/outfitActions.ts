@@ -213,7 +213,7 @@ export async function copyOutfitToWardrobe(outfitId: string, tripId: string) {
             locationUrl: existing.locationUrl,
             isPrivate: existing.isPrivate,
             products: {
-                create: existing.products.map(p => ({
+                create: existing.products.map((p: any) => ({
                     tripId: p.tripId,
                     name: p.name,
                     category: p.category,
