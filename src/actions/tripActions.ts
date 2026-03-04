@@ -15,14 +15,18 @@ export async function syncUser() {
     const userId = user.id;
 
     const email = user.email ?? `unknown-${userId}@example.com`;
+    const name = user.user_metadata?.full_name || user.user_metadata?.name || null;
+    const avatarUrl = user.user_metadata?.avatar_url || null;
 
     try {
         await prisma.user.upsert({
             where: { id: userId },
-            update: { email }, // keep email synced
+            update: { email, name, avatarUrl }, // keep synced
             create: {
                 id: userId,
                 email,
+                name,
+                avatarUrl,
                 role: "Admin",
             },
         });
@@ -31,10 +35,12 @@ export async function syncUser() {
             const fallbackEmail = `${userId}-${email}`;
             await prisma.user.upsert({
                 where: { id: userId },
-                update: { email: fallbackEmail },
+                update: { email: fallbackEmail, name, avatarUrl },
                 create: {
                     id: userId,
                     email: fallbackEmail,
+                    name,
+                    avatarUrl,
                     role: "Admin",
                 },
             });

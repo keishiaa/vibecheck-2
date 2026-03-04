@@ -24,6 +24,45 @@ function getDisplayUrl(url: string | null | undefined): string {
     }
 }
 
+const UserBubble = ({ user, isOwner = false }: { user: any, isOwner?: boolean }) => {
+    if (!user) return null;
+    const avatar = user.avatarUrl;
+    const nameStr = user.name || user.email || "U";
+
+    const getInitials = (str: string) => {
+        if (str.includes('@')) {
+            const prefix = str.split('@')[0];
+            const parts = prefix.split(/[._-]/);
+            if (parts.length > 1 && parts[0] && parts[parts.length - 1]) {
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            }
+            return prefix.substring(0, 2).toUpperCase();
+        }
+        const parts = str.split(' ');
+        if (parts.length > 1 && parts[0] && parts[parts.length - 1]) {
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        return str.substring(0, 2).toUpperCase();
+    };
+
+    const initials = getInitials(nameStr);
+    const bgColor = isOwner ? 'bg-[#D1C3B4]' : 'bg-[#FCFAF8]';
+    const textColor = isOwner ? 'text-[#3C3833]' : 'text-[#8A827A]';
+
+    return (
+        <div
+            className={`w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[11px] font-bold ${bgColor} ${textColor} shadow-sm overflow-hidden shrink-0 hover:z-30 relative`}
+            title={`${isOwner ? 'Owner' : 'Member'}: ${user.name || user.email}`}
+        >
+            {avatar ? (
+                <img src={avatar} alt={nameStr} className="w-full h-full object-cover" />
+            ) : (
+                initials
+            )}
+        </div>
+    );
+};
+
 export default function DashboardClientView({ trips }: { trips: any[] }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTrip, setEditingTrip] = useState<any>(null);
@@ -63,18 +102,10 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                                 </div>
 
                                 {/* Floating Participant Bubbles */}
-                                <div className="absolute top-3 left-3 flex -space-x-1.5 z-20">
-                                    {/* Owner Bubble */}
-                                    {trip.owner && (
-                                        <div className="w-6 h-6 rounded-full bg-[#D1C3B4] border border-white flex items-center justify-center text-[10px] font-bold text-[#3C3833] shadow-sm" title={`Owner: ${trip.owner.email}`}>
-                                            {trip.owner.email[0].toUpperCase()}
-                                        </div>
-                                    )}
-                                    {/* Members Bubbles */}
+                                <div className="absolute top-3 left-3 flex -space-x-2.5 z-20">
+                                    <UserBubble user={trip.owner} isOwner={true} />
                                     {trip.members && trip.members.map((member: any) => (
-                                        <div key={member.id} className="w-6 h-6 rounded-full bg-[#FCFAF8] border border-white flex items-center justify-center text-[10px] font-bold text-[#8A827A] shadow-sm" title={`Member: ${member.user?.email}`}>
-                                            {member.user?.email?.[0]?.toUpperCase() || "M"}
-                                        </div>
+                                        <UserBubble key={member.id} user={member.user} isOwner={false} />
                                     ))}
                                 </div>
 
