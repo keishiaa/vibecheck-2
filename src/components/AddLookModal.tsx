@@ -514,7 +514,7 @@ export default function AddLookModal({
                             </div>
 
                             {/* Right Column: Visual Preview */}
-                            <div className="flex flex-col bg-[#FDFBF7] rounded-2xl border border-[#EAE5DF] p-4 shadow-inner relative overflow-y-auto">
+                            <div className="flex flex-col bg-[#FDFBF7] rounded-2xl border border-[#EAE5DF] p-4 shadow-inner relative overflow-y-auto min-h-[300px] md:min-h-0">
                                 <div className="absolute top-0 left-0 w-full px-4 pt-3 pb-2 bg-gradient-to-b from-[#FDFBF7] to-transparent z-10 flex justify-between items-center">
                                     <h4 className="font-semibold text-[#8A827A] text-xs uppercase tracking-widest bg-white/60 px-2 py-0.5 rounded backdrop-blur-sm shadow-sm border border-white/50">Moodboard Preview</h4>
                                 </div>

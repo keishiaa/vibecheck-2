@@ -18,7 +18,7 @@ model User {
   trips       Trip[]
   memberTrips TripMember[]
   outfits     Outfit[]
-  comments    Comment[]
+  likes       Like[]
 }
 
 model Trip {
@@ -70,17 +70,18 @@ model Outfit {
   userId      String
   trip        Trip      @relation(fields: [tripId], references: [id])
   user        User      @relation(fields: [userId], references: [id])
-  comments    Comment[]
+  likes       Like[]
   products    Product[]
 }
 
-model Comment {
-  id          String @id @default(uuid())
-  outfitId    String
-  userId      String
-  textContent String
-  outfit      Outfit @relation(fields: [outfitId], references: [id])
-  user        User   @relation(fields: [userId], references: [id])
+model Like {
+  id       String @id @default(uuid())
+  outfitId String
+  userId   String
+  outfit   Outfit @relation(fields: [outfitId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([outfitId, userId])
 }
 
 model Product {

@@ -3,10 +3,9 @@
 import { useState, useTransition } from "react";
 import AddLookModal from "@/components/AddLookModal";
 import AddProductModal from "@/components/AddProductModal";
-import OutfitChatModal from "@/components/calendar/OutfitChatModal";
-import CreateTripModal from "@/components/CreateTripModal";
-import { assignOutfitToDay } from "@/actions/outfitActions";
+import { assignOutfitToDay, toggleLike } from "@/actions/outfitActions";
 import { updateDayDetails } from "@/actions/tripActions";
+import CreateTripModal from "@/components/CreateTripModal";
 import Link from "next/link";
 
 function getDisplayUrl(url: string | null | undefined): string {
@@ -58,7 +57,6 @@ export default function CalendarClientWrapper({
 }) {
     const [activeDayModal, setActiveDayModal] = useState<number | null>(null);
     const [editingOutfit, setEditingOutfit] = useState<any>(null);
-    const [activeChatOutfit, setActiveChatOutfit] = useState<any>(null);
     const [activeCatalogModal, setActiveCatalogModal] = useState<boolean>(false);
     const [activeEditTripModal, setActiveEditTripModal] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<'itinerary' | 'wardrobe' | 'catalog'>('itinerary');
@@ -122,6 +120,17 @@ export default function CalendarClientWrapper({
         });
     };
 
+    const handleToggleLike = async (outfitId: string) => {
+        // Optimistic UI update could be added here, but for simplicity we rely on Server Action revalidation.
+        startTransition(async () => {
+            try {
+                await toggleLike(outfitId);
+            } catch (err) {
+                console.error("Failed to like outfit.", err);
+            }
+        });
+    };
+
     const renderOutfit = (outfit: any, isWardrobe: boolean = false) => {
         const hasImageProduct = outfit.products?.find((p: any) => p.imageUrl);
         const displayImage = getDisplayUrl(hasImageProduct?.imageUrl);
@@ -163,10 +172,16 @@ export default function CalendarClientWrapper({
                     {/* Action Bar */}
                     <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/60 to-transparent flex gap-2">
                         <button
-                            onClick={(e) => { e.stopPropagation(); setActiveChatOutfit(outfit); }}
-                            className="flex-1 py-1.5 text-xs font-medium border border-white/40 text-white bg-black/20 rounded-md backdrop-blur-sm hover:bg-white/30 transition-colors"
+                            onClick={(e) => { e.stopPropagation(); handleToggleLike(outfit.id); }}
+                            className={`flex items-center justify-center gap-1.5 flex-1 py-1.5 text-xs font-medium border rounded-md backdrop-blur-sm transition-colors ${outfit.likes?.some((l: any) => l.user?.email === userEmail)
+                                ? 'border-red-500/50 bg-red-500/20 text-white hover:bg-red-500/40'
+                                : 'border-white/40 text-white bg-black/20 hover:bg-white/30'
+                                }`}
                         >
-                            {outfit.comments?.length || 0} Chat
+                            <span className={outfit.likes?.some((l: any) => l.user?.email === userEmail) ? 'text-red-400' : 'text-white'}>
+                                {outfit.likes?.some((l: any) => l.user?.email === userEmail) ? '♥' : '♡'}
+                            </span>
+                            {outfit.likes?.length || 0}
                         </button>
                     </div>
                 </div>
@@ -354,7 +369,7 @@ export default function CalendarClientWrapper({
                 )}
 
                 {/* Tabs */}
-                <div className="flex border-b border-[#EAE5DF] mb-8 mt-2 sticky top-[88px] bg-[#FDFBF7]/95 backdrop-blur-md z-20">
+                <div className="flex border-b border-[#EAE5DF] mb-8 sticky top-[73px] sm:top-[89px] bg-[#FDFBF7]/95 backdrop-blur-md z-20 -mx-4 px-4 sm:-mx-0 sm:px-0">
                     <button
                         className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'itinerary' ? 'border-[#3C3833] text-[#3C3833]' : 'border-transparent text-[#8A827A] hover:text-[#3C3833]'}`}
                         onClick={() => setActiveTab('itinerary')}
@@ -514,12 +529,6 @@ export default function CalendarClientWrapper({
                 isOpen={activeCatalogModal}
                 onClose={() => setActiveCatalogModal(false)}
                 tripId={tripId}
-            />
-
-            <OutfitChatModal
-                isOpen={!!activeChatOutfit}
-                onClose={() => setActiveChatOutfit(null)}
-                outfit={activeChatOutfit}
             />
 
             <CreateTripModal

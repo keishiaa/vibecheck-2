@@ -131,11 +131,11 @@ export async function getOutfitsForTrip(tripId: string) {
         },
         include: {
             user: {
-                select: { email: true, role: true } // Don't expose all user details, just email/role for profile bubbles
+                select: { email: true, role: true, name: true, avatarUrl: true }
             },
-            comments: {
+            likes: {
                 include: {
-                    user: { select: { email: true } }
+                    user: { select: { email: true, name: true, avatarUrl: true } }
                 }
             },
             products: true
@@ -146,16 +146,13 @@ export async function getOutfitsForTrip(tripId: string) {
     return outfits;
 }
 
-export async function addComment(outfitId: string, textContent: string) {
+export async function toggleLike(outfitId: string) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     const userId = user?.id;
 
     if (!userId) throw new Error("Unauthorized");
 
-    if (!textContent) throw new Error("Comment cannot be empty");
-
-    // Fetch outfit to know which trip to revalidate
     const outfit = await prisma.outfit.findUnique({
         where: { id: outfitId },
         select: { tripId: true }
@@ -163,16 +160,30 @@ export async function addComment(outfitId: string, textContent: string) {
 
     if (!outfit) throw new Error("Outfit not found");
 
-    const comment = await prisma.comment.create({
-        data: {
-            outfitId,
-            userId,
-            textContent,
+    const existingLike = await prisma.like.findUnique({
+        where: {
+            outfitId_userId: {
+                outfitId,
+                userId
+            }
         }
     });
 
+    if (existingLike) {
+        await prisma.like.delete({
+            where: { id: existingLike.id }
+        });
+    } else {
+        await prisma.like.create({
+            data: {
+                outfitId,
+                userId
+            }
+        });
+    }
+
     revalidatePath(`/trips/${outfit.tripId}`);
-    return comment;
+    return !existingLike; // return true if liked, false if unliked
 }
 
 export async function assignOutfitToDay(outfitId: string, dayNumber: number, tripId: string) {
