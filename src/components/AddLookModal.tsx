@@ -401,7 +401,12 @@ export default function AddLookModal({
                                                             handleUpdateProduct(idx, "imageUrl", result.info.secure_url);
                                                         }
                                                     }}
-                                                    options={{ maxFiles: 1, resourceType: "image", clientAllowedFormats: ["png", "jpeg", "webp", "jpg"] }}
+                                                    options={{
+                                                        maxFiles: 1,
+                                                        resourceType: "image",
+                                                        clientAllowedFormats: ["png", "jpeg", "webp", "jpg"],
+                                                        sources: ["local", "camera", "url"]
+                                                    }}
                                                 >
                                                     {({ open }) => (
                                                         <div
