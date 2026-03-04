@@ -43,7 +43,21 @@ export async function signup(formData: FormData) {
 
 export async function signInWithGoogle() {
     const supabase = await createClient()
-    const origin = (await headers()).get('origin')
+
+    let origin: string | undefined = process.env.NEXT_PUBLIC_SITE_URL;
+
+    if (!origin) {
+        if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+            origin = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+        } else if (process.env.VERCEL_URL) {
+            origin = `https://${process.env.VERCEL_URL}`;
+        }
+    }
+
+    if (!origin) {
+        const h = await headers();
+        origin = h.get('origin') || 'http://localhost:3000';
+    }
 
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
