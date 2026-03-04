@@ -132,6 +132,12 @@ export default function AddProductModal({
                                             setImageUrl(results.info.secure_url);
                                         }
                                     }}
+                                    options={{
+                                        maxFiles: 1,
+                                        resourceType: "image",
+                                        clientAllowedFormats: ["png", "jpeg", "webp", "jpg"],
+                                        sources: ["local", "camera", "url"]
+                                    }}
                                 >
                                     {({ open }) => (
                                         <div
