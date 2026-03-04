@@ -13,14 +13,12 @@ export async function GET(request: Request) {
         if (!error) {
             const forwardedHost = request.headers.get('x-forwarded-host')
             const isLocalEnv = process.env.NODE_ENV === 'development'
-            if (isLocalEnv) {
-                // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-                return NextResponse.redirect(`${origin}${next}`)
-            } else if (forwardedHost) {
+
+            if (!isLocalEnv && forwardedHost) {
                 return NextResponse.redirect(`https://${forwardedHost}${next}`)
-            } else {
-                return NextResponse.redirect(`${origin}${next}`)
             }
+
+            return NextResponse.redirect(`${origin}${next}`)
         }
     }
 
