@@ -174,11 +174,11 @@ export default function CalendarClientWrapper({
                         <button
                             onClick={(e) => { e.stopPropagation(); handleToggleLike(outfit.id); }}
                             className={`flex items-center justify-center gap-1.5 flex-1 py-1.5 text-xs font-medium border rounded-md backdrop-blur-sm transition-colors ${outfit.likes?.some((l: any) => l.user?.email === userEmail)
-                                ? 'border-red-500/50 bg-red-500/20 text-white hover:bg-red-500/40'
+                                ? 'border-emerald-500/50 bg-emerald-500/20 text-white hover:bg-emerald-500/40'
                                 : 'border-white/40 text-white bg-black/20 hover:bg-white/30'
                                 }`}
                         >
-                            <span className={outfit.likes?.some((l: any) => l.user?.email === userEmail) ? 'text-red-400' : 'text-white'}>
+                            <span className={outfit.likes?.some((l: any) => l.user?.email === userEmail) ? 'text-emerald-400' : 'text-white'}>
                                 {outfit.likes?.some((l: any) => l.user?.email === userEmail) ? '♥' : '♡'}
                             </span>
                             {outfit.likes?.length || 0}

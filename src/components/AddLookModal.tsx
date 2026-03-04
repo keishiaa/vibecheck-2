@@ -190,11 +190,12 @@ export default function AddLookModal({
     function handleAddProduct() {
         setProducts(prev => [...prev, { name: "", category: "top", imageUrl: "", tags: [], notes: "" }]);
         setTimeout(() => {
-            const container = document.getElementById("product-list-container");
-            if (container) {
-                container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+            const items = document.querySelectorAll('.product-item-card');
+            const lastItem = items[items.length - 1];
+            if (lastItem) {
+                lastItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-        }, 50);
+        }, 100);
     }
 
     function handleUpdateProduct(index: number, field: string, value: any) {
@@ -359,6 +360,11 @@ export default function AddLookModal({
                                                         const selectedProduct = catalogProducts.find(p => p.id === e.target.value);
                                                         if (selectedProduct) {
                                                             setProducts(prev => [...prev, selectedProduct]);
+                                                            setTimeout(() => {
+                                                                const items = document.querySelectorAll('.product-item-card');
+                                                                const lastItem = items[items.length - 1];
+                                                                if (lastItem) lastItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                            }, 100);
                                                         }
                                                         e.target.value = "";
                                                     }
@@ -389,7 +395,7 @@ export default function AddLookModal({
                                     )}
 
                                     {products.map((p, idx) => (
-                                        <div key={idx} className="p-4 border border-[#EAE5DF] rounded-xl flex gap-4 bg-white shadow-sm hover:shadow-md transition-shadow relative group">
+                                        <div key={idx} className="product-item-card p-4 border border-[#EAE5DF] rounded-xl flex gap-4 bg-white shadow-sm hover:shadow-md transition-shadow relative group">
                                             <button type="button" onClick={() => handleRemoveProduct(idx)} className="absolute top-2 right-2 text-[#C4BCB3] hover:text-red-500 hover:bg-red-50 p-1 rounded-md transition-colors opacity-0 group-hover:opacity-100">
                                                 <X size={16} />
                                             </button>
