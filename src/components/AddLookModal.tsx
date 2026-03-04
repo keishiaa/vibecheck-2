@@ -188,6 +188,12 @@ export default function AddLookModal({
 
     function handleAddProduct() {
         setProducts(prev => [...prev, { name: "", category: "top", imageUrl: "", tags: [], notes: "" }]);
+        setTimeout(() => {
+            const container = document.getElementById("product-list-container");
+            if (container) {
+                container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+            }
+        }, 50);
     }
 
     function handleUpdateProduct(index: number, field: string, value: any) {
@@ -374,7 +380,7 @@ export default function AddLookModal({
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col gap-3 overflow-y-auto pb-4 px-1">
+                                <div id="product-list-container" className="flex flex-col gap-3 overflow-y-auto pb-4 px-1 scroll-smooth">
                                     {products.length === 0 && (
                                         <div className="text-sm text-[#8A827A] italic p-8 my-4 border-2 border-dashed border-[#EAE5DF] bg-[#FCFAF8] rounded-2xl text-center">
                                             No items added yet. Build your outfit by adding items below!
@@ -427,7 +433,7 @@ export default function AddLookModal({
                                                 </CldUploadWidget>
                                             </div>
 
-                                            <div className="flex-1 flex flex-col gap-2.5 pt-1">
+                                            <div className="flex-1 min-w-0 flex flex-col gap-2.5 pt-1">
                                                 <div>
                                                     <input required type="text" value={p.name} onChange={e => handleUpdateProduct(idx, "name", e.target.value)} className="w-full text-sm font-semibold border-b border-transparent hover:border-[#EAE5DF] focus:border-[#C4BCB3] focus:outline-none bg-transparent placeholder-[#C4BCB3] pb-0.5" placeholder="Item Name (e.g. Silk Camisole)" />
                                                 </div>
@@ -538,27 +544,27 @@ export default function AddLookModal({
                             )}
                         </div>
 
-                        <div className="flex gap-3 w-full sm:w-auto">
+                        <div className="flex gap-2 w-full sm:w-auto">
                             {existingOutfit && existingOutfit.dayNumber !== null && (
                                 <button
                                     type="button"
                                     onClick={handleCopyToWardrobe}
                                     disabled={loading}
                                     title="Copies this look to your Trip Wardrobe without removing it from the calendar."
-                                    className="flex-1 sm:flex-none px-6 py-3 font-medium transition-colors border-2 border-[#D1C3B4] text-[#8A827A] bg-[#FCFAF8] rounded-xl hover:bg-[#D1C3B4] hover:text-[#3C3833] shadow-sm disabled:opacity-50"
+                                    className="flex-1 sm:flex-none px-3 py-2.5 text-sm font-medium transition-colors border-2 border-[#D1C3B4] text-[#8A827A] bg-[#FCFAF8] rounded-xl hover:bg-[#D1C3B4] hover:text-[#3C3833] shadow-sm disabled:opacity-50"
                                 >
-                                    📥 Copy to Wardrobe
+                                    📥 Copy
                                 </button>
                             )}
-                            <button type="button" onClick={onClose} disabled={loading} className="flex-1 sm:flex-none px-6 py-3 font-medium transition-colors border border-[#EAE5DF] text-[#8A827A] rounded-xl hover:bg-[#FCFAF8] hover:text-[#3C3833] shadow-sm disabled:opacity-50">
+                            <button type="button" onClick={onClose} disabled={loading} className="flex-1 sm:flex-none px-3 py-2.5 text-sm font-medium transition-colors border border-[#EAE5DF] text-[#8A827A] rounded-xl hover:bg-[#FCFAF8] hover:text-[#3C3833] shadow-sm disabled:opacity-50">
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="flex-1 sm:flex-none px-8 py-3 font-medium text-white transition-all bg-[#3C3833] rounded-xl hover:bg-black shadow-md disabled:opacity-50 hover:shadow-lg hover:-translate-y-0.5"
+                                className="flex-1 sm:flex-none px-5 py-2.5 text-sm font-medium text-white transition-all bg-[#3C3833] rounded-xl hover:bg-black shadow-md disabled:opacity-50 hover:shadow-lg hover:-translate-y-0.5"
                             >
-                                {loading ? "Saving..." : "Save Look"}
+                                {loading ? "Saving" : "Save Look"}
                             </button>
                         </div>
                     </div>
