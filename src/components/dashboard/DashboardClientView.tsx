@@ -10,7 +10,7 @@ function getDisplayUrl(url: string | null | undefined): string {
     if (!url) return "";
 
     // Cloudinary URLs
-    if (url.includes('cloudinary.com')) return url;
+    if (url.includes('cloudinary.com') || url.includes('supabase.co')) return url;
 
     // Explicit image file extensions
     if (url.match(/\.(jpeg|jpg|gif|png|webp|avif|svg)(\?.*)?$/i)) return url;

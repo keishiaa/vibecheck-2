@@ -52,6 +52,17 @@ export async function syncUser() {
     return userId;
 }
 
+const DEFAULT_TRIP_IMAGES = [
+    "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1504150558240-0b4fd8946624?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1516483638261-f40af5ba62ea?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1503220317375-aaad61436b1b?auto=format&fit=crop&w=800&q=80"
+];
+
 export async function createTrip(formData: FormData) {
     const userId = await syncUser();
 
@@ -59,10 +70,14 @@ export async function createTrip(formData: FormData) {
     const startDateStr = formData.get("startDate") as string;
     const endDateStr = formData.get("endDate") as string;
     const locationUrl = formData.get("locationUrl") as string | null;
-    const locationImageUrl = formData.get("locationImageUrl") as string | null;
+    let locationImageUrl = formData.get("locationImageUrl") as string | null;
 
     if (!name || !startDateStr || !endDateStr) {
         throw new Error("Missing required fields");
+    }
+
+    if (!locationImageUrl || locationImageUrl.trim() === "") {
+        locationImageUrl = DEFAULT_TRIP_IMAGES[Math.floor(Math.random() * DEFAULT_TRIP_IMAGES.length)];
     }
 
     // Set time to noon to avoid timezone shift issues

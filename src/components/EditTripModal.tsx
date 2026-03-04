@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { updateTrip } from "@/actions/tripActions";
 import { useRouter } from "next/navigation";
 import { ImagePlus, X } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 
 export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boolean; onClose: () => void; trip: any }) {
     const [name, setName] = useState("");
@@ -140,20 +141,16 @@ export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boole
                                         if (!file) return;
                                         try {
                                             setIsUploadingImage(true);
-                                            const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dzzv2vmy3";
-                                            const formData = new FormData();
-                                            formData.append("file", file);
-                                            formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "vibecheck");
+                                            const supabase = createClient();
+                                            const fileExt = file.name ? file.name.split('.').pop() : 'jpg';
+                                            const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+                                            const { data, error } = await supabase.storage.from('vibecheck-images').upload(fileName, file);
 
-                                            const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-                                                method: "POST",
-                                                body: formData
-                                            });
-                                            const data = await res.json();
-                                            if (data.secure_url) {
-                                                setLocationImageUrl(data.secure_url);
-                                            } else if (data.error) {
-                                                alert("Upload failed: " + data.error.message);
+                                            if (error) {
+                                                alert("Upload failed: " + error.message);
+                                            } else if (data) {
+                                                const { data: publicUrlData } = supabase.storage.from('vibecheck-images').getPublicUrl(data.path);
+                                                setLocationImageUrl(publicUrlData.publicUrl);
                                             }
                                         } catch (err: any) {
                                             console.error("Upload failed", err);

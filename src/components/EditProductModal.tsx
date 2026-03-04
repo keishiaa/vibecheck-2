@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { updateProductInTrip } from "@/actions/outfitActions";
 import { useRouter } from "next/navigation";
 import { ImagePlus, X } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 import { CldUploadWidget } from "next-cloudinary";
 
 function getDisplayUrl(url: string | null | undefined): string {
@@ -61,7 +62,7 @@ export default function EditProductModal({
     async function handleImageUrlBlur(url: string) {
         if (!url || !url.startsWith('http')) return;
         // If it's an image explicitly, do nothing
-        if (url.match(/\.(jpeg|jpg|gif|png|webp|avif|svg)(\?.*)?$/i) || url.includes('cloudinary')) return;
+        if (url.match(/\.(jpeg|jpg|gif|png|webp|avif|svg)(\?.*)?$/i) || url.includes('supabase') || url.includes('cloudinary')) return;
 
         try {
             const res = await fetch(`/api/scrape?url=${encodeURIComponent(url)}`);
@@ -153,21 +154,16 @@ export default function EditProductModal({
                                                     try {
                                                         setIsUploadingImage(true);
 
-                                                        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dzzv2vmy3";
+                                                        const supabase = createClient();
+                                                        const fileExt = file.name ? file.name.split('.').pop() : 'jpg';
+                                                        const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+                                                        const { data, error } = await supabase.storage.from('vibecheck-images').upload(fileName, file);
 
-                                                        const formData = new FormData();
-                                                        formData.append("file", file);
-                                                        formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "vibecheck");
-
-                                                        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-                                                            method: "POST",
-                                                            body: formData
-                                                        });
-                                                        const data = await res.json();
-                                                        if (data.secure_url) {
-                                                            setImageUrl(data.secure_url);
-                                                        } else if (data.error) {
-                                                            alert("Upload failed: " + data.error.message);
+                                                        if (error) {
+                                                            alert("Upload failed: " + error.message);
+                                                        } else if (data) {
+                                                            const { data: publicUrlData } = supabase.storage.from('vibecheck-images').getPublicUrl(data.path);
+                                                            setImageUrl(publicUrlData.publicUrl);
                                                         }
                                                     } catch (err: any) {
                                                         console.error("Upload failed", err);

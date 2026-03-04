@@ -5,6 +5,7 @@ import { addOutfit, assignOutfitToDay, updateOutfit, copyOutfitToWardrobe, delet
 import { useRouter } from "next/navigation";
 import { CldUploadWidget } from "next-cloudinary";
 import { ImagePlus, X, GripVertical } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 
 function getDisplayUrl(url: string | null | undefined): string {
     if (!url) return "";
@@ -440,21 +441,20 @@ export default function AddLookModal({
                                                             try {
                                                                 setUploadingImageIdx(idx);
 
-                                                                const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dzzv2vmy3";
+                                                                const supabase = createClient();
+                                                                const fileExt = file.name ? file.name.split('.').pop() : 'jpg';
+                                                                const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+                                                                const { data, error } = await supabase.storage.from('vibecheck-images').upload(fileName, file);
 
-                                                                const formData = new FormData();
-                                                                formData.append("file", file);
-                                                                formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "vibecheck");
-
-                                                                const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-                                                                    method: "POST",
-                                                                    body: formData
-                                                                });
-                                                                const data = await res.json();
-                                                                if (data.secure_url) {
-                                                                    handleUpdateProduct(idx, "imageUrl", data.secure_url);
-                                                                } else if (data.error) {
-                                                                    alert("Upload failed: " + data.error.message);
+                                                                if (error) {
+                                                                    alert("Upload failed: " + error.message);
+                                                                } else if (data) {
+                                                                    const { data: publicUrlData } = supabase.storage.from('vibecheck-images').getPublicUrl(data.path);
+                                                                    setProducts(prev => {
+                                                                        const updated = [...prev];
+                                                                        updated[idx].imageUrl = publicUrlData.publicUrl;
+                                                                        return updated;
+                                                                    });
                                                                 }
                                                             } catch (err: any) {
                                                                 console.error("Upload failed", err);
@@ -491,7 +491,7 @@ export default function AddLookModal({
                                                             handleUpdateProduct(idx, "imageUrl", val);
 
                                                             // If pasted text is a web link but not an explicit image file
-                                                            if (val && val.startsWith('http') && !val.includes('cloudinary') && !val.match(/\.(jpeg|jpg|gif|png|webp|avif|svg)(\?.*)?$/i)) {
+                                                            if (val && val.startsWith('http') && !val.includes('supabase') && !val.includes('cloudinary') && !val.match(/\.(jpeg|jpg|gif|png|webp|avif|svg)(\?.*)?$/i)) {
                                                                 try {
                                                                     const res = await fetch(`/api/scrape?url=${encodeURIComponent(val)}`);
                                                                     const data = await res.json();
