@@ -429,30 +429,42 @@ export default function AddLookModal({
                                                             </button>
                                                         </>
                                                     )}
-                                                    <CldUploadWidget
-                                                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "vibecheck"}
-                                                        onSuccess={(result: any) => {
-                                                            if (result?.info?.secure_url) {
-                                                                handleUpdateProduct(idx, "imageUrl", result.info.secure_url);
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        capture="environment"
+                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                        onChange={async (e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (!file) return;
+                                                            try {
+                                                                setUploadingImageIdx(idx);
+
+                                                                const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dzzv2vmy3";
+
+                                                                const formData = new FormData();
+                                                                formData.append("file", file);
+                                                                formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "vibecheck");
+
+                                                                const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                                                                    method: "POST",
+                                                                    body: formData
+                                                                });
+                                                                const data = await res.json();
+                                                                if (data.secure_url) {
+                                                                    handleUpdateProduct(idx, "imageUrl", data.secure_url);
+                                                                } else if (data.error) {
+                                                                    alert("Upload failed: " + data.error.message);
+                                                                }
+                                                            } catch (err: any) {
+                                                                console.error("Upload failed", err);
+                                                                alert("Upload failed. Please check your connection.");
+                                                            } finally {
+                                                                setUploadingImageIdx(null);
+                                                                e.target.value = "";
                                                             }
                                                         }}
-                                                        options={{
-                                                            maxFiles: 1,
-                                                            resourceType: "image",
-                                                            clientAllowedFormats: ["png", "jpeg", "webp", "jpg"],
-                                                        }}
-                                                    >
-                                                        {({ open }) => (
-                                                            <div
-                                                                onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    e.stopPropagation();
-                                                                    open();
-                                                                }}
-                                                                className="absolute inset-0 w-full h-full cursor-pointer z-10"
-                                                            />
-                                                        )}
-                                                    </CldUploadWidget>
+                                                    />
                                                 </div>
                                             </div>
 
@@ -460,15 +472,15 @@ export default function AddLookModal({
                                                 <div>
                                                     <input required type="text" value={p.name} onChange={e => handleUpdateProduct(idx, "name", e.target.value)} className="w-full text-sm font-semibold border-b border-transparent hover:border-[#EAE5DF] focus:border-[#C4BCB3] focus:outline-none bg-transparent placeholder-[#C4BCB3] pb-0.5" placeholder="Item Name (e.g. Silk Camisole)" />
                                                 </div>
-                                                <div className="flex gap-2">
-                                                    <select value={p.category} onChange={e => handleUpdateProduct(idx, "category", e.target.value)} className="w-32 px-2 py-1 text-xs border border-[#EAE5DF] rounded-md focus:outline-none focus:ring-1 focus:ring-[#D1C3B4] bg-[#FCFAF8] text-[#8A827A]">
+                                                <div className="flex gap-2 w-full">
+                                                    <select value={p.category} onChange={e => handleUpdateProduct(idx, "category", e.target.value)} className="w-24 shrink-0 px-2 py-1 text-[10px] sm:text-xs border border-[#EAE5DF] rounded-md focus:outline-none focus:ring-1 focus:ring-[#D1C3B4] bg-[#FCFAF8] text-[#8A827A]">
                                                         <option value="top">Top</option>
                                                         <option value="bottom">Bottoms</option>
                                                         <option value="dress">Dress</option>
                                                         <option value="shoes">Shoes</option>
                                                         <option value="accessories">Accessories</option>
                                                     </select>
-                                                    <input type="text" value={p.notes} onChange={e => handleUpdateProduct(idx, "notes", e.target.value)} className="flex-1 px-2 py-1 text-xs border border-[#EAE5DF] rounded-md focus:outline-none focus:ring-1 focus:ring-[#D1C3B4] placeholder-[#C4BCB3] bg-[#FCFAF8]" placeholder="Notes or Price..." />
+                                                    <input type="text" value={(!p.notes || p.notes.startsWith('http')) ? '' : p.notes} onChange={e => handleUpdateProduct(idx, "notes", e.target.value)} className="flex-1 min-w-0 w-full px-2 py-1 text-xs border border-[#EAE5DF] rounded-md focus:outline-none focus:ring-1 focus:ring-[#D1C3B4] placeholder-[#C4BCB3] bg-[#FCFAF8]" placeholder="Notes or Price..." />
                                                 </div>
                                                 {!p.imageUrl && (
                                                     <input
@@ -488,9 +500,7 @@ export default function AddLookModal({
                                                                             const updated = [...prev];
                                                                             const item = { ...updated[idx] };
                                                                             item.imageUrl = data.imageUrl;
-                                                                            if (!item.notes || !item.notes.includes(val)) {
-                                                                                item.notes = item.notes ? `${item.notes} ${val}` : val;
-                                                                            }
+                                                                            // Removed auto appending URL to notes
                                                                             updated[idx] = item;
                                                                             return updated;
                                                                         });

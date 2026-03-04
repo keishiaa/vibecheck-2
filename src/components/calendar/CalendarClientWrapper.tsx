@@ -312,17 +312,14 @@ export default function CalendarClientWrapper({
             {/* Sticky Header */}
             <div className="sticky top-0 z-30 flex items-center justify-between p-4 sm:p-6 bg-[#FDFBF7]/90 backdrop-blur-md border-b border-[#EAE5DF]">
                 <div className="flex items-center gap-3">
-                    <Link href="/" className="shrink-0 group overflow-hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#EAE5DF] shadow-sm hover:border-[#A69B90] transition-colors relative block focus:outline-none focus:ring-2 focus:ring-[#D1C3B4]">
-                        {userAvatar ? (
-                            <img src={userAvatar} className="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="Account Profile" />
-                        ) : (
-                            <div className="w-full h-full bg-[#D1C3B4] flex items-center justify-center text-[#3C3833] font-bold text-sm sm:text-base">
-                                {userEmail ? userEmail[0].toUpperCase() : "U"}
-                            </div>
-                        )}
+                    <Link href="/" className="shrink-0 group flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#EAE5DF] bg-white shadow-sm hover:border-[#A69B90] hover:bg-[#F5F2EE] transition-colors relative focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#8A827A] hover:text-[#3C3833]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                     </Link>
                     <div>
-                        <h1 className="text-xl sm:text-2xl font-semibold tracking-wide text-[#3C3833] line-clamp-1">{tripName}</h1>
+                        <h1 onClick={() => setActiveEditTripModal(true)} className="text-xl sm:text-2xl font-semibold tracking-wide text-[#3C3833] line-clamp-1 cursor-pointer hover:underline group-title flex items-center gap-2">
+                            {tripName}
+                            <span className="text-[#8A827A] text-sm opacity-50 hover:opacity-100">✏️</span>
+                        </h1>
                         <div className="flex items-center gap-3 mt-1 sm:mt-2">
                             <span className="text-[10px] sm:text-sm text-[#8A827A] font-medium tracking-wide">
                                 {tripStartDate.toLocaleDateString(undefined, dateOptions)} — {tripEndDate.toLocaleDateString(undefined, dateOptions)}
@@ -356,61 +353,26 @@ export default function CalendarClientWrapper({
             </div>
 
             <main className="max-w-md px-4 py-8 mx-auto sm:max-w-2xl">
-                <div className="mb-10 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col sm:flex-row">
-                    <div className="relative w-full sm:w-1/2 h-48 sm:h-auto bg-[#FCFAF8] border-b sm:border-b-0 sm:border-r border-[#EAE5DF] flex items-center justify-center overflow-hidden">
-                        {tripLocationImageUrl ? (
-                            <img
-                                src={getDisplayUrl(tripLocationImageUrl)}
-                                onError={(e) => handleImageError(e, tripLocationImageUrl)}
-                                alt="Location Preview"
-                                className="object-cover w-full h-full hover:scale-105 transition-transform duration-700"
-                            />
-                        ) : (
-                            <div className="text-[#8A827A] flex w-full h-full flex-col items-center justify-center gap-2 opacity-70 bg-[#FCFAF8]">
-                                <span className="text-4xl text-center">🗺️</span>
+                <div className="mb-10 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col sm:flex-row items-center justify-between p-4 sm:p-5 bg-gradient-to-r from-white to-[#FCFAF8]">
+                    <div className="flex items-center gap-4">
+                        <span className="text-3xl">🌤️</span>
+                        <div className="flex flex-col">
+                            <h3 className="text-xs font-semibold tracking-wider text-[#3C3833] uppercase">Current Conditions</h3>
+                            <div className="flex items-baseline gap-2 mt-0.5">
+                                <span className="text-2xl font-light tracking-tighter text-[#3C3833]">25°C</span>
+                                <span className="text-sm font-medium text-[#8A827A]">/ 78°F • Mostly Sunny</span>
                             </div>
-                        )}
-                        {tripLocationUrl && (
-                            <a
-                                href={tripLocationUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="absolute bottom-3 right-3 px-3 py-1.5 bg-black/50 hover:bg-black/70 backdrop-blur-md text-white text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
-                            >
-                                Open Maps ↗
-                            </a>
-                        )}
+                        </div>
                     </div>
 
-                    <div className="w-full sm:w-1/2 p-5 flex flex-col justify-center bg-gradient-to-br from-white to-[#FCFAF8]">
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="text-lg">🌤️</span>
-                            <h3 className="text-sm font-semibold tracking-wide text-[#3C3833] uppercase">Current Conditions</h3>
+                    <div className="mt-4 sm:mt-0 flex items-center gap-6">
+                        <div className="flex flex-col items-end">
+                            <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Humidity</span>
+                            <span className="text-sm font-medium text-[#3C3833]">64%</span>
                         </div>
-
-                        <div className="mt-4 flex items-end gap-3">
-                            <span className="text-4xl font-light tracking-tighter text-[#3C3833]">25°C</span>
-                            <span className="text-xl font-medium text-[#8A827A] mb-1">/ 78°F</span>
-                        </div>
-                        <span className="text-sm text-[#8A827A] mt-1 font-medium">Mostly Sunny</span>
-
-                        <div className="mt-5 grid grid-cols-2 gap-4">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Humidity</span>
-                                <span className="text-sm font-medium text-[#3C3833]">64%</span>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Wind</span>
-                                <span className="text-sm font-medium text-[#3C3833]">8 mph W</span>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">UV Index</span>
-                                <span className="text-sm font-medium text-[#3C3833]">High (7)</span>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Sunset</span>
-                                <span className="text-sm font-medium text-[#3C3833]">7:42 PM</span>
-                            </div>
+                        <div className="flex flex-col items-end">
+                            <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Wind</span>
+                            <span className="text-sm font-medium text-[#3C3833]">8 mph W</span>
                         </div>
                     </div>
                 </div>

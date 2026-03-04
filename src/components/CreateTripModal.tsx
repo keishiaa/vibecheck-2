@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { createTrip, updateTrip } from "@/actions/tripActions";
 import { useRouter } from "next/navigation";
-import { CldUploadWidget } from "next-cloudinary";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, X } from "lucide-react";
 
 export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isOpen: boolean; onClose: () => void; existingTrip?: any }) {
     const [name, setName] = useState("");
@@ -13,6 +12,7 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
     const [locationUrl, setLocationUrl] = useState("");
     const [locationImageUrl, setLocationImageUrl] = useState("");
     const [loading, setLoading] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -101,38 +101,63 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
 
                     <div>
                         <label className="block mb-1 text-sm text-[#8A827A]">Location Image (Optional)</label>
-                        <CldUploadWidget
-                            uploadPreset="vibecheck"
-                            onSuccess={(result: any) => {
-                                if (result?.info?.secure_url) {
-                                    setLocationImageUrl(result.info.secure_url);
-                                }
-                            }}
-                            options={{
-                                maxFiles: 1,
-                                resourceType: "image",
-                                clientAllowedFormats: ["png", "jpeg", "webp", "jpg"],
-                            }}
-                        >
-                            {({ open }) => (
-                                <div
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        open();
-                                    }}
-                                    className={`w-full h-32 overflow-hidden flex items-center justify-center border-2 border-dashed rounded-xl cursor-pointer transition-colors mt-2 mb-4 ${locationImageUrl ? 'border-[#C4BCB3] bg-white' : 'border-[#EAE5DF] bg-[#FCFAF8] hover:border-[#A69B90]'}`}
-                                >
-                                    {locationImageUrl ? (
-                                        <img src={locationImageUrl} className="w-full h-full object-cover rounded-xl" alt="Location preview" />
-                                    ) : (
-                                        <div className="flex flex-col items-center justify-center p-2 text-[#8A827A]">
-                                            <ImagePlus className="w-5 h-5 mb-1 opacity-60" />
-                                            <span className="text-[10px] font-medium text-center">Upload Cover Image</span>
-                                        </div>
-                                    )}
+                        <div className={`relative w-full h-32 overflow-hidden flex items-center justify-center border-2 border-dashed rounded-xl transition-colors mt-2 mb-4 ${(locationImageUrl || isUploadingImage) ? 'border-[#C4BCB3] bg-white' : 'border-[#EAE5DF] bg-[#FCFAF8] hover:border-[#A69B90]'}`}>
+                            {isUploadingImage ? (
+                                <div className="flex flex-col items-center">
+                                    <div className="w-6 h-6 border-2 border-[#D1C3B4] border-t-transparent rounded-full animate-spin mb-2"></div>
+                                    <span className="text-xs text-[#8A827A]">Uploading...</span>
+                                </div>
+                            ) : locationImageUrl ? (
+                                <>
+                                    <img src={locationImageUrl} className="w-full h-full object-cover rounded-xl" alt="Location preview" />
+                                    <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLocationImageUrl(""); }} className="absolute z-20 top-2 right-2 p-1.5 bg-black/50 text-white rounded-full hover:bg-black transition-colors">
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center p-2 text-[#8A827A]">
+                                    <ImagePlus className="w-5 h-5 mb-1 opacity-60" />
+                                    <span className="text-[10px] font-medium text-center">Upload Cover Image</span>
                                 </div>
                             )}
-                        </CldUploadWidget>
+
+                            {!locationImageUrl && !isUploadingImage && (
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    capture="environment"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+                                        try {
+                                            setIsUploadingImage(true);
+                                            const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dzzv2vmy3";
+                                            const formData = new FormData();
+                                            formData.append("file", file);
+                                            formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "vibecheck");
+
+                                            const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                                                method: "POST",
+                                                body: formData
+                                            });
+                                            const data = await res.json();
+                                            if (data.secure_url) {
+                                                setLocationImageUrl(data.secure_url);
+                                            } else if (data.error) {
+                                                alert("Upload failed: " + data.error.message);
+                                            }
+                                        } catch (err: any) {
+                                            console.error("Upload failed", err);
+                                            alert("Upload failed. Please check your connection.");
+                                        } finally {
+                                            setIsUploadingImage(false);
+                                            e.target.value = "";
+                                        }
+                                    }}
+                                />
+                            )}
+                        </div>
 
                         <label className="block mb-1 text-sm text-[#8A827A]">Location URL (Google Maps etc.) - Optional</label>
                         <input

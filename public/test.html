@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+<input type="file" id="fi" />
+<script>
+document.getElementById("fi").addEventListener("change", async (e) => {
+  const f = e.target.files[0];
+  const fd = new FormData();
+  fd.append("file", f);
+  fd.append("upload_preset", "vibecheck");
+  const res = await fetch("https://api.cloudinary.com/v1_1/dzzv2vmy3/image/upload", { method: "POST", body: fd });
+  console.log(await res.json());
+});
+</script>
+</body>
+</html>
