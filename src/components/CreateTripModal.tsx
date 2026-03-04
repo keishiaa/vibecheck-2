@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { createTrip } from "@/actions/tripActions";
+import { useEffect, useState } from "react";
+import { createTrip, updateTrip } from "@/actions/tripActions";
 import { useRouter } from "next/navigation";
 import { CldUploadWidget } from "next-cloudinary";
 import { ImagePlus } from "lucide-react";
 
-export default function CreateTripModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isOpen: boolean; onClose: () => void; existingTrip?: any }) {
     const [name, setName] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -14,6 +14,16 @@ export default function CreateTripModal({ isOpen, onClose }: { isOpen: boolean; 
     const [locationImageUrl, setLocationImageUrl] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        if (isOpen) {
+            setName(existingTrip?.name || "");
+            setStartDate(existingTrip?.startDate ? new Date(existingTrip.startDate).toISOString().split('T')[0] : "");
+            setEndDate(existingTrip?.endDate ? new Date(existingTrip.endDate).toISOString().split('T')[0] : "");
+            setLocationUrl(existingTrip?.locationUrl || "");
+            setLocationImageUrl(existingTrip?.locationImageUrl || "");
+        }
+    }, [isOpen, existingTrip]);
 
     if (!isOpen) return null;
 
@@ -29,7 +39,11 @@ export default function CreateTripModal({ isOpen, onClose }: { isOpen: boolean; 
         if (locationImageUrl) formData.append("locationImageUrl", locationImageUrl);
 
         try {
-            await createTrip(formData);
+            if (existingTrip?.id) {
+                await updateTrip(existingTrip.id, formData);
+            } else {
+                await createTrip(formData);
+            }
             onClose(); // Close modal on success
             router.refresh(); // Tell Next to refetch the `getTrips` server action!
         } catch (err: any) {
@@ -42,8 +56,10 @@ export default function CreateTripModal({ isOpen, onClose }: { isOpen: boolean; 
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
-            <div className="w-full max-w-sm p-6 bg-white border border-[#EAE5DF] rounded-2xl shadow-xl animate-in fade-in zoom-in-95 duration-200">
-                <h3 className="mb-4 text-xl font-medium tracking-wide text-[#3C3833]">Create New Trip</h3>
+            <div className="w-full max-w-sm p-6 bg-white border border-[#EAE5DF] rounded-2xl shadow-xl animate-in fade-in zoom-in-95 duration-200 text-left">
+                <h3 className="mb-4 text-xl font-medium tracking-wide text-[#3C3833]">
+                    {existingTrip ? 'Edit Trip' : 'Create New Trip'}
+                </h3>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <div>
@@ -142,7 +158,7 @@ export default function CreateTripModal({ isOpen, onClose }: { isOpen: boolean; 
                             disabled={loading}
                             className="flex-1 py-3 text-sm font-medium text-[#3C3833] transition-all bg-[#D1C3B4] rounded-lg hover:bg-[#C2B2A1] disabled:opacity-50"
                         >
-                            {loading ? "Creating..." : "Create"}
+                            {loading ? "Saving..." : (existingTrip ? "Save Details" : "Create")}
                         </button>
                     </div>
                 </form>

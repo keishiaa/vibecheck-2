@@ -174,3 +174,58 @@ export async function joinTrip(tripId: string) {
     revalidatePath(`/trips/${tripId}`);
     return tripId;
 }
+
+export async function getDayDetailsForTrip(tripId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const details = await (prisma as any).dayDetails.findMany({
+        where: { tripId },
+        orderBy: { dayNumber: 'asc' }
+    });
+    return details;
+}
+
+export async function updateDayDetails(tripId: string, dayNumber: number, formData: FormData) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const activities = formData.get("activities") as string | null;
+    const locationUrl = formData.get("locationUrl") as string | null;
+
+    // Check if user is owner or member
+    const trip = await prisma.trip.findUnique({
+        where: { id: tripId },
+        include: { members: true }
+    });
+
+    if (!trip) throw new Error("Trip not found");
+
+    const isOwner = trip.ownerId === user.id;
+    const isMember = (trip as any).members?.some((m: any) => m.userId === user.id);
+
+    if (!isOwner && !isMember) throw new Error("Unauthorized");
+
+    await (prisma as any).dayDetails.upsert({
+        where: {
+            tripId_dayNumber: {
+                tripId,
+                dayNumber
+            }
+        },
+        update: {
+            activities,
+            locationUrl
+        },
+        create: {
+            tripId,
+            dayNumber,
+            activities,
+            locationUrl
+        }
+    });
+
+    revalidatePath(`/trips/${tripId}`);
+}

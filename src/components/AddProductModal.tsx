@@ -8,10 +8,24 @@ import { ImagePlus, X } from "lucide-react";
 
 function getDisplayUrl(url: string | null | undefined): string {
     if (!url) return "";
-    if (url.includes('cloudinary.com') || url.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i)) {
-        return url;
+    return url;
+}
+
+function handleImageError(e: React.SyntheticEvent<HTMLImageElement, Event>, originalUrl: string) {
+    const target = e.currentTarget;
+    if (!target.dataset.fallback) {
+        target.dataset.fallback = "true";
+        try {
+            const domain = new URL(originalUrl).hostname;
+            target.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=256`;
+            target.classList.remove('object-cover');
+            target.classList.add('object-contain', 'scale-50', 'opacity-50');
+        } catch {
+            target.style.display = 'none';
+        }
+    } else {
+        target.style.display = 'none';
     }
-    return `https://api.microlink.io/?url=${encodeURIComponent(url)}&embed=image.url`;
 }
 
 export default function AddProductModal({
@@ -31,6 +45,26 @@ export default function AddProductModal({
     const router = useRouter();
 
     if (!isOpen) return null;
+
+    async function handleImageUrlBlur(url: string) {
+        if (!url || !url.startsWith('http')) return;
+        // If it's an image explicitly, do nothing
+        if (url.match(/\.(jpeg|jpg|gif|png|webp|avif|svg)(\?.*)?$/i) || url.includes('cloudinary')) return;
+
+        try {
+            const res = await fetch(`/api/scrape?url=${encodeURIComponent(url)}`);
+            const data = await res.json();
+            if (data.imageUrl) {
+                // If notes is empty, store this link just to be safe
+                if (!notes) {
+                    setNotes(url);
+                }
+                setImageUrl(data.imageUrl);
+            }
+        } catch (e) {
+            console.error("Failed to scrape link for product image", e);
+        }
+    }
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -81,7 +115,7 @@ export default function AddProductModal({
                             <label className="block mb-2 text-sm font-medium text-[#5C564D]">Product Image</label>
                             {imageUrl ? (
                                 <div className="relative w-full aspect-square max-h-[250px] bg-[#EAE5DF] rounded-xl overflow-hidden group">
-                                    <img src={getDisplayUrl(imageUrl)} alt="Preview" className="object-cover w-full h-full" />
+                                    <img src={getDisplayUrl(imageUrl)} onError={(e) => handleImageError(e, imageUrl)} alt="Preview" className="object-cover w-full h-full" />
                                     <button
                                         type="button"
                                         onClick={() => setImageUrl("")}
@@ -120,6 +154,7 @@ export default function AddProductModal({
                                     className="flex-1 px-3 py-1.5 bg-white border border-[#EAE5DF] rounded-md focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#3C3833] text-sm"
                                     value={imageUrl}
                                     onChange={(e) => setImageUrl(e.target.value)}
+                                    onBlur={(e) => handleImageUrlBlur(e.target.value)}
                                 />
                             </div>
                         </div>

@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { getOutfitsForTrip, getProductsForTrip } from "@/actions/outfitActions";
+import { getDayDetailsForTrip } from "@/actions/tripActions";
 import CalendarClientWrapper from "@/components/calendar/CalendarClientWrapper";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
@@ -40,6 +41,13 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
 
     const outfits = await getOutfitsForTrip(trip.id);
     const products = await getProductsForTrip(trip.id);
+    const dayDetailsRows = await getDayDetailsForTrip(trip.id);
+
+    // Map them into a key-value object by dayNumber
+    const initialDayDetails = dayDetailsRows.reduce((acc: any, row: any) => {
+        acc[row.dayNumber] = row;
+        return acc;
+    }, {});
 
     return (
         <div className="min-h-screen bg-[#FDFBF7] text-[#3C3833] font-sans pb-24 selection:bg-[#D1C3B4] selection:text-[#3C3833]">
@@ -59,6 +67,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
                 tripLocationImageUrl={(trip as any).locationImageUrl}
                 outfits={outfits}
                 products={products}
+                initialDayDetails={initialDayDetails}
             />
         </div>
     );

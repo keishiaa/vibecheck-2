@@ -4,15 +4,30 @@ import { useState, useTransition } from "react";
 import AddLookModal from "@/components/AddLookModal";
 import AddProductModal from "@/components/AddProductModal";
 import OutfitChatModal from "@/components/calendar/OutfitChatModal";
+import CreateTripModal from "@/components/CreateTripModal";
 import { assignOutfitToDay } from "@/actions/outfitActions";
+import { updateDayDetails } from "@/actions/tripActions";
 
 function getDisplayUrl(url: string | null | undefined): string {
     if (!url) return "";
-    if (url.includes('cloudinary.com') || url.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i)) {
-        return url;
+    return url;
+}
+
+function handleImageError(e: React.SyntheticEvent<HTMLImageElement, Event>, originalUrl: string) {
+    const target = e.currentTarget;
+    if (!target.dataset.fallback) {
+        target.dataset.fallback = "true";
+        try {
+            const domain = new URL(originalUrl).hostname;
+            target.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=256`;
+            target.classList.remove('object-cover');
+            target.classList.add('object-contain', 'scale-50', 'opacity-50');
+        } catch {
+            target.style.display = 'none';
+        }
+    } else {
+        target.style.display = 'none';
     }
-    // Convert generic web store links into microlink image extractors automatically
-    return `https://api.microlink.io/?url=${encodeURIComponent(url)}&embed=image.url`;
 }
 
 export default function CalendarClientWrapper({
@@ -23,7 +38,8 @@ export default function CalendarClientWrapper({
     tripLocationUrl,
     tripLocationImageUrl,
     outfits,
-    products = []
+    products = [],
+    initialDayDetails = {}
 }: {
     tripId: string;
     tripName: string;
@@ -33,11 +49,18 @@ export default function CalendarClientWrapper({
     tripLocationImageUrl?: string | null;
     outfits: any[];
     products?: any[];
+    initialDayDetails?: Record<number, any>;
 }) {
     const [activeDayModal, setActiveDayModal] = useState<number | null>(null);
+    const [editingOutfit, setEditingOutfit] = useState<any>(null);
     const [activeChatOutfit, setActiveChatOutfit] = useState<any>(null);
     const [activeCatalogModal, setActiveCatalogModal] = useState<boolean>(false);
+    const [activeEditTripModal, setActiveEditTripModal] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<'itinerary' | 'wardrobe' | 'catalog'>('itinerary');
+
+    // State for day details
+    const [dayDetails, setDayDetails] = useState<Record<number, any>>(initialDayDetails);
+    const [editingDayDetails, setEditingDayDetails] = useState<number | null>(null);
 
     // Group outfits by day
     const outfitsByDay: Record<number, any[]> = {};
@@ -72,16 +95,39 @@ export default function CalendarClientWrapper({
         });
     };
 
+    const handleSaveDayDetails = async (dayNum: number, e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const activities = formData.get("activities") as string;
+        const locationUrl = formData.get("locationUrl") as string;
+
+        setDayDetails(prev => ({
+            ...prev,
+            [dayNum]: { ...prev[dayNum], activities, locationUrl }
+        }));
+        setEditingDayDetails(null);
+
+        startTransition(async () => {
+            try {
+                await updateDayDetails(tripId, dayNum, formData);
+            } catch (err) {
+                console.error(err);
+                alert("Failed to save day details.");
+            }
+        });
+    };
+
     const renderOutfit = (outfit: any, isWardrobe: boolean = false) => {
         const hasImageProduct = outfit.products?.find((p: any) => p.imageUrl);
         const displayImage = getDisplayUrl(hasImageProduct?.imageUrl);
+        const lookIdentifier = outfit.name ? outfit.name.replace(/\s+/g, '-').toLowerCase() : outfit.id;
 
         return (
-            <div key={outfit.id} className="flex flex-col animate-in fade-in duration-500 relative">
-                <div className="relative group overflow-hidden rounded-xl bg-white border border-[#EAE5DF] aspect-[3/4]">
+            <div key={outfit.id} id={`look-${lookIdentifier}`} onClick={() => setEditingOutfit(outfit)} className="flex flex-col animate-in fade-in duration-500 relative cursor-pointer group/card">
+                <div className="relative group overflow-hidden rounded-xl bg-white border border-[#EAE5DF] aspect-[3/4] group-hover/card:shadow-md transition-shadow">
                     {displayImage ? (
                         <>
-                            <img src={displayImage} alt="Main Visual" className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105" />
+                            <img src={displayImage} onError={(e) => handleImageError(e, displayImage)} alt="Main Visual" className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 pointer-events-none">
                                 <h3 className="text-white font-medium text-lg leading-tight dropshadow-md">
                                     {outfit.name || "Untitled Look"}
@@ -112,7 +158,7 @@ export default function CalendarClientWrapper({
                     {/* Action Bar */}
                     <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/60 to-transparent flex gap-2">
                         <button
-                            onClick={() => setActiveChatOutfit(outfit)}
+                            onClick={(e) => { e.stopPropagation(); setActiveChatOutfit(outfit); }}
                             className="flex-1 py-1.5 text-xs font-medium border border-white/40 text-white bg-black/20 rounded-md backdrop-blur-sm hover:bg-white/30 transition-colors"
                         >
                             {outfit.comments?.length || 0} Chat
@@ -125,6 +171,7 @@ export default function CalendarClientWrapper({
                         <select
                             className="w-full py-2 px-3 bg-white border border-[#EAE5DF] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#D1C3B4]"
                             onChange={(e) => {
+                                e.stopPropagation();
                                 if (e.target.value) {
                                     handleAssignToDay(outfit.id, parseInt(e.target.value, 10));
                                 }
@@ -139,28 +186,37 @@ export default function CalendarClientWrapper({
                     </div>
                 )}
 
-                {/* Description Pill */}
-                {outfit.description && (
-                    <div className="mt-3 px-1">
-                        <p className="text-sm text-[#3C3833] line-clamp-2">{outfit.description}</p>
+                {/* Itinerary Details & Description */}
+                {(outfit.activity || outfit.locationUrl || outfit.description) && (
+                    <div className="mt-3 px-1 flex flex-col gap-1.5">
+                        {outfit.activity && <h4 className="text-sm font-bold text-[#3C3833]">{outfit.activity}</h4>}
+                        {outfit.locationUrl && (
+                            <a href={outfit.locationUrl} onClick={e => e.stopPropagation()} target="_blank" rel="noopener noreferrer" className="text-xs text-[#8A827A] truncate hover:text-[#3C3833] hover:underline flex items-center gap-1">
+                                📍 {outfit.locationUrl.replace(/^https?:\/\//, '')}
+                            </a>
+                        )}
+                        {outfit.description && <p className="text-sm text-[#3C3833] line-clamp-2 mt-1">{outfit.description}</p>}
                     </div>
                 )}
 
                 {/* Mini Products Row */}
                 {outfit.products && outfit.products.length > 0 && (
                     <div className="flex gap-2 mt-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none">
-                        {outfit.products.map((prod: any) => (
-                            <div key={prod.id} className="w-14 h-14 shrink-0 bg-white border border-[#EAE5DF] rounded-md overflow-hidden relative group cursor-pointer" title={prod.name + ' • ' + prod.category}>
-                                {prod.imageUrl ? (
-                                    <img src={getDisplayUrl(prod.imageUrl)} alt={prod.name} className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex flex-col items-center justify-center text-[#8A827A] p-1 text-center bg-[#FCFAF8]">
-                                        <span className="text-[9px] font-medium truncate w-full">{prod.name}</span>
-                                        <span className="text-[7px] uppercase tracking-wider mt-0.5 opacity-60">{prod.category.substring(0, 3)}</span>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                        {outfit.products.map((prod: any) => {
+                            const dImg = getDisplayUrl(prod.imageUrl);
+                            return (
+                                <div key={prod.id} className="w-14 h-14 shrink-0 bg-white border border-[#EAE5DF] rounded-md overflow-hidden relative group cursor-pointer" title={prod.name + ' • ' + prod.category}>
+                                    {dImg ? (
+                                        <img src={dImg} onError={(e) => handleImageError(e, dImg)} alt={prod.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex flex-col items-center justify-center text-[#8A827A] p-1 text-center bg-[#FCFAF8]">
+                                            <span className="text-[9px] font-medium truncate w-full">{prod.name}</span>
+                                            <span className="text-[7px] uppercase tracking-wider mt-0.5 opacity-60">{prod.category.substring(0, 3)}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
@@ -186,23 +242,38 @@ export default function CalendarClientWrapper({
                         </span>
                     </div>
                 </div>
-                <button
-                    onClick={handleCopyInvite}
-                    className="px-4 py-2 text-sm font-medium transition-colors bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm ml-4"
-                >
-                    + Invite Friends
-                </button>
+                <div className="flex gap-2 ml-4">
+                    <button
+                        onClick={() => setActiveEditTripModal(true)}
+                        className="hidden sm:block px-4 py-2 text-sm font-medium transition-colors bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm"
+                    >
+                        Edit Trip
+                    </button>
+                    <button
+                        onClick={handleCopyInvite}
+                        className="px-4 py-2 text-sm font-medium transition-colors bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm"
+                    >
+                        + Invite Friends
+                    </button>
+                </div>
             </div>
 
             <main className="max-w-md px-4 py-8 mx-auto sm:max-w-2xl">
                 {(tripLocationUrl || tripLocationImageUrl) && (
                     <div className="mb-10 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col sm:flex-row">
-                        <div className="relative w-full sm:w-1/2 h-48 sm:h-auto bg-[#FCFAF8] border-b sm:border-b-0 sm:border-r border-[#EAE5DF]">
-                            <img
-                                src={tripLocationImageUrl ? tripLocationImageUrl : `https://api.microlink.io/?url=${encodeURIComponent(tripLocationUrl || "")}&embed=image.url`}
-                                alt="Location Preview"
-                                className="object-cover w-full h-full hover:scale-105 transition-transform duration-700"
-                            />
+                        <div className="relative w-full sm:w-1/2 h-48 sm:h-auto bg-[#FCFAF8] border-b sm:border-b-0 sm:border-r border-[#EAE5DF] flex items-center justify-center overflow-hidden">
+                            {tripLocationImageUrl ? (
+                                <img
+                                    src={getDisplayUrl(tripLocationImageUrl)}
+                                    onError={(e) => handleImageError(e, tripLocationImageUrl)}
+                                    alt="Location Preview"
+                                    className="object-cover w-full h-full hover:scale-105 transition-transform duration-700"
+                                />
+                            ) : (
+                                <div className="text-[#8A827A] flex w-full h-full flex-col items-center justify-center gap-2 opacity-70 bg-[#FCFAF8]">
+                                    <span className="text-4xl text-center">🗺️</span>
+                                </div>
+                            )}
                             {tripLocationUrl && (
                                 <a
                                     href={tripLocationUrl}
@@ -222,8 +293,8 @@ export default function CalendarClientWrapper({
                             </div>
 
                             <div className="mt-4 flex items-end gap-3">
-                                <span className="text-4xl font-light tracking-tighter text-[#3C3833]">78°F</span>
-                                <span className="text-xl font-medium text-[#8A827A] mb-1">/ 25°C</span>
+                                <span className="text-4xl font-light tracking-tighter text-[#3C3833]">25°C</span>
+                                <span className="text-xl font-medium text-[#8A827A] mb-1">/ 78°F</span>
                             </div>
                             <span className="text-sm text-[#8A827A] mt-1 font-medium">Mostly Sunny</span>
 
@@ -298,7 +369,6 @@ export default function CalendarClientWrapper({
                                         </div>
                                         <div className="flex flex-col flex-grow">
                                             <h2 className="text-xl font-medium tracking-wide text-[#3C3833]">{formatter.format(currentDate)}</h2>
-                                            <p className="text-sm text-[#8A827A]">Open Schedule</p>
                                         </div>
                                         <button onClick={() => setActiveDayModal(dayNum)} className="px-3 py-1.5 text-xs font-medium text-[#8A827A] border border-[#C4BCB3] transition-colors bg-white hover:bg-[#FCFAF8] rounded-lg opacity-0 group-hover:opacity-100 hidden sm:block">
                                             + Add Look
@@ -349,6 +419,9 @@ export default function CalendarClientWrapper({
                         ) : (
                             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                                 {savedOutfits.map((outfit) => renderOutfit(outfit, true))}
+                                <div onClick={() => setActiveDayModal(0)} className="flex items-center justify-center border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group aspect-[3/4]">
+                                    <span className="text-[#8A827A] font-medium text-sm transition-transform group-hover:scale-105">+ Add Saved Look</span>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -379,7 +452,7 @@ export default function CalendarClientWrapper({
                                     <div key={p.id} className="relative flex flex-col items-center p-3 bg-white border border-[#EAE5DF] rounded-xl shadow-sm hover:shadow-md transition-shadow">
                                         <div className="w-full aspect-square bg-[#FCFAF8] rounded-lg overflow-hidden border border-[#EAE5DF] mb-3 relative">
                                             {p.imageUrl ? (
-                                                <img src={getDisplayUrl(p.imageUrl)} alt={p.name} className="object-cover relative w-full h-full hover:scale-105 transition-transform duration-500" />
+                                                <img src={getDisplayUrl(p.imageUrl)} onError={(e) => handleImageError(e, p.imageUrl)} alt={p.name} className="object-cover relative w-full h-full hover:scale-105 transition-transform duration-500" />
                                             ) : (
                                                 <div className="flex items-center justify-center w-full h-full text-[#8A827A] text-xs">No Image</div>
                                             )}
@@ -395,11 +468,13 @@ export default function CalendarClientWrapper({
             </main>
 
             <AddLookModal
-                isOpen={activeDayModal !== null}
-                onClose={() => setActiveDayModal(null)}
+                isOpen={activeDayModal !== null || editingOutfit !== null}
+                onClose={() => { setActiveDayModal(null); setEditingOutfit(null); }}
                 tripId={tripId}
-                dayNumber={activeDayModal === 0 ? null : activeDayModal!}
+                dayNumber={editingOutfit ? editingOutfit.dayNumber : (activeDayModal === 0 ? null : activeDayModal!)}
                 catalogProducts={products || []}
+                savedOutfits={savedOutfits}
+                existingOutfit={editingOutfit}
             />
 
             <AddProductModal
@@ -412,6 +487,19 @@ export default function CalendarClientWrapper({
                 isOpen={!!activeChatOutfit}
                 onClose={() => setActiveChatOutfit(null)}
                 outfit={activeChatOutfit}
+            />
+
+            <CreateTripModal
+                isOpen={activeEditTripModal}
+                onClose={() => setActiveEditTripModal(false)}
+                existingTrip={{
+                    id: tripId,
+                    name: tripName,
+                    startDate: tripStartDate,
+                    endDate: tripEndDate,
+                    locationUrl: tripLocationUrl,
+                    locationImageUrl: tripLocationImageUrl
+                }}
             />
         </>
     );
