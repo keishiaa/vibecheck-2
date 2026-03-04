@@ -31,6 +31,46 @@ function handleImageError(e: React.SyntheticEvent<HTMLImageElement, Event>, orig
     }
 }
 
+const UserBubble = ({ user, isOwner = false }: { user: any, isOwner?: boolean }) => {
+    if (!user) return null;
+    const avatar = user.avatarUrl || user.avatar_url;
+    const nameStr = user.name || user.email || "U";
+
+    const getInitials = (str: string) => {
+        if (!str) return "U";
+        if (str.includes('@')) {
+            const prefix = str.split('@')[0];
+            const parts = prefix.split(/[._-]/);
+            if (parts.length > 1 && parts[0] && parts[parts.length - 1]) {
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            }
+            return prefix.substring(0, 2).toUpperCase();
+        }
+        const parts = str.split(' ');
+        if (parts.length > 1 && parts[0] && parts[parts.length - 1]) {
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        return str.substring(0, 2).toUpperCase();
+    };
+
+    const initials = getInitials(nameStr);
+    const bgColor = isOwner ? 'bg-[#D1C3B4]' : 'bg-[#FCFAF8]';
+    const textColor = isOwner ? 'text-[#3C3833]' : 'text-[#8A827A]';
+
+    return (
+        <div
+            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-[#FDFBF7] flex items-center justify-center text-[10px] sm:text-[11px] font-bold ${bgColor} ${textColor} shadow-sm overflow-hidden shrink-0 hover:z-30 relative`}
+            title={`${isOwner ? 'Owner' : 'Member'}: ${user.name || user.email || 'Unknown User'}`}
+        >
+            {avatar ? (
+                <img src={avatar} alt={nameStr} className="w-full h-full object-cover" />
+            ) : (
+                initials
+            )}
+        </div>
+    );
+};
+
 export default function CalendarClientWrapper({
     tripId,
     tripName,
@@ -42,7 +82,9 @@ export default function CalendarClientWrapper({
     products = [],
     initialDayDetails = {},
     userAvatar,
-    userEmail
+    userEmail,
+    tripOwner,
+    tripMembers
 }: {
     tripId: string;
     tripName: string;
@@ -55,6 +97,8 @@ export default function CalendarClientWrapper({
     initialDayDetails?: Record<number, any>;
     userAvatar?: string | null;
     userEmail?: string | null;
+    tripOwner?: any;
+    tripMembers?: any[];
 }) {
     const [activeDayModal, setActiveDayModal] = useState<number | null>(null);
     const [editingOutfit, setEditingOutfit] = useState<any>(null);
@@ -279,10 +323,19 @@ export default function CalendarClientWrapper({
                     </Link>
                     <div>
                         <h1 className="text-xl sm:text-2xl font-semibold tracking-wide text-[#3C3833] line-clamp-1">{tripName}</h1>
-                        <div className="flex items-center gap-2 mt-0.5 sm:mt-1">
-                            <span className="text-[10px] sm:text-sm text-[#8A827A]">
+                        <div className="flex items-center gap-3 mt-1 sm:mt-2">
+                            <span className="text-[10px] sm:text-sm text-[#8A827A] font-medium tracking-wide">
                                 {tripStartDate.toLocaleDateString(undefined, dateOptions)} — {tripEndDate.toLocaleDateString(undefined, dateOptions)}
                             </span>
+
+                            {(tripOwner || (tripMembers && tripMembers.length > 0)) && (
+                                <div className="flex -space-x-1.5 z-20 items-center pl-3 border-l border-[#EAE5DF]">
+                                    {tripOwner && <UserBubble user={tripOwner} isOwner={true} />}
+                                    {tripMembers?.filter((m: any) => m.userId !== tripOwner?.id).map((member: any) => (
+                                        <UserBubble key={member.id} user={member.user} isOwner={false} />
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -303,66 +356,64 @@ export default function CalendarClientWrapper({
             </div>
 
             <main className="max-w-md px-4 py-8 mx-auto sm:max-w-2xl">
-                {(tripLocationUrl || tripLocationImageUrl) && (
-                    <div className="mb-10 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col sm:flex-row">
-                        <div className="relative w-full sm:w-1/2 h-48 sm:h-auto bg-[#FCFAF8] border-b sm:border-b-0 sm:border-r border-[#EAE5DF] flex items-center justify-center overflow-hidden">
-                            {tripLocationImageUrl ? (
-                                <img
-                                    src={getDisplayUrl(tripLocationImageUrl)}
-                                    onError={(e) => handleImageError(e, tripLocationImageUrl)}
-                                    alt="Location Preview"
-                                    className="object-cover w-full h-full hover:scale-105 transition-transform duration-700"
-                                />
-                            ) : (
-                                <div className="text-[#8A827A] flex w-full h-full flex-col items-center justify-center gap-2 opacity-70 bg-[#FCFAF8]">
-                                    <span className="text-4xl text-center">🗺️</span>
-                                </div>
-                            )}
-                            {tripLocationUrl && (
-                                <a
-                                    href={tripLocationUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="absolute bottom-3 right-3 px-3 py-1.5 bg-black/50 hover:bg-black/70 backdrop-blur-md text-white text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
-                                >
-                                    Open Maps ↗
-                                </a>
-                            )}
+                <div className="mb-10 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col sm:flex-row">
+                    <div className="relative w-full sm:w-1/2 h-48 sm:h-auto bg-[#FCFAF8] border-b sm:border-b-0 sm:border-r border-[#EAE5DF] flex items-center justify-center overflow-hidden">
+                        {tripLocationImageUrl ? (
+                            <img
+                                src={getDisplayUrl(tripLocationImageUrl)}
+                                onError={(e) => handleImageError(e, tripLocationImageUrl)}
+                                alt="Location Preview"
+                                className="object-cover w-full h-full hover:scale-105 transition-transform duration-700"
+                            />
+                        ) : (
+                            <div className="text-[#8A827A] flex w-full h-full flex-col items-center justify-center gap-2 opacity-70 bg-[#FCFAF8]">
+                                <span className="text-4xl text-center">🗺️</span>
+                            </div>
+                        )}
+                        {tripLocationUrl && (
+                            <a
+                                href={tripLocationUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="absolute bottom-3 right-3 px-3 py-1.5 bg-black/50 hover:bg-black/70 backdrop-blur-md text-white text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
+                            >
+                                Open Maps ↗
+                            </a>
+                        )}
+                    </div>
+
+                    <div className="w-full sm:w-1/2 p-5 flex flex-col justify-center bg-gradient-to-br from-white to-[#FCFAF8]">
+                        <div className="flex items-center gap-2 mb-1">
+                            <span className="text-lg">🌤️</span>
+                            <h3 className="text-sm font-semibold tracking-wide text-[#3C3833] uppercase">Current Conditions</h3>
                         </div>
 
-                        <div className="w-full sm:w-1/2 p-5 flex flex-col justify-center bg-gradient-to-br from-white to-[#FCFAF8]">
-                            <div className="flex items-center gap-2 mb-1">
-                                <span className="text-lg">🌤️</span>
-                                <h3 className="text-sm font-semibold tracking-wide text-[#3C3833] uppercase">Current Conditions</h3>
-                            </div>
+                        <div className="mt-4 flex items-end gap-3">
+                            <span className="text-4xl font-light tracking-tighter text-[#3C3833]">25°C</span>
+                            <span className="text-xl font-medium text-[#8A827A] mb-1">/ 78°F</span>
+                        </div>
+                        <span className="text-sm text-[#8A827A] mt-1 font-medium">Mostly Sunny</span>
 
-                            <div className="mt-4 flex items-end gap-3">
-                                <span className="text-4xl font-light tracking-tighter text-[#3C3833]">25°C</span>
-                                <span className="text-xl font-medium text-[#8A827A] mb-1">/ 78°F</span>
+                        <div className="mt-5 grid grid-cols-2 gap-4">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Humidity</span>
+                                <span className="text-sm font-medium text-[#3C3833]">64%</span>
                             </div>
-                            <span className="text-sm text-[#8A827A] mt-1 font-medium">Mostly Sunny</span>
-
-                            <div className="mt-5 grid grid-cols-2 gap-4">
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Humidity</span>
-                                    <span className="text-sm font-medium text-[#3C3833]">64%</span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Wind</span>
-                                    <span className="text-sm font-medium text-[#3C3833]">8 mph W</span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">UV Index</span>
-                                    <span className="text-sm font-medium text-[#3C3833]">High (7)</span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Sunset</span>
-                                    <span className="text-sm font-medium text-[#3C3833]">7:42 PM</span>
-                                </div>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Wind</span>
+                                <span className="text-sm font-medium text-[#3C3833]">8 mph W</span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">UV Index</span>
+                                <span className="text-sm font-medium text-[#3C3833]">High (7)</span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Sunset</span>
+                                <span className="text-sm font-medium text-[#3C3833]">7:42 PM</span>
                             </div>
                         </div>
                     </div>
-                )}
+                </div>
 
                 {/* Tabs */}
                 <div className="flex border-b border-[#EAE5DF] mb-8 sticky top-[73px] sm:top-[89px] bg-[#FDFBF7]/95 backdrop-blur-md z-20 -mx-4 px-4 sm:-mx-0 sm:px-0">

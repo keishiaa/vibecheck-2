@@ -4,6 +4,7 @@ import { useState } from "react";
 import { addProductToTrip } from "@/actions/outfitActions";
 import { useRouter } from "next/navigation";
 import { ImagePlus, X } from "lucide-react";
+import { CldUploadWidget } from "next-cloudinary";
 
 function getDisplayUrl(url: string | null | undefined): string {
     if (!url) return "";
@@ -126,60 +127,34 @@ export default function AddProductModal({
                                 </div>
                             ) : (
                                 <div className="relative flex flex-col items-center justify-center p-8 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white/50 transition-colors hover:border-[#A69B90] hover:bg-white cursor-pointer group">
-                                    {isUploadingImage ? (
-                                        <>
-                                            <div className="w-8 h-8 border-4 border-[#D1C3B4] border-t-transparent rounded-full animate-spin mb-3"></div>
-                                            <span className="text-sm font-medium text-[#8A827A]">Uploading...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div className="p-3 mb-3 text-[#A69B90] bg-[#F5F2EE] rounded-full group-hover:text-[#8A827A] group-hover:scale-110 transition-all">
-                                                <ImagePlus className="w-6 h-6" />
-                                            </div>
-                                            <span className="text-sm font-medium text-[#8A827A]">Upload Image</span>
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                                onChange={async (e) => {
-                                                    const file = e.target.files?.[0];
-                                                    if (!file) return;
-                                                    try {
-                                                        setIsUploadingImage(true);
-
-                                                        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-                                                        if (!cloudName) {
-                                                            alert("Environment variable NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME is missing. Please restart your dev server.");
-                                                            setIsUploadingImage(false);
-                                                            return;
-                                                        }
-
-                                                        const formData = new FormData();
-                                                        formData.append("file", file);
-                                                        // Use the exact preset name expected by Cloudinary
-                                                        formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "vibecheck");
-
-                                                        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-                                                            method: "POST",
-                                                            body: formData
-                                                        });
-                                                        const data = await res.json();
-                                                        if (data.secure_url) {
-                                                            setImageUrl(data.secure_url);
-                                                        } else if (data.error) {
-                                                            alert("Upload failed: " + data.error.message);
-                                                        }
-                                                    } catch (err: any) {
-                                                        console.error("Upload failed", err);
-                                                        alert("Upload failed. Please check your connection.");
-                                                    } finally {
-                                                        setIsUploadingImage(false);
-                                                        e.target.value = "";
-                                                    }
+                                    <CldUploadWidget
+                                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "vibecheck"}
+                                        onSuccess={(result: any) => {
+                                            if (result?.info?.secure_url) {
+                                                setImageUrl(result.info.secure_url);
+                                            }
+                                        }}
+                                        options={{
+                                            maxFiles: 1,
+                                            resourceType: "image",
+                                            clientAllowedFormats: ["png", "jpeg", "webp", "jpg"],
+                                        }}
+                                    >
+                                        {({ open }) => (
+                                            <div
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    open();
                                                 }}
-                                            />
-                                        </>
-                                    )}
+                                                className="absolute inset-0 w-full h-full flex flex-col items-center justify-center cursor-pointer z-10"
+                                            >
+                                                <div className="p-3 mb-3 text-[#A69B90] bg-[#F5F2EE] rounded-full group-hover:text-[#8A827A] group-hover:scale-110 transition-all">
+                                                    <ImagePlus className="w-6 h-6" />
+                                                </div>
+                                                <span className="text-sm font-medium text-[#8A827A]">Upload Image</span>
+                                            </div>
+                                        )}
+                                    </CldUploadWidget>
                                 </div>
                             )}
                             <div className="mt-3 flex gap-2 w-full justify-between items-center text-sm">

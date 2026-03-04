@@ -11,7 +11,10 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
     const trip = await prisma.trip.findUnique({
         where: { id },
         include: {
-            members: true as any
+            owner: true as any,
+            members: {
+                include: { user: true as any }
+            } as any
         } as any
     });
 
@@ -66,6 +69,8 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
                 initialDayDetails={initialDayDetails}
                 userAvatar={userAvatar}
                 userEmail={userEmail}
+                tripOwner={(trip as any).owner}
+                tripMembers={(trip as any).members}
             />
         </div>
     );
