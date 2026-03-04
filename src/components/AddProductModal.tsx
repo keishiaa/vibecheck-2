@@ -41,6 +41,7 @@ export default function AddProductModal({
     const [imageUrl, setImageUrl] = useState("");
     const [notes, setNotes] = useState("");
     const [loading, setLoading] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
     const router = useRouter();
 
     if (!isOpen) return null;
@@ -125,35 +126,51 @@ export default function AddProductModal({
                                 </div>
                             ) : (
                                 <div className="relative flex flex-col items-center justify-center p-8 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white/50 transition-colors hover:border-[#A69B90] hover:bg-white cursor-pointer group">
-                                    <div className="p-3 mb-3 text-[#A69B90] bg-[#F5F2EE] rounded-full group-hover:text-[#8A827A] group-hover:scale-110 transition-all">
-                                        <ImagePlus className="w-6 h-6" />
-                                    </div>
-                                    <span className="text-sm font-medium text-[#8A827A]">Upload Image</span>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                        onChange={async (e) => {
-                                            const file = e.target.files?.[0];
-                                            if (!file) return;
-                                            try {
-                                                const formData = new FormData();
-                                                formData.append("file", file);
-                                                formData.append("upload_preset", "vibecheck_outfits");
+                                    {isUploadingImage ? (
+                                        <>
+                                            <div className="w-8 h-8 border-4 border-[#D1C3B4] border-t-transparent rounded-full animate-spin mb-3"></div>
+                                            <span className="text-sm font-medium text-[#8A827A]">Uploading...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="p-3 mb-3 text-[#A69B90] bg-[#F5F2EE] rounded-full group-hover:text-[#8A827A] group-hover:scale-110 transition-all">
+                                                <ImagePlus className="w-6 h-6" />
+                                            </div>
+                                            <span className="text-sm font-medium text-[#8A827A]">Upload Image</span>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                onChange={async (e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (!file) return;
+                                                    try {
+                                                        setIsUploadingImage(true);
+                                                        const formData = new FormData();
+                                                        formData.append("file", file);
+                                                        formData.append("upload_preset", "vibecheck_outfits");
 
-                                                const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                                                    method: "POST",
-                                                    body: formData
-                                                });
-                                                const data = await res.json();
-                                                if (data.secure_url) {
-                                                    setImageUrl(data.secure_url);
-                                                }
-                                            } catch (err) {
-                                                console.error("Upload failed", err);
-                                            }
-                                        }}
-                                    />
+                                                        const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                                                            method: "POST",
+                                                            body: formData
+                                                        });
+                                                        const data = await res.json();
+                                                        if (data.secure_url) {
+                                                            setImageUrl(data.secure_url);
+                                                        } else if (data.error) {
+                                                            alert("Upload failed: " + data.error.message);
+                                                        }
+                                                    } catch (err: any) {
+                                                        console.error("Upload failed", err);
+                                                        alert("Upload failed. Please check your connection.");
+                                                    } finally {
+                                                        setIsUploadingImage(false);
+                                                        e.target.value = "";
+                                                    }
+                                                }}
+                                            />
+                                        </>
+                                    )}
                                 </div>
                             )}
                             <div className="mt-3 flex gap-2 w-full justify-between items-center text-sm">

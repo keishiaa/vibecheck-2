@@ -59,6 +59,7 @@ export default function AddLookModal({
     const [products, setProducts] = useState<any[]>(existingOutfit?.products || []);
 
     const [loading, setLoading] = useState(false);
+    const [uploadingImageIdx, setUploadingImageIdx] = useState<number | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -395,6 +396,12 @@ export default function AddLookModal({
 
                                             <div className="shrink-0 w-24">
                                                 <div className="relative w-full aspect-square overflow-hidden flex items-center justify-center border border-[#EAE5DF] rounded-lg cursor-pointer transition-all hover:border-[#A69B90] group/img bg-white">
+                                                    {uploadingImageIdx === idx && (
+                                                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 z-30">
+                                                            <div className="w-5 h-5 border-2 border-[#D1C3B4] border-t-transparent rounded-full animate-spin mb-1"></div>
+                                                            <span className="text-[9px] font-medium text-[#8A827A]">Uploading...</span>
+                                                        </div>
+                                                    )}
                                                     {!p.imageUrl && (
                                                         <div className={`absolute inset-0 flex flex-col items-center justify-center text-[#8A827A] bg-[#FCFAF8] border-dashed border-2 rounded-lg`}>
                                                             <ImagePlus className="w-6 h-6 mb-1 opacity-50" />
@@ -424,6 +431,7 @@ export default function AddLookModal({
                                                             const file = e.target.files?.[0];
                                                             if (!file) return;
                                                             try {
+                                                                setUploadingImageIdx(idx);
                                                                 const formData = new FormData();
                                                                 formData.append("file", file);
                                                                 // Use the exact preset name expected by Cloudinary
@@ -436,9 +444,15 @@ export default function AddLookModal({
                                                                 const data = await res.json();
                                                                 if (data.secure_url) {
                                                                     handleUpdateProduct(idx, "imageUrl", data.secure_url);
+                                                                } else if (data.error) {
+                                                                    alert("Upload failed: " + data.error.message);
                                                                 }
-                                                            } catch (err) {
+                                                            } catch (err: any) {
                                                                 console.error("Upload failed", err);
+                                                                alert("Upload failed. Please check your connection.");
+                                                            } finally {
+                                                                setUploadingImageIdx(null);
+                                                                e.target.value = "";
                                                             }
                                                         }}
                                                     />
