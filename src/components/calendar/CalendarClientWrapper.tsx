@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import AddLookModal from "@/components/AddLookModal";
 import AddProductModal from "@/components/AddProductModal";
-import { assignOutfitToDay, toggleLike } from "@/actions/outfitActions";
+import { assignOutfitToDay, deleteProduct } from "@/actions/outfitActions";
 import { updateDayDetails } from "@/actions/tripActions";
 import CreateTripModal from "@/components/CreateTripModal";
 import Link from "next/link";
@@ -60,6 +60,7 @@ export default function CalendarClientWrapper({
     const [activeCatalogModal, setActiveCatalogModal] = useState<boolean>(false);
     const [activeEditTripModal, setActiveEditTripModal] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<'itinerary' | 'wardrobe' | 'catalog'>('itinerary');
+    const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
     // State for day details
     const [dayDetails, setDayDetails] = useState<Record<number, any>>(initialDayDetails);
@@ -120,13 +121,17 @@ export default function CalendarClientWrapper({
         });
     };
 
-    const handleToggleLike = async (outfitId: string) => {
-        // Optimistic UI update could be added here, but for simplicity we rely on Server Action revalidation.
+
+    const handleDeleteProduct = async (productId: string) => {
+        const confirmed = window.confirm("Are you sure you want to delete this product from your catalog? This will remove it from any assigned looks.");
+        if (!confirmed) return;
+
         startTransition(async () => {
             try {
-                await toggleLike(outfitId);
+                await deleteProduct(productId, tripId);
             } catch (err) {
-                console.error("Failed to like outfit.", err);
+                console.error("Failed to delete product.", err);
+                alert("Failed to delete product.");
             }
         });
     };
@@ -168,22 +173,6 @@ export default function CalendarClientWrapper({
                             </span>
                         )}
                     </div>
-
-                    {/* Action Bar */}
-                    <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/60 to-transparent flex gap-2">
-                        <button
-                            onClick={(e) => { e.stopPropagation(); handleToggleLike(outfit.id); }}
-                            className={`flex items-center justify-center gap-1.5 flex-1 py-1.5 text-xs font-medium border rounded-md backdrop-blur-sm transition-colors ${outfit.likes?.some((l: any) => l.user?.email === userEmail)
-                                ? 'border-emerald-500/50 bg-emerald-500/20 text-white hover:bg-emerald-500/40'
-                                : 'border-white/40 text-white bg-black/20 hover:bg-white/30'
-                                }`}
-                        >
-                            <span className={outfit.likes?.some((l: any) => l.user?.email === userEmail) ? 'text-emerald-400' : 'text-white'}>
-                                {outfit.likes?.some((l: any) => l.user?.email === userEmail) ? '♥' : '♡'}
-                            </span>
-                            {outfit.likes?.length || 0}
-                        </button>
-                    </div>
                 </div>
 
                 {isWardrobe && (
@@ -204,42 +193,47 @@ export default function CalendarClientWrapper({
                             ))}
                         </select>
                     </div>
-                )}
+                )
+                }
 
                 {/* Itinerary Details & Description */}
-                {(outfit.activity || outfit.locationUrl || outfit.description) && (
-                    <div className="mt-3 px-1 flex flex-col gap-1.5">
-                        {outfit.activity && <h4 className="text-sm font-bold text-[#3C3833]">{outfit.activity}</h4>}
-                        {outfit.locationUrl && (
-                            <a href={outfit.locationUrl} onClick={e => e.stopPropagation()} target="_blank" rel="noopener noreferrer" className="text-xs text-[#8A827A] truncate hover:text-[#3C3833] hover:underline flex items-center gap-1">
-                                📍 {outfit.locationUrl.replace(/^https?:\/\//, '')}
-                            </a>
-                        )}
-                        {outfit.description && <p className="text-sm text-[#3C3833] line-clamp-2 mt-1">{outfit.description}</p>}
-                    </div>
-                )}
+                {
+                    (outfit.activity || outfit.locationUrl || outfit.description) && (
+                        <div className="mt-3 px-1 flex flex-col gap-1.5">
+                            {outfit.activity && <h4 className="text-sm font-bold text-[#3C3833]">{outfit.activity}</h4>}
+                            {outfit.locationUrl && (
+                                <a href={outfit.locationUrl} onClick={e => e.stopPropagation()} target="_blank" rel="noopener noreferrer" className="text-xs text-[#8A827A] truncate hover:text-[#3C3833] hover:underline flex items-center gap-1">
+                                    📍 {outfit.locationUrl.replace(/^https?:\/\//, '')}
+                                </a>
+                            )}
+                            {outfit.description && <p className="text-sm text-[#3C3833] line-clamp-2 mt-1">{outfit.description}</p>}
+                        </div>
+                    )
+                }
 
                 {/* Mini Products Row */}
-                {outfit.products && outfit.products.length > 0 && (
-                    <div className="flex gap-2 mt-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none">
-                        {outfit.products.map((prod: any) => {
-                            const dImg = getDisplayUrl(prod.imageUrl);
-                            return (
-                                <div key={prod.id} className="w-14 h-14 shrink-0 bg-white border border-[#EAE5DF] rounded-md overflow-hidden relative group cursor-pointer" title={prod.name + ' • ' + prod.category}>
-                                    {dImg ? (
-                                        <img src={dImg} onError={(e) => handleImageError(e, dImg)} alt={prod.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex flex-col items-center justify-center text-[#8A827A] p-1 text-center bg-[#FCFAF8]">
-                                            <span className="text-[9px] font-medium truncate w-full">{prod.name}</span>
-                                            <span className="text-[7px] uppercase tracking-wider mt-0.5 opacity-60">{prod.category.substring(0, 3)}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-            </div>
+                {
+                    outfit.products && outfit.products.length > 0 && (
+                        <div className="flex gap-2 mt-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none">
+                            {outfit.products.map((prod: any) => {
+                                const dImg = getDisplayUrl(prod.imageUrl);
+                                return (
+                                    <div key={prod.id} className="w-14 h-14 shrink-0 bg-white border border-[#EAE5DF] rounded-md overflow-hidden relative group cursor-pointer" title={prod.name + ' • ' + prod.category}>
+                                        {dImg ? (
+                                            <img src={dImg} onError={(e) => handleImageError(e, dImg)} alt={prod.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex flex-col items-center justify-center text-[#8A827A] p-1 text-center bg-[#FCFAF8]">
+                                                <span className="text-[9px] font-medium truncate w-full">{prod.name}</span>
+                                                <span className="text-[7px] uppercase tracking-wider mt-0.5 opacity-60">{prod.category.substring(0, 3)}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )
+                }
+            </div >
         );
     };
 
@@ -477,17 +471,32 @@ export default function CalendarClientWrapper({
 
                 {activeTab === 'catalog' && (
                     <div className="flex flex-col gap-8 animate-in fade-in duration-500">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div>
                                 <h2 className="text-xl font-medium tracking-wide text-[#3C3833]">Product Catalog</h2>
                                 <p className="text-sm text-[#8A827A]">Individual items you are bringing on this trip.</p>
                             </div>
-                            <button
-                                onClick={() => setActiveCatalogModal(true)}
-                                className="px-4 py-2 text-sm font-medium text-white transition-colors bg-[#3C3833] rounded-full hover:bg-black shadow-sm"
-                            >
-                                + Add Product
-                            </button>
+                            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                                <select
+                                    className="w-full sm:w-auto px-3 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#3C3833]"
+                                    value={categoryFilter}
+                                    onChange={(e) => setCategoryFilter(e.target.value)}
+                                >
+                                    <option value="all">All Categories</option>
+                                    <option value="top">Top</option>
+                                    <option value="bottoms">Bottoms</option>
+                                    <option value="dress">Dress / One-Piece</option>
+                                    <option value="shoes">Shoes</option>
+                                    <option value="accessories">Accessories</option>
+                                    <option value="outerwear">Outerwear</option>
+                                </select>
+                                <button
+                                    onClick={() => setActiveCatalogModal(true)}
+                                    className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white transition-colors bg-[#3C3833] rounded-full hover:bg-black shadow-sm whitespace-nowrap lg:shrink-0"
+                                >
+                                    + Add Product
+                                </button>
+                            </div>
                         </div>
 
                         {!products || products.length === 0 ? (
@@ -496,8 +505,16 @@ export default function CalendarClientWrapper({
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                                {products.map((p: any) => (
-                                    <div key={p.id} className="relative flex flex-col items-center p-3 bg-white border border-[#EAE5DF] rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                {products.filter(p => categoryFilter === 'all' || p.category === categoryFilter).map((p: any) => (
+                                    <div key={p.id} className="relative flex flex-col items-center p-3 bg-white border border-[#EAE5DF] rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteProduct(p.id); }}
+                                            className="absolute top-1 right-1 z-10 w-6 h-6 flex items-center justify-center bg-white/80 backdrop-blur-sm text-[#8A827A] hover:text-red-500 hover:bg-red-50 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-sm"
+                                        >
+                                            ✕
+                                        </button>
+
                                         <div className="w-full aspect-square bg-[#FCFAF8] rounded-lg overflow-hidden border border-[#EAE5DF] mb-3 relative">
                                             {p.imageUrl ? (
                                                 <img src={getDisplayUrl(p.imageUrl)} onError={(e) => handleImageError(e, p.imageUrl)} alt={p.name} className="object-cover relative w-full h-full hover:scale-105 transition-transform duration-500" />

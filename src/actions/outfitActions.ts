@@ -133,11 +133,6 @@ export async function getOutfitsForTrip(tripId: string) {
             user: {
                 select: { email: true, role: true, name: true, avatarUrl: true }
             },
-            likes: {
-                include: {
-                    user: { select: { email: true, name: true, avatarUrl: true } }
-                }
-            },
             products: true
         },
         orderBy: { dayNumber: "asc" },
@@ -146,45 +141,6 @@ export async function getOutfitsForTrip(tripId: string) {
     return outfits;
 }
 
-export async function toggleLike(outfitId: string) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    const userId = user?.id;
-
-    if (!userId) throw new Error("Unauthorized");
-
-    const outfit = await prisma.outfit.findUnique({
-        where: { id: outfitId },
-        select: { tripId: true }
-    });
-
-    if (!outfit) throw new Error("Outfit not found");
-
-    const existingLike = await prisma.like.findUnique({
-        where: {
-            outfitId_userId: {
-                outfitId,
-                userId
-            }
-        }
-    });
-
-    if (existingLike) {
-        await prisma.like.delete({
-            where: { id: existingLike.id }
-        });
-    } else {
-        await prisma.like.create({
-            data: {
-                outfitId,
-                userId
-            }
-        });
-    }
-
-    revalidatePath(`/trips/${outfit.tripId}`);
-    return !existingLike; // return true if liked, false if unliked
-}
 
 export async function assignOutfitToDay(outfitId: string, dayNumber: number, tripId: string) {
     const supabase = await createClient();
@@ -279,6 +235,18 @@ export async function deleteOutfit(outfitId: string, tripId: string) {
     // For now, allow deletion if authorized
     await prisma.outfit.delete({
         where: { id: outfitId }
+    });
+
+    revalidatePath(`/trips/${tripId}`);
+}
+
+export async function deleteProduct(productId: string, tripId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    await prisma.product.delete({
+        where: { id: productId }
     });
 
     revalidatePath(`/trips/${tripId}`);
