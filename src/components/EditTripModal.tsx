@@ -12,6 +12,8 @@ export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boole
     const [endDate, setEndDate] = useState("");
     const [locationUrl, setLocationUrl] = useState("");
     const [locationImageUrl, setLocationImageUrl] = useState("");
+    const [showWeather, setShowWeather] = useState(false);
+    const [weatherLocation, setWeatherLocation] = useState("");
     const [loading, setLoading] = useState(false);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const router = useRouter();
@@ -37,6 +39,8 @@ export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boole
             } else {
                 setLocationImageUrl("");
             }
+            setShowWeather(trip.showWeather || false);
+            setWeatherLocation(trip.weatherLocation || "");
         }
     }, [trip]);
 
@@ -52,6 +56,8 @@ export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boole
         formData.append("endDate", endDate);
         if (locationUrl) formData.append("locationUrl", locationUrl);
         if (locationImageUrl) formData.append("locationImageUrl", locationImageUrl);
+        formData.append("showWeather", showWeather ? "true" : "false");
+        if (weatherLocation) formData.append("weatherLocation", weatherLocation);
 
         try {
             await updateTrip(trip.id, formData);
@@ -172,6 +178,30 @@ export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boole
                             placeholder="https://maps.google.com/..."
                             className="w-full px-4 py-3 text-sm bg-[#FCFAF8] border border-[#EAE5DF] rounded-lg focus:outline-none focus:border-[#A69B90] transition-colors text-[#3C3833] placeholder-[#C4BCB3]"
                         />
+
+                        <label className="flex items-center gap-2 mt-4 text-sm font-medium text-[#3C3833] cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={showWeather}
+                                onChange={(e) => setShowWeather(e.target.checked)}
+                                className="w-4 h-4 rounded border-[#EAE5DF] text-[#3C3833] focus:ring-[#3C3833] accent-[#3C3833]"
+                            />
+                            Show Weather Forecast
+                        </label>
+
+                        {showWeather && (
+                            <div className="mt-3 animate-in fade-in slide-in-from-top-2">
+                                <label className="block mb-1 text-sm text-[#8A827A]">Weather Location (City, Country)</label>
+                                <input
+                                    type="text"
+                                    value={weatherLocation}
+                                    onChange={e => setWeatherLocation(e.target.value)}
+                                    placeholder="e.g. Paris, France"
+                                    required={showWeather}
+                                    className="w-full px-4 py-3 text-sm bg-[#FCFAF8] border border-[#EAE5DF] rounded-lg focus:outline-none focus:border-[#A69B90] transition-colors text-[#3C3833] placeholder-[#C4BCB3]"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex gap-3 mt-4">

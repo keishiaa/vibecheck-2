@@ -270,3 +270,18 @@ export async function updateProductInTrip(productId: string, tripId: string, dat
     revalidatePath(`/trips/${tripId}`);
     return product;
 }
+
+export async function removeProductFromOutfit(productId: string, outfitId: string, tripId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    await prisma.outfit.update({
+        where: { id: outfitId },
+        data: {
+            products: { disconnect: { id: productId } }
+        }
+    });
+
+    revalidatePath(`/trips/${tripId}`);
+}

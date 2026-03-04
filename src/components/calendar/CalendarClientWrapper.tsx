@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import AddLookModal from "@/components/AddLookModal";
 import AddProductModal from "@/components/AddProductModal";
 import EditProductModal from "@/components/EditProductModal";
-import { assignOutfitToDay, deleteProduct } from "@/actions/outfitActions";
+import { assignOutfitToDay, deleteProduct, removeProductFromOutfit } from "@/actions/outfitActions";
 import { updateDayDetails } from "@/actions/tripActions";
 import CreateTripModal from "@/components/CreateTripModal";
 import Link from "next/link";
@@ -78,6 +78,8 @@ export default function CalendarClientWrapper({
     tripStartDate,
     tripLocationUrl,
     tripLocationImageUrl,
+    tripShowWeather,
+    tripWeatherLocation,
     outfits,
     products = [],
     initialDayDetails = {},
@@ -92,6 +94,8 @@ export default function CalendarClientWrapper({
     tripStartDate: Date;
     tripLocationUrl?: string | null;
     tripLocationImageUrl?: string | null;
+    tripShowWeather?: boolean;
+    tripWeatherLocation?: string | null;
     outfits: any[];
     products?: any[];
     initialDayDetails?: Record<number, any>;
@@ -111,6 +115,63 @@ export default function CalendarClientWrapper({
     // State for day details
     const [dayDetails, setDayDetails] = useState<Record<number, any>>(initialDayDetails);
     const [editingDayDetails, setEditingDayDetails] = useState<number | null>(null);
+
+    const [weatherData, setWeatherData] = useState<{ tempC?: number; tempF?: number; conditions?: string; icon?: string; humidity?: number; wind?: string; error?: boolean } | null>(null);
+
+    useEffect(() => {
+        if (!tripShowWeather || !tripWeatherLocation) return;
+
+        async function fetchWeather() {
+            try {
+                // 1. Geocode
+                const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(tripWeatherLocation as string)}&count=1&language=en&format=json`);
+                const geoData = await geoRes.json();
+                if (!geoData.results || geoData.results.length === 0) {
+                    setWeatherData({ error: true });
+                    return;
+                }
+                const { latitude, longitude } = geoData.results[0];
+
+                // 2. Weather
+                const wxRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&wind_speed_unit=mph&temperature_unit=celsius`);
+                const wxData = await wxRes.json();
+
+                if (!wxData || !wxData.current) {
+                    setWeatherData({ error: true });
+                    return;
+                }
+
+                const current = wxData.current;
+                const tempC = Math.round(current.temperature_2m);
+                const tempF = Math.round((tempC * 9 / 5) + 32);
+
+                // Decode WMO code (simplified)
+                const code = current.weather_code;
+                let conditions = "Clear";
+                let icon = "☀️";
+                if (code >= 1 && code <= 3) { conditions = "Partly Cloudy"; icon = "🌤️"; }
+                if (code >= 45 && code <= 48) { conditions = "Fog"; icon = "🌫️"; }
+                if (code >= 51 && code <= 67) { conditions = "Rain"; icon = "🌧️"; }
+                if (code >= 71 && code <= 77) { conditions = "Snow"; icon = "❄️"; }
+                if (code >= 80 && code <= 82) { conditions = "Rain Showers"; icon = "🌦️"; }
+                if (code >= 95) { conditions = "Thunderstorm"; icon = "⛈️"; }
+
+                setWeatherData({
+                    tempC,
+                    tempF,
+                    conditions,
+                    icon,
+                    humidity: current.relative_humidity_2m,
+                    wind: `${Math.round(current.wind_speed_10m)} mph`,
+                });
+            } catch (err) {
+                console.error(err);
+                setWeatherData({ error: true });
+            }
+        }
+
+        fetchWeather();
+    }, [tripShowWeather, tripWeatherLocation]);
 
     // Group outfits by day
     const outfitsByDay: Record<number, any[]> = {};
@@ -182,6 +243,21 @@ export default function CalendarClientWrapper({
         });
     };
 
+    const handleRemoveProductFromLook = async (e: React.MouseEvent, productId: string, outfitId: string) => {
+        e.stopPropagation();
+        const confirmed = window.confirm("Remove this product from the look?");
+        if (!confirmed) return;
+
+        startTransition(async () => {
+            try {
+                await removeProductFromOutfit(productId, outfitId, tripId);
+            } catch (err) {
+                console.error("Failed to remove product.", err);
+                alert("Failed to remove product.");
+            }
+        });
+    };
+
     const renderOutfit = (outfit: any, isWardrobe: boolean = false) => {
         const hasImageProduct = outfit.products?.find((p: any) => p.imageUrl);
         const displayImage = getDisplayUrl(hasImageProduct?.imageUrl);
@@ -189,7 +265,7 @@ export default function CalendarClientWrapper({
 
         return (
             <div key={outfit.id} id={`look-${lookIdentifier}`} onClick={() => setEditingOutfit(outfit)} className="flex flex-col animate-in fade-in duration-500 relative cursor-pointer group/card">
-                <div className="relative group overflow-hidden rounded-xl bg-white border border-[#EAE5DF] aspect-[3/4] group-hover/card:shadow-md transition-shadow">
+                <div className="relative group overflow-hidden rounded-xl bg-white border border-[#EAE5DF] aspect-square group-hover/card:shadow-md transition-shadow">
                     {displayImage ? (
                         <>
                             <img src={displayImage} onError={(e) => handleImageError(e, displayImage)} alt="Main Visual" className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105" />
@@ -273,6 +349,12 @@ export default function CalendarClientWrapper({
                                                 <span className="text-[7px] uppercase tracking-wider mt-0.5 opacity-60">{prod.category.substring(0, 3)}</span>
                                             </div>
                                         )}
+                                        <button
+                                            onClick={(e) => handleRemoveProductFromLook(e, prod.id, outfit.id)}
+                                            className="absolute top-0 right-0 z-10 w-4 h-4 flex items-center justify-center bg-white/90 backdrop-blur-sm text-[#8A827A] hover:text-red-500 rounded-bl-md opacity-0 group-hover:opacity-100 transition-all text-[8px]"
+                                        >
+                                            ✕
+                                        </button>
                                     </div>
                                 );
                             })}
@@ -353,29 +435,31 @@ export default function CalendarClientWrapper({
             </div>
 
             <main className="max-w-md px-4 py-8 mx-auto sm:max-w-2xl">
-                <div className="mb-10 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col sm:flex-row items-center justify-between p-4 sm:p-5 bg-gradient-to-r from-white to-[#FCFAF8]">
-                    <div className="flex items-center gap-4">
-                        <span className="text-3xl">🌤️</span>
-                        <div className="flex flex-col">
-                            <h3 className="text-xs font-semibold tracking-wider text-[#3C3833] uppercase">Current Conditions</h3>
-                            <div className="flex items-baseline gap-2 mt-0.5">
-                                <span className="text-2xl font-light tracking-tighter text-[#3C3833]">25°C</span>
-                                <span className="text-sm font-medium text-[#8A827A]">/ 78°F • Mostly Sunny</span>
+                {tripShowWeather && weatherData && !weatherData.error && (
+                    <div className="mb-10 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col sm:flex-row items-center justify-between p-4 sm:p-5 bg-gradient-to-r from-white to-[#FCFAF8]">
+                        <div className="flex items-center gap-4">
+                            <span className="text-3xl">{weatherData.icon}</span>
+                            <div className="flex flex-col">
+                                <h3 className="text-xs font-semibold tracking-wider text-[#3C3833] uppercase">Current Conditions in {tripWeatherLocation}</h3>
+                                <div className="flex items-baseline gap-2 mt-0.5">
+                                    <span className="text-2xl font-light tracking-tighter text-[#3C3833]">{weatherData.tempC}°C</span>
+                                    <span className="text-sm font-medium text-[#8A827A]">/ {weatherData.tempF}°F • {weatherData.conditions}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 sm:mt-0 flex items-center gap-6">
+                            <div className="flex flex-col items-end">
+                                <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Humidity</span>
+                                <span className="text-sm font-medium text-[#3C3833]">{weatherData.humidity}%</span>
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Wind</span>
+                                <span className="text-sm font-medium text-[#3C3833]">{weatherData.wind}</span>
                             </div>
                         </div>
                     </div>
-
-                    <div className="mt-4 sm:mt-0 flex items-center gap-6">
-                        <div className="flex flex-col items-end">
-                            <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Humidity</span>
-                            <span className="text-sm font-medium text-[#3C3833]">64%</span>
-                        </div>
-                        <div className="flex flex-col items-end">
-                            <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Wind</span>
-                            <span className="text-sm font-medium text-[#3C3833]">8 mph W</span>
-                        </div>
-                    </div>
-                </div>
+                )}
 
                 {/* Tabs */}
                 <div className="flex border-b border-[#EAE5DF] mb-8 sticky top-[73px] sm:top-[89px] bg-[#FDFBF7]/95 backdrop-blur-md z-20 -mx-4 px-4 sm:-mx-0 sm:px-0">
@@ -442,7 +526,7 @@ export default function CalendarClientWrapper({
                                             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                                 {dayOutfits.map((outfit) => renderOutfit(outfit, false))}
 
-                                                <div onClick={() => setActiveDayModal(dayNum)} className="flex items-center justify-center border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group aspect-[3/4]">
+                                                <div onClick={() => setActiveDayModal(dayNum)} className="flex items-center justify-center border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group aspect-square">
                                                     <span className="text-[#8A827A] font-medium text-sm transition-transform group-hover:scale-105">+ Add</span>
                                                 </div>
                                             </div>
@@ -476,7 +560,7 @@ export default function CalendarClientWrapper({
                         ) : (
                             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                                 {savedOutfits.map((outfit) => renderOutfit(outfit, true))}
-                                <div onClick={() => setActiveDayModal(0)} className="flex items-center justify-center border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group aspect-[3/4]">
+                                <div onClick={() => setActiveDayModal(0)} className="flex items-center justify-center border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group aspect-square">
                                     <span className="text-[#8A827A] font-medium text-sm transition-transform group-hover:scale-105">+ Add Saved Look</span>
                                 </div>
                             </div>

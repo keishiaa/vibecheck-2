@@ -71,6 +71,8 @@ export async function createTrip(formData: FormData) {
     const endDateStr = formData.get("endDate") as string;
     const locationUrl = formData.get("locationUrl") as string | null;
     let locationImageUrl = formData.get("locationImageUrl") as string | null;
+    const showWeather = formData.get("showWeather") === "true";
+    const weatherLocation = formData.get("weatherLocation") as string | null;
 
     if (!name || !startDateStr || !endDateStr) {
         throw new Error("Missing required fields");
@@ -91,6 +93,8 @@ export async function createTrip(formData: FormData) {
             endDate,
             locationUrl,
             locationImageUrl,
+            showWeather,
+            weatherLocation,
             ownerId: userId,
         } as any,
     });
@@ -143,6 +147,8 @@ export async function updateTrip(tripId: string, formData: FormData) {
     const endDateStr = formData.get("endDate") as string;
     const locationUrl = formData.get("locationUrl") as string | null;
     const locationImageUrl = formData.get("locationImageUrl") as string | null;
+    const showWeather = formData.get("showWeather") === "true";
+    const weatherLocation = formData.get("weatherLocation") as string | null;
 
     if (!name || !startDateStr || !endDateStr) {
         throw new Error("Missing required fields");
@@ -159,6 +165,8 @@ export async function updateTrip(tripId: string, formData: FormData) {
             endDate,
             locationUrl,
             locationImageUrl,
+            showWeather,
+            weatherLocation,
         } as any,
     });
 

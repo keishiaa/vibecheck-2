@@ -64,6 +64,8 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
                 tripStartDate={new Date(trip.startDate)}
                 tripLocationUrl={trip.locationUrl}
                 tripLocationImageUrl={(trip as any).locationImageUrl}
+                tripShowWeather={(trip as any).showWeather}
+                tripWeatherLocation={(trip as any).weatherLocation}
                 outfits={outfits}
                 products={products}
                 initialDayDetails={initialDayDetails}

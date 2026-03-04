@@ -28,6 +28,8 @@ model Trip {
   ownerId          String
   locationUrl      String?
   locationImageUrl String?
+  showWeather      Boolean      @default(false)
+  weatherLocation  String?
   owner            User         @relation(fields: [ownerId], references: [id])
   outfits          Outfit[]
   members          TripMember[]
