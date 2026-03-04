@@ -7,6 +7,7 @@ import OutfitChatModal from "@/components/calendar/OutfitChatModal";
 import CreateTripModal from "@/components/CreateTripModal";
 import { assignOutfitToDay } from "@/actions/outfitActions";
 import { updateDayDetails } from "@/actions/tripActions";
+import Link from "next/link";
 
 function getDisplayUrl(url: string | null | undefined): string {
     if (!url) return "";
@@ -39,7 +40,9 @@ export default function CalendarClientWrapper({
     tripLocationImageUrl,
     outfits,
     products = [],
-    initialDayDetails = {}
+    initialDayDetails = {},
+    userAvatar,
+    userEmail
 }: {
     tripId: string;
     tripName: string;
@@ -50,6 +53,8 @@ export default function CalendarClientWrapper({
     outfits: any[];
     products?: any[];
     initialDayDetails?: Record<number, any>;
+    userAvatar?: string | null;
+    userEmail?: string | null;
 }) {
     const [activeDayModal, setActiveDayModal] = useState<number | null>(null);
     const [editingOutfit, setEditingOutfit] = useState<any>(null);
@@ -250,13 +255,24 @@ export default function CalendarClientWrapper({
     return (
         <>
             {/* Sticky Header */}
-            <div className="sticky top-0 z-30 flex items-center justify-between p-6 bg-[#FDFBF7]/90 backdrop-blur-md border-b border-[#EAE5DF]">
-                <div>
-                    <h1 className="text-2xl font-semibold tracking-wide text-[#3C3833]">{tripName}</h1>
-                    <div className="flex items-center gap-2 mt-1">
-                        <span className="text-sm text-[#8A827A]">
-                            {tripStartDate.toLocaleDateString(undefined, dateOptions)} — {tripEndDate.toLocaleDateString(undefined, dateOptions)}
-                        </span>
+            <div className="sticky top-0 z-30 flex items-center justify-between p-4 sm:p-6 bg-[#FDFBF7]/90 backdrop-blur-md border-b border-[#EAE5DF]">
+                <div className="flex items-center gap-3">
+                    <Link href="/" className="shrink-0 group overflow-hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#EAE5DF] shadow-sm hover:border-[#A69B90] transition-colors relative block focus:outline-none focus:ring-2 focus:ring-[#D1C3B4]">
+                        {userAvatar ? (
+                            <img src={userAvatar} className="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="Account Profile" />
+                        ) : (
+                            <div className="w-full h-full bg-[#D1C3B4] flex items-center justify-center text-[#3C3833] font-bold text-sm sm:text-base">
+                                {userEmail ? userEmail[0].toUpperCase() : "U"}
+                            </div>
+                        )}
+                    </Link>
+                    <div>
+                        <h1 className="text-xl sm:text-2xl font-semibold tracking-wide text-[#3C3833] line-clamp-1">{tripName}</h1>
+                        <div className="flex items-center gap-2 mt-0.5 sm:mt-1">
+                            <span className="text-[10px] sm:text-sm text-[#8A827A]">
+                                {tripStartDate.toLocaleDateString(undefined, dateOptions)} — {tripEndDate.toLocaleDateString(undefined, dateOptions)}
+                            </span>
+                        </div>
                     </div>
                 </div>
                 <div className="flex gap-2 ml-4">

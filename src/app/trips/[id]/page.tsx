@@ -49,15 +49,11 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
         return acc;
     }, {});
 
+    const userAvatar = user?.user_metadata?.avatar_url;
+    const userEmail = user?.email;
+
     return (
         <div className="min-h-screen bg-[#FDFBF7] text-[#3C3833] font-sans pb-24 selection:bg-[#D1C3B4] selection:text-[#3C3833]">
-            {/* Return Navigation */}
-            <div className="px-6 py-4">
-                <Link href="/" className="text-sm border border-[#EAE5DF] text-[#8A827A] transition-colors rounded-full px-4 py-2 hover:bg-[#FCFAF8]">
-                    ← Back to Trips
-                </Link>
-            </div>
-
             <CalendarClientWrapper
                 tripId={trip.id}
                 tripName={trip.name}
@@ -68,6 +64,8 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
                 outfits={outfits}
                 products={products}
                 initialDayDetails={initialDayDetails}
+                userAvatar={userAvatar}
+                userEmail={userEmail}
             />
         </div>
     );
