@@ -49,18 +49,35 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
 
                     return (
                         <div key={trip.id} className="relative group block">
-                            <Link href={`/trips/${trip.id}`} className="relative overflow-hidden h-48 border border-[#EAE5DF] rounded-xl bg-white transition-all shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col">
+                            <Link href={`/trips/${trip.id}`} className="relative overflow-hidden h-36 border border-[#EAE5DF] rounded-xl bg-white transition-all shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col">
                                 {displayImage && (
                                     <div className="absolute inset-0">
                                         <img src={displayImage} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.style.display = 'none'; }} alt={trip.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                     </div>
                                 )}
-                                <div className={`absolute inset-0 p-6 flex flex-col justify-end ${displayImage ? 'bg-gradient-to-t from-black/80 via-black/20 to-transparent' : 'bg-gradient-to-t from-white via-white/80 to-transparent'} z-10`}>
-                                    <h3 className={`text-xl font-medium tracking-wide ${displayImage ? 'text-white drop-shadow-md' : 'text-[#3C3833]'}`}>{trip.name}</h3>
-                                    <p className={`text-sm ${displayImage ? 'text-white/80' : 'text-[#8A827A]'}`}>
+                                <div className={`absolute inset-0 p-4 flex flex-col justify-end ${displayImage ? 'bg-gradient-to-t from-black/80 via-black/20 to-transparent' : 'bg-gradient-to-t from-white via-white/80 to-transparent'} z-10`}>
+                                    <h3 className={`text-lg font-medium tracking-wide ${displayImage ? 'text-white drop-shadow-md' : 'text-[#3C3833]'}`}>{trip.name}</h3>
+                                    <p className={`text-xs ${displayImage ? 'text-white/80' : 'text-[#8A827A]'}`}>
                                         {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()}
                                     </p>
                                 </div>
+
+                                {/* Floating Participant Bubbles */}
+                                <div className="absolute top-3 left-3 flex -space-x-1.5 z-20">
+                                    {/* Owner Bubble */}
+                                    {trip.owner && (
+                                        <div className="w-6 h-6 rounded-full bg-[#D1C3B4] border border-white flex items-center justify-center text-[10px] font-bold text-[#3C3833] shadow-sm" title={`Owner: ${trip.owner.email}`}>
+                                            {trip.owner.email[0].toUpperCase()}
+                                        </div>
+                                    )}
+                                    {/* Members Bubbles */}
+                                    {trip.members && trip.members.map((member: any) => (
+                                        <div key={member.id} className="w-6 h-6 rounded-full bg-[#FCFAF8] border border-white flex items-center justify-center text-[10px] font-bold text-[#8A827A] shadow-sm" title={`Member: ${member.user?.email}`}>
+                                            {member.user?.email?.[0]?.toUpperCase() || "M"}
+                                        </div>
+                                    ))}
+                                </div>
+
                                 {!displayImage && <div className="absolute inset-0 bg-[#A69B90] opacity-0 group-hover:opacity-5 transition-opacity"></div>}
                             </Link>
 

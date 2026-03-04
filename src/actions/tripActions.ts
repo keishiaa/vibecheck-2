@@ -96,6 +96,14 @@ export async function getTrips() {
                 { members: { some: { userId } } }
             ]
         } as any,
+        include: {
+            owner: true,
+            members: {
+                include: {
+                    user: true
+                }
+            }
+        } as any,
         orderBy: { startDate: "asc" },
     });
 
