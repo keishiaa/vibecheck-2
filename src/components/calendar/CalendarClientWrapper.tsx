@@ -370,7 +370,7 @@ export default function CalendarClientWrapper({
                         className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'itinerary' ? 'border-[#3C3833] text-[#3C3833]' : 'border-transparent text-[#8A827A] hover:text-[#3C3833]'}`}
                         onClick={() => setActiveTab('itinerary')}
                     >
-                        Itinerary
+                        Events
                     </button>
                     <button
                         className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'wardrobe' ? 'border-[#3C3833] text-[#3C3833]' : 'border-transparent text-[#8A827A] hover:text-[#3C3833]'}`}
@@ -387,7 +387,7 @@ export default function CalendarClientWrapper({
                         className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'catalog' ? 'border-[#3C3833] text-[#3C3833]' : 'border-transparent text-[#8A827A] hover:text-[#3C3833]'}`}
                         onClick={() => setActiveTab('catalog')}
                     >
-                        Catalog
+                        Products
                     </button>
                 </div>
 
@@ -475,7 +475,7 @@ export default function CalendarClientWrapper({
                     <div className="flex flex-col gap-8 animate-in fade-in duration-500">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div>
-                                <h2 className="text-xl font-medium tracking-wide text-[#3C3833]">Product Catalog</h2>
+                                <h3 className="text-2xl font-light tracking-tight text-[#3C3833]">Your Products</h3>
                                 <p className="text-sm text-[#8A827A]">Individual items you are bringing on this trip.</p>
                             </div>
                             <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
@@ -503,7 +503,7 @@ export default function CalendarClientWrapper({
 
                         {!products || products.length === 0 ? (
                             <div onClick={() => setActiveCatalogModal(true)} className="flex items-center justify-center h-48 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors cursor-pointer group hover:bg-[#FCFAF8] hover:border-[#A69B90]">
-                                <span className="text-[#8A827A] font-medium transition-transform group-hover:scale-105">+ Add an item to your catalog</span>
+                                <span className="text-[#8A827A] font-medium transition-transform group-hover:scale-105">+ Add an item to your products</span>
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
