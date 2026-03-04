@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import AddLookModal from "@/components/AddLookModal";
 import AddProductModal from "@/components/AddProductModal";
+import EditProductModal from "@/components/EditProductModal";
 import { assignOutfitToDay, deleteProduct } from "@/actions/outfitActions";
 import { updateDayDetails } from "@/actions/tripActions";
 import CreateTripModal from "@/components/CreateTripModal";
@@ -57,6 +58,7 @@ export default function CalendarClientWrapper({
 }) {
     const [activeDayModal, setActiveDayModal] = useState<number | null>(null);
     const [editingOutfit, setEditingOutfit] = useState<any>(null);
+    const [editingProduct, setEditingProduct] = useState<any>(null);
     const [activeCatalogModal, setActiveCatalogModal] = useState<boolean>(false);
     const [activeEditTripModal, setActiveEditTripModal] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<'itinerary' | 'wardrobe' | 'catalog'>('itinerary');
@@ -506,7 +508,7 @@ export default function CalendarClientWrapper({
                         ) : (
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                                 {products.filter(p => categoryFilter === 'all' || p.category === categoryFilter).map((p: any) => (
-                                    <div key={p.id} className="relative flex flex-col items-center p-3 bg-white border border-[#EAE5DF] rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+                                    <div key={p.id} onClick={() => setEditingProduct(p)} className="cursor-pointer relative flex flex-col items-center p-3 bg-white border border-[#EAE5DF] rounded-xl shadow-sm hover:shadow-md transition-shadow group">
 
                                         <button
                                             onClick={(e) => { e.stopPropagation(); handleDeleteProduct(p.id); }}
@@ -547,6 +549,8 @@ export default function CalendarClientWrapper({
                 onClose={() => setActiveCatalogModal(false)}
                 tripId={tripId}
             />
+
+            <EditProductModal isOpen={!!editingProduct} onClose={() => setEditingProduct(null)} tripId={tripId} product={editingProduct} />
 
             <CreateTripModal
                 isOpen={activeEditTripModal}

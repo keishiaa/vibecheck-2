@@ -438,12 +438,19 @@ export default function AddLookModal({
                                                             if (!file) return;
                                                             try {
                                                                 setUploadingImageIdx(idx);
+
+                                                                const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+                                                                if (!cloudName) {
+                                                                    alert("Environment variable NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME is missing.");
+                                                                    setUploadingImageIdx(null);
+                                                                    return;
+                                                                }
+
                                                                 const formData = new FormData();
                                                                 formData.append("file", file);
-                                                                // Use the exact preset name expected by Cloudinary
-                                                                formData.append("upload_preset", "vibecheck");
+                                                                formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "vibecheck");
 
-                                                                const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                                                                const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
                                                                     method: "POST",
                                                                     body: formData
                                                                 });
