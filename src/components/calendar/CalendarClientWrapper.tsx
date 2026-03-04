@@ -223,10 +223,27 @@ export default function CalendarClientWrapper({
         );
     };
 
-    const handleCopyInvite = () => {
+    const handleCopyInvite = async () => {
         const inviteUrl = `${window.location.origin}/join/${tripId}`;
+        const shareData = {
+            title: `You're invited: ${tripName}`,
+            text: `Join the lookbook for ${tripName} on VibeCheck!`,
+            url: inviteUrl
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+                return;
+            } catch (err: any) {
+                if (err.name !== 'AbortError') {
+                    console.error("Error sharing:", err);
+                }
+            }
+        }
+
+        // Fallback
         navigator.clipboard.writeText(inviteUrl);
-        // Replace with toast later if needed
         alert("Invite link copied to clipboard!");
     };
 
