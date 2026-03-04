@@ -394,48 +394,55 @@ export default function AddLookModal({
                                             </button>
 
                                             <div className="shrink-0 w-24">
-                                                <CldUploadWidget
-                                                    uploadPreset="vibecheck"
-                                                    onSuccess={(result: any) => {
-                                                        if (result?.info?.secure_url) {
-                                                            handleUpdateProduct(idx, "imageUrl", result.info.secure_url);
-                                                        }
-                                                    }}
-                                                    options={{
-                                                        maxFiles: 1,
-                                                        resourceType: "image",
-                                                        clientAllowedFormats: ["png", "jpeg", "webp", "jpg"],
-                                                        sources: ["local", "camera", "url"]
-                                                    }}
-                                                >
-                                                    {({ open }) => (
-                                                        <div
-                                                            onClick={(e) => { e.preventDefault(); open(); }}
-                                                            className={`w-full aspect-square overflow-hidden flex items-center justify-center border border-[#EAE5DF] rounded-lg cursor-pointer transition-all hover:border-[#A69B90] relative group/img ${p.imageUrl ? 'bg-white' : 'bg-[#FCFAF8] border-dashed border-2'}`}
-                                                        >
-                                                            {p.imageUrl ? (
-                                                                <>
-                                                                    <img src={getDisplayUrl(p.imageUrl)} onError={(e) => handleImageError(e, p.imageUrl)} className="w-full h-full object-cover" alt="Uploaded product" />
-                                                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
-                                                                        <span className="text-white text-[10px] font-medium">Change</span>
-                                                                    </div>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={(e) => { e.stopPropagation(); handleUpdateProduct(idx, "imageUrl", ""); }}
-                                                                        className="absolute top-1 right-1 bg-black/60 text-white rounded p-1 opacity-0 group-hover/img:opacity-100 hover:bg-black transition-opacity z-10"
-                                                                    >
-                                                                        <X size={12} />
-                                                                    </button>
-                                                                </>
-                                                            ) : (
-                                                                <div className="flex flex-col items-center justify-center text-[#8A827A]">
-                                                                    <ImagePlus className="w-6 h-6 mb-1 opacity-50" />
-                                                                    <span className="text-[9px] font-medium text-center">Add Photo</span>
-                                                                </div>
-                                                            )}
+                                                <div className="relative w-full aspect-square overflow-hidden flex items-center justify-center border border-[#EAE5DF] rounded-lg cursor-pointer transition-all hover:border-[#A69B90] group/img bg-white">
+                                                    {!p.imageUrl && (
+                                                        <div className={`absolute inset-0 flex flex-col items-center justify-center text-[#8A827A] bg-[#FCFAF8] border-dashed border-2 rounded-lg`}>
+                                                            <ImagePlus className="w-6 h-6 mb-1 opacity-50" />
+                                                            <span className="text-[9px] font-medium text-center">Add Photo</span>
                                                         </div>
                                                     )}
-                                                </CldUploadWidget>
+                                                    {p.imageUrl && (
+                                                        <>
+                                                            <img src={getDisplayUrl(p.imageUrl)} onError={(e) => handleImageError(e, p.imageUrl)} className="absolute inset-0 w-full h-full object-cover" alt="Uploaded product" />
+                                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity pointer-events-none">
+                                                                <span className="text-white text-[10px] font-medium">Change</span>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleUpdateProduct(idx, "imageUrl", ""); }}
+                                                                className="absolute top-1 right-1 bg-black/60 text-white rounded p-1 opacity-0 group-hover/img:opacity-100 hover:bg-black transition-opacity z-20"
+                                                            >
+                                                                <X size={12} />
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                        onChange={async (e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (!file) return;
+                                                            try {
+                                                                const formData = new FormData();
+                                                                formData.append("file", file);
+                                                                // Use the exact preset name expected by Cloudinary
+                                                                formData.append("upload_preset", "vibecheck");
+
+                                                                const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                                                                    method: "POST",
+                                                                    body: formData
+                                                                });
+                                                                const data = await res.json();
+                                                                if (data.secure_url) {
+                                                                    handleUpdateProduct(idx, "imageUrl", data.secure_url);
+                                                                }
+                                                            } catch (err) {
+                                                                console.error("Upload failed", err);
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
                                             </div>
 
                                             <div className="flex-1 min-w-0 flex flex-col gap-2.5 pt-1">

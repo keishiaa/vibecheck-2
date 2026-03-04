@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { addProductToTrip } from "@/actions/outfitActions";
 import { useRouter } from "next/navigation";
-import { CldUploadWidget } from "next-cloudinary";
 import { ImagePlus, X } from "lucide-react";
 
 function getDisplayUrl(url: string | null | undefined): string {
@@ -125,32 +124,37 @@ export default function AddProductModal({
                                     </button>
                                 </div>
                             ) : (
-                                <CldUploadWidget
-                                    uploadPreset="vibecheck_outfits"
-                                    onSuccess={(results: any) => {
-                                        if (results.info?.secure_url) {
-                                            setImageUrl(results.info.secure_url);
-                                        }
-                                    }}
-                                    options={{
-                                        maxFiles: 1,
-                                        resourceType: "image",
-                                        clientAllowedFormats: ["png", "jpeg", "webp", "jpg"],
-                                        sources: ["local", "camera", "url"]
-                                    }}
-                                >
-                                    {({ open }) => (
-                                        <div
-                                            onClick={() => open()}
-                                            className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white/50 transition-colors hover:border-[#A69B90] hover:bg-white cursor-pointer group"
-                                        >
-                                            <div className="p-3 mb-3 text-[#A69B90] bg-[#F5F2EE] rounded-full group-hover:text-[#8A827A] group-hover:scale-110 transition-all">
-                                                <ImagePlus className="w-6 h-6" />
-                                            </div>
-                                            <span className="text-sm font-medium text-[#8A827A]">Upload Image</span>
-                                        </div>
-                                    )}
-                                </CldUploadWidget>
+                                <div className="relative flex flex-col items-center justify-center p-8 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white/50 transition-colors hover:border-[#A69B90] hover:bg-white cursor-pointer group">
+                                    <div className="p-3 mb-3 text-[#A69B90] bg-[#F5F2EE] rounded-full group-hover:text-[#8A827A] group-hover:scale-110 transition-all">
+                                        <ImagePlus className="w-6 h-6" />
+                                    </div>
+                                    <span className="text-sm font-medium text-[#8A827A]">Upload Image</span>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                        onChange={async (e) => {
+                                            const file = e.target.files?.[0];
+                                            if (!file) return;
+                                            try {
+                                                const formData = new FormData();
+                                                formData.append("file", file);
+                                                formData.append("upload_preset", "vibecheck_outfits");
+
+                                                const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                                                    method: "POST",
+                                                    body: formData
+                                                });
+                                                const data = await res.json();
+                                                if (data.secure_url) {
+                                                    setImageUrl(data.secure_url);
+                                                }
+                                            } catch (err) {
+                                                console.error("Upload failed", err);
+                                            }
+                                        }}
+                                    />
+                                </div>
                             )}
                             <div className="mt-3 flex gap-2 w-full justify-between items-center text-sm">
                                 <span className="text-xs text-[#8A827A]">Or paste a link:</span>
