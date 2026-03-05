@@ -819,7 +819,7 @@ export default function CalendarClientWrapper({
                             onClick={() => setEditingDayDetails(dayNum)}
                             className="text-xs font-medium text-[#A69B90] hover:text-[#59524A] flex items-center gap-1 transition-colors"
                           >
-                            <span>+ Add daily plan</span>
+                            <span>+ Add event or activities</span>
                           </button>
                         )}
                       </div>
