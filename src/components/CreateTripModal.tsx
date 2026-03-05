@@ -97,12 +97,8 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
         try {
             await deleteTrip(existingTrip.id);
             onClose();
-            router.push('/');
+            window.location.href = '/';
         } catch (err: any) {
-            if (err?.message?.includes("NEXT_REDIRECT") || err?.digest?.includes("NEXT_REDIRECT")) {
-                // Ignore redirect errors as they are expected when leaving a deleted trip
-                return;
-            }
             console.error(err);
             alert("Failed to delete trip. " + (err.message || JSON.stringify(err)));
             setLoading(false);

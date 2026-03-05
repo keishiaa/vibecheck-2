@@ -3,7 +3,6 @@
 import prisma from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 /**
  * Sync user from Supabase to Prisma DB if they don't exist.
@@ -272,7 +271,4 @@ export async function deleteTrip(tripId: string) {
     await prisma.trip.delete({
         where: { id: tripId },
     });
-
-    revalidatePath("/");
-    redirect("/");
 }
