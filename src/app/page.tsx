@@ -12,7 +12,7 @@ export default async function Home() {
   const trips = user ? await getTrips() : [];
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#3C3833] font-sans selection:bg-[#D1C3B4] selection:text-[#3C3833]">
+    <div className="min-h-screen bg-[#FDFBF7] text-[#3C3833] font-sans selection:bg-[#D1C3B4] selection:text-[#3C3833] flex flex-col">
       {/* Navigation Bar */}
       <nav className="flex items-center justify-between p-6 border-b border-[#EAE5DF] bg-white">
         <div className="flex items-center gap-3">
@@ -45,6 +45,11 @@ export default async function Home() {
           <DashboardClientView trips={trips} />
         )}
       </main>
+
+      <footer className="w-full text-center py-8 text-xs text-[#8A827A] group flex justify-center items-center gap-1 font-medium mt-auto">
+        vibecoded by keishia
+        <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">✨</span>
+      </footer>
     </div>
   );
 }
