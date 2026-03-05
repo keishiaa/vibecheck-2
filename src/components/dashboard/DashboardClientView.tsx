@@ -4,7 +4,10 @@ import { useState } from "react";
 import CreateTripModal from "@/components/CreateTripModal";
 import EditTripModal from "@/components/EditTripModal";
 
+import { Playfair_Display } from "next/font/google";
 import Link from "next/link";
+
+const playfair = Playfair_Display({ subsets: ["latin"] });
 
 function getDisplayUrl(url: string | null | undefined): string {
     if (!url) return "";
@@ -69,8 +72,13 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
 
     return (
         <>
-            <div className="flex items-center justify-between gap-4 mb-8">
-                <h2 className="text-3xl font-light tracking-tight text-[#59524A]">Current Trips</h2>
+            <div className="flex items-end justify-between gap-4 mb-10">
+                <div className="flex flex-col gap-1">
+                    <h2 className={`text-4xl sm:text-5xl text-[#3C3833] ${playfair.className} tracking-tight`}>
+                        <span className="italic text-[#8A827A] pr-1">Current</span> Trips.
+                    </h2>
+                    <div className="w-12 h-[2px] bg-[#D1C3B4] mt-2 rounded-full"></div>
+                </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
                     className="hidden md:block px-5 py-2.5 text-sm font-medium transition-all active:scale-95 bg-[#D1C3B4] text-[#3C3833] rounded-full hover:bg-[#C2B2A1]"
