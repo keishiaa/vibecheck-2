@@ -677,10 +677,10 @@ export default function CalendarClientWrapper({
             <div className="flex items-center gap-4">
               <span className="text-3xl">{weatherData.icon}</span>
               <div className="flex flex-col">
-                <h3 className="text-xs font-semibold tracking-wider text-[#3C3833] uppercase">
+                <h3 className="text-[11px] font-medium text-[#8A827A] mb-0.5">
                   {weatherData.isHistorical
-                    ? "Historical Estimate for "
-                    : "Trip Forecast for "}
+                    ? "Historical estimate for "
+                    : "Trip forecast for "}
                   {tripWeatherLocation}
                 </h3>
                 <div className="flex items-baseline gap-2 mt-0.5">
