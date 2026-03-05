@@ -95,7 +95,12 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
 
         setLoading(true);
         try {
-            await deleteTrip(existingTrip.id);
+            const res = await deleteTrip(existingTrip.id);
+            if (res?.error) {
+                alert("Failed: " + res.error);
+                setLoading(false);
+                return;
+            }
             onClose();
             window.location.href = '/';
         } catch (err: any) {
@@ -134,7 +139,7 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
                                 type="date"
                                 value={startDate}
                                 onChange={e => setStartDate(e.target.value)}
-                                className="w-full px-4 py-3 text-sm bg-[#FCFAF8] border border-[#EAE5DF] rounded-lg focus:outline-none focus:border-[#A69B90] transition-colors text-[#3C3833]"
+                                className="w-full min-w-0 flex-1 appearance-none px-4 py-3 text-sm bg-[#FCFAF8] border border-[#EAE5DF] rounded-lg focus:outline-none focus:border-[#A69B90] transition-colors text-[#3C3833]"
                             />
                         </div>
 
@@ -146,7 +151,7 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
                                 value={endDate}
                                 onChange={e => setEndDate(e.target.value)}
                                 min={startDate}
-                                className="w-full px-4 py-3 text-sm bg-[#FCFAF8] border border-[#EAE5DF] rounded-lg focus:outline-none focus:border-[#A69B90] transition-colors text-[#3C3833]"
+                                className="w-full min-w-0 flex-1 appearance-none px-4 py-3 text-sm bg-[#FCFAF8] border border-[#EAE5DF] rounded-lg focus:outline-none focus:border-[#A69B90] transition-colors text-[#3C3833]"
                             />
                         </div>
                     </div>

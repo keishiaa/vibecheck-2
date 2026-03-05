@@ -253,22 +253,30 @@ export async function updateDayDetails(tripId: string, dayNumber: number, formDa
 }
 
 export async function deleteTrip(tripId: string) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    const userId = user?.id;
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        const userId = user?.id;
 
-    if (!userId) throw new Error("Unauthorized");
+        if (!userId) return { error: "Unauthorized: User not logged in." };
 
-    const trip = await prisma.trip.findUnique({ where: { id: tripId } });
-    if (!trip || trip.ownerId !== userId) throw new Error("Unauthorized");
+        const trip = await prisma.trip.findUnique({ where: { id: tripId } });
+        if (!trip) return { error: "Trip not found." };
+        if (trip.ownerId !== userId) return { error: "Unauthorized: You do not own this trip." };
 
-    // Clean up related entities manually to bypass missing Cascades
-    await prisma.product.deleteMany({ where: { tripId } });
-    await prisma.outfit.deleteMany({ where: { tripId } });
-    await prisma.tripMember.deleteMany({ where: { tripId } });
-    await prisma.dayDetails.deleteMany({ where: { tripId } });
+        // Clean up related entities manually to bypass missing Cascades
+        await prisma.product.deleteMany({ where: { tripId } });
+        await prisma.outfit.deleteMany({ where: { tripId } });
+        await prisma.tripMember.deleteMany({ where: { tripId } });
+        await prisma.dayDetails.deleteMany({ where: { tripId } });
 
-    await prisma.trip.delete({
-        where: { id: tripId },
-    });
+        await prisma.trip.delete({
+            where: { id: tripId },
+        });
+
+        return { success: true };
+    } catch (e: any) {
+        console.error("deleteTrip Error:", e);
+        return { error: e.message || String(e) };
+    }
 }
