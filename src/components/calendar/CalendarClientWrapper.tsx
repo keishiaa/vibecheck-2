@@ -943,7 +943,7 @@ export default function CalendarClientWrapper({
                   onChange={(e) => setOwnerFilter(e.target.value)}
                 >
                   <option value="mine">My Catalog</option>
-                  <option value="all">Everyones Products</option>
+                  <option value="all">Everyone's Products</option>
                 </select>
                 <select
                   className="w-full sm:w-auto px-3 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#3C3833]"
