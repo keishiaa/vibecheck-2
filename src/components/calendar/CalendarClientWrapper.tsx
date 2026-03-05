@@ -1065,7 +1065,7 @@ export default function CalendarClientWrapper({
       />
 
       {/* Mobile Bottom Tab Bar */}
-      <nav className="sm:hidden fixed bottom-0 left-0 w-full z-40 bg-white/80 backdrop-blur-xl border-t border-[#EAE5DF]/50 pb-safe pb-6 pt-3 px-6 flex justify-between items-center shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
+      <nav className="sm:hidden fixed bottom-0 left-0 w-full z-40 bg-white/80 backdrop-blur-xl border-t border-[#EAE5DF]/50 pb-8 pt-4 px-4 flex justify-around items-center shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
         <button
           onClick={() => setActiveTab("itinerary")}
           className={`flex flex-col items-center gap-1 transition-all active:scale-95 ${activeTab === "itinerary" ? "text-[#3C3833]" : "text-[#8A827A]"}`}
