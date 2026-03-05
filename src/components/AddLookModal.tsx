@@ -185,21 +185,32 @@ export default function AddLookModal({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white sm:bg-black/40 backdrop-blur-sm sm:p-4 text-left">
             <div className="w-full h-full sm:h-[90vh] sm:max-w-5xl p-4 sm:p-6 bg-white sm:border border-[#EAE5DF] sm:rounded-2xl sm:shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 flex flex-col">
-                <div className="flex items-center justify-between mb-4 shrink-0 pt-4 sm:pt-0 pb-3 border-b border-[#EAE5DF]">
-                    <h3 className="text-xl font-semibold tracking-wide text-[#3C3833]">
-                        {existingOutfit ? 'View / Edit Look Inspector' : (dayNumber ? `Day ${dayNumber} Look Inspector` : 'New Wardrobe Look')}
+                <div className="flex items-center justify-between mb-4 shrink-0 pt-4 sm:pt-0 pb-3 border-b border-[#EAE5DF] gap-2">
+                    <h3 className="text-lg sm:text-xl font-semibold tracking-wide text-[#3C3833] truncate">
+                        {existingOutfit ? 'The Ensemble' : (dayNumber ? `Day ${dayNumber} Ensemble` : 'New Wardrobe Look')}
                     </h3>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                        {existingOutfit && existingOutfit.dayNumber !== null && (
+                            <button
+                                type="button"
+                                onClick={handleCopyToWardrobe}
+                                disabled={loading}
+                                title="Copy to Wardrobe"
+                                className="text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 border border-[#EAE5DF] bg-[#FCFAF8] text-[#8A827A] rounded-md shadow-sm hover:bg-white hover:text-[#3C3833] transition-colors flex gap-1 sm:gap-1.5 items-center disabled:opacity-50"
+                            >
+                                <span>📥</span> Copy
+                            </button>
+                        )}
                         {existingOutfit && (
                             <button type="button" onClick={(e) => {
                                 e.preventDefault();
                                 navigator.clipboard.writeText(`${window.location.origin}/trips/${tripId}`);
                                 alert("Link copied to clipboard!");
-                            }} className="text-xs px-3 py-1.5 border border-[#EAE5DF] bg-[#FCFAF8] text-[#3C3833] rounded-md shadow-sm hover:bg-white transition-colors flex gap-2 items-center">
-                                <span>📤</span> Share Look
+                            }} className="text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 border border-[#EAE5DF] bg-[#FCFAF8] text-[#3C3833] rounded-md shadow-sm hover:bg-white transition-colors flex gap-1 sm:gap-1.5 items-center">
+                                <span>📤</span> Share
                             </button>
                         )}
-                        <button type="button" onClick={onClose} className="p-2 text-[#8A827A] hover:bg-[#FCFAF8] rounded-full transition">✕</button>
+                        <button type="button" onClick={onClose} className="p-1 sm:p-2 text-[#8A827A] hover:bg-[#FCFAF8] rounded-full transition ml-1 shrink-0">✕</button>
                     </div>
                 </div>
 
@@ -303,7 +314,7 @@ export default function AddLookModal({
                             {/* Left Column: Product Editor */}
                             <div className="flex flex-col gap-4 md:border-r border-[#EAE5DF] md:pr-4">
                                 <div className="flex items-center justify-between pb-2 border-b border-[#EAE5DF]">
-                                    <h4 className="font-semibold text-[#3C3833] text-sm uppercase tracking-wider">Look Items Editor</h4>
+                                    <h4 className="font-semibold text-[#3C3833] text-sm uppercase tracking-wider">Editor</h4>
                                     <div className="flex gap-2 items-center">
                                         {catalogProducts && catalogProducts.length > 0 && (
                                             <select
@@ -542,25 +553,14 @@ export default function AddLookModal({
                             )}
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                            {existingOutfit && existingOutfit.dayNumber !== null && (
-                                <button
-                                    type="button"
-                                    onClick={handleCopyToWardrobe}
-                                    disabled={loading}
-                                    title="Copies this look to your Trip Wardrobe without removing it from the calendar."
-                                    className="flex-1 sm:flex-none px-3 py-2.5 text-sm font-medium transition-colors border-2 border-[#D1C3B4] text-[#8A827A] bg-[#FCFAF8] rounded-xl hover:bg-[#D1C3B4] hover:text-[#3C3833] shadow-sm disabled:opacity-50"
-                                >
-                                    📥 Copy
-                                </button>
-                            )}
-                            <button type="button" onClick={onClose} disabled={loading} className="flex-1 sm:flex-none px-3 py-2.5 text-sm font-medium transition-colors border border-[#EAE5DF] text-[#8A827A] rounded-xl hover:bg-[#FCFAF8] hover:text-[#3C3833] shadow-sm disabled:opacity-50">
+                        <div className="flex flex-row gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+                            <button type="button" onClick={onClose} disabled={loading} className="px-4 py-2 sm:py-2.5 text-sm font-medium transition-colors border border-[#EAE5DF] text-[#8A827A] rounded-xl hover:bg-[#FCFAF8] hover:text-[#3C3833] shadow-sm disabled:opacity-50 bg-white">
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="flex-1 sm:flex-none px-5 py-2.5 text-sm font-medium text-white transition-all bg-[#3C3833] rounded-xl hover:bg-black shadow-md disabled:opacity-50 hover:shadow-lg hover:-translate-y-0.5"
+                                className="flex-1 sm:flex-none px-6 py-2 sm:py-2.5 text-sm font-medium text-white transition-all bg-[#3C3833] rounded-xl hover:bg-black shadow-md disabled:opacity-50 hover:shadow-lg hover:-translate-y-0.5"
                             >
                                 {loading ? "Saving" : "Save Look"}
                             </button>
