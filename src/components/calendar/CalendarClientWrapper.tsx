@@ -131,7 +131,7 @@ export default function CalendarClientWrapper({
   const [activeEditTripModal, setActiveEditTripModal] =
     useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<
-    "itinerary" | "wardrobe" | "catalog"
+    "itinerary" | "catalog"
   >("itinerary");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [ownerFilter, setOwnerFilter] = useState<string>("mine");
@@ -705,17 +705,6 @@ export default function CalendarClientWrapper({
             Events
           </button>
           <button
-            className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === "wardrobe" ? "border-[#3C3833] text-[#3C3833]" : "border-transparent text-[#8A827A] hover:text-[#3C3833]"}`}
-            onClick={() => setActiveTab("wardrobe")}
-          >
-            Saved Looks
-            {savedOutfits.length > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none bg-[#D1C3B4] text-[#3C3833] rounded-full">
-                {savedOutfits.length}
-              </span>
-            )}
-          </button>
-          <button
             className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === "catalog" ? "border-[#3C3833] text-[#3C3833]" : "border-transparent text-[#8A827A] hover:text-[#3C3833]"}`}
             onClick={() => setActiveTab("catalog")}
           >
@@ -876,52 +865,6 @@ export default function CalendarClientWrapper({
                 </div>
               );
             })}
-          </div>
-        )}
-
-        {activeTab === "wardrobe" && (
-          <div className="flex flex-col gap-8 animate-in fade-in duration-500">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-medium tracking-wide text-[#3C3833]">
-                  Trip Wardrobe
-                </h2>
-                <p className="text-sm text-[#8A827A]">
-                  Looks saved for this trip, ready to be assigned.
-                </p>
-              </div>
-              <button
-                onClick={() => setActiveDayModal(0)}
-                className="px-4 py-2 text-sm font-medium text-white transition-colors bg-[#3C3833] rounded-full hover:bg-black shadow-sm"
-              >
-                + Add Look
-              </button>
-            </div>
-
-            {savedOutfits.length === 0 ? (
-              <div
-                onClick={() => setActiveDayModal(0)}
-                className="flex items-center justify-center h-48 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group"
-              >
-                <span className="text-[#8A827A] font-medium transition-transform group-hover:scale-105">
-                  + Create your first saved look
-                </span>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-6">
-                <div className="grid grid-cols-2 gap-3 sm:gap-6 sm:grid-cols-3">
-                  {savedOutfits.map((outfit) => renderOutfit(outfit, true))}
-                </div>
-                <div
-                  onClick={() => setActiveDayModal(0)}
-                  className="flex items-center justify-center h-14 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group"
-                >
-                  <span className="text-[#8A827A] font-medium text-sm transition-transform group-hover:scale-105">
-                    + Add Saved Look
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -1087,18 +1030,6 @@ export default function CalendarClientWrapper({
         >
           <CalendarDays strokeWidth={activeTab === "itinerary" ? 2.5 : 1.5} size={24} />
           <span className="text-[10px] font-medium">Events</span>
-        </button>
-        <button
-          onClick={() => setActiveTab("wardrobe")}
-          className={`flex flex-col items-center gap-1 transition-all active:scale-95 relative ${activeTab === "wardrobe" ? "text-[#3C3833]" : "text-[#8A827A]"}`}
-        >
-          <Shirt strokeWidth={activeTab === "wardrobe" ? 2.5 : 1.5} size={24} />
-          <span className="text-[10px] font-medium">Looks</span>
-          {savedOutfits.length > 0 && (
-            <span className="absolute -top-1 -right-2 bg-[#D1C3B4] text-[#3C3833] text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white">
-              {savedOutfits.length}
-            </span>
-          )}
         </button>
         <button
           onClick={() => setActiveTab("catalog")}
