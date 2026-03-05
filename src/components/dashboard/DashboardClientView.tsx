@@ -73,7 +73,7 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                 <h2 className="text-3xl font-light tracking-tight text-[#59524A]">Current Trips</h2>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="w-full sm:w-auto px-5 py-2.5 text-sm font-medium transition-all bg-[#D1C3B4] text-[#3C3833] rounded-full hover:bg-[#C2B2A1]"
+                    className="w-full sm:w-auto px-5 py-2.5 text-sm font-medium transition-all active:scale-95 bg-[#D1C3B4] text-[#3C3833] rounded-full hover:bg-[#C2B2A1]"
                 >
                     + Create New Trip
                 </button>
@@ -102,7 +102,7 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
 
                     return (
                         <div key={trip.id} className="relative group block">
-                            <Link href={`/trips/${trip.id}`} className={`relative overflow-hidden h-28 border border-[#EAE5DF] rounded-xl transition-all shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col ${colorClass}`}>
+                            <Link href={`/trips/${trip.id}`} className={`relative overflow-hidden h-28 border border-[#EAE5DF] rounded-xl transition-all active:scale-[0.98] shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col ${colorClass}`}>
                                 <div className={`absolute inset-0 p-3.5 flex flex-col justify-end bg-gradient-to-t from-black/20 to-transparent z-10`}>
                                     <h3 className={`text-base font-semibold tracking-wide leading-tight mb-1 text-[#3C3833]`}>{trip.name}</h3>
                                     <div className="flex flex-col gap-1 sm:flex-row sm:items-center justify-between sm:gap-2 w-full mt-1">
@@ -131,7 +131,7 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                                         e.stopPropagation();
                                         setEditingTrip(trip);
                                     }}
-                                    className="px-3 py-1.5 text-xs font-medium text-[#8A827A] border border-[#EAE5DF] bg-white rounded-md shadow-sm hover:bg-[#FCFAF8] hover:text-[#3C3833] transition-colors"
+                                    className="px-3 py-1.5 text-xs font-medium text-[#8A827A] border border-[#EAE5DF] bg-white rounded-md shadow-sm hover:bg-[#FCFAF8] hover:text-[#3C3833] transition-all active:scale-95"
                                 >
                                     Edit
                                 </button>

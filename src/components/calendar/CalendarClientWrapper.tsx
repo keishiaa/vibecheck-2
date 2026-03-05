@@ -434,9 +434,9 @@ export default function CalendarClientWrapper({
         key={outfit.id}
         id={`look-${lookIdentifier}`}
         onClick={() => setEditingOutfit(outfit)}
-        className="flex flex-col animate-in fade-in duration-500 relative cursor-pointer group/card"
+        className="flex flex-col animate-in fade-in duration-500 relative cursor-pointer group/card active:scale-[0.98] transition-transform"
       >
-        <div className="relative group overflow-hidden rounded-xl bg-white border border-[#EAE5DF] aspect-square group-hover/card:shadow-md transition-shadow">
+        <div className="relative group overflow-hidden rounded-2xl bg-white aspect-[4/5] shadow-sm hover:shadow-lg transition-shadow">
           {displayImage ? (
             <>
               <img
@@ -603,11 +603,11 @@ export default function CalendarClientWrapper({
   return (
     <>
       {/* Sticky Header */}
-      <div className="sticky top-0 z-30 flex items-center justify-between p-4 sm:p-6 bg-[#FDFBF7]/90 backdrop-blur-md border-b border-[#EAE5DF]">
+      <div className="sticky top-0 z-30 flex items-center justify-between p-4 sm:p-6 bg-white/70 backdrop-blur-xl border-b border-[#EAE5DF]/50">
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="shrink-0 group flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#EAE5DF] bg-white shadow-sm hover:border-[#A69B90] hover:bg-[#F5F2EE] transition-colors relative focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#8A827A] hover:text-[#3C3833]"
+            className="shrink-0 group flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#EAE5DF] bg-white shadow-sm hover:border-[#A69B90] hover:bg-[#F5F2EE] transition-all active:scale-95 relative focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#8A827A] hover:text-[#3C3833]"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -659,13 +659,13 @@ export default function CalendarClientWrapper({
         <div className="flex gap-2 ml-4">
           <button
             onClick={() => setActiveEditTripModal(true)}
-            className="hidden sm:block px-4 py-2 text-sm font-medium transition-colors bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm"
+            className="hidden sm:block px-4 py-2 text-sm font-medium transition-all active:scale-95 bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm"
           >
             Edit Trip
           </button>
           <button
             onClick={handleCopyInvite}
-            className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-colors bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm flex items-center gap-1.5"
+            className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-all active:scale-95 bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm flex items-center gap-1.5"
           >
             <UserPlus size={14} className="sm:w-4 sm:h-4 text-[#8A827A]" />
             <span className="hidden sm:inline">Invite Friends</span>
@@ -699,7 +699,7 @@ export default function CalendarClientWrapper({
         )}
 
         {/* Tabs */}
-        <div className="flex border-b border-[#EAE5DF] mb-8 sticky top-[73px] sm:top-[89px] bg-[#FDFBF7]/95 backdrop-blur-md z-20 -mx-4 px-4 sm:-mx-0 sm:px-0">
+        <div className="flex border-b border-[#EAE5DF] mb-8 sticky top-[73px] sm:top-[89px] bg-white/70 backdrop-blur-xl z-20 -mx-4 px-4 sm:-mx-0 sm:px-0">
           <button
             className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === "itinerary" ? "border-[#3C3833] text-[#3C3833]" : "border-transparent text-[#8A827A] hover:text-[#3C3833]"}`}
             onClick={() => setActiveTab("itinerary")}

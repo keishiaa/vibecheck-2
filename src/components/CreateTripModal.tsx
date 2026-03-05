@@ -106,9 +106,10 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
-            <div className="w-full max-w-sm p-6 bg-white border border-[#EAE5DF] rounded-2xl shadow-xl animate-in fade-in zoom-in-95 duration-200 text-left">
-                <h3 className="mb-4 text-xl font-medium tracking-wide text-[#3C3833]">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-md p-0 sm:p-4 transition-all">
+            <div className="w-full max-w-sm p-6 sm:p-6 pb-10 sm:pb-6 bg-white border-t sm:border border-[#EAE5DF] rounded-t-3xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300 text-left">
+                <div className="w-12 h-1.5 bg-[#EAE5DF] rounded-full mx-auto mb-6 sm:hidden pointer-events-none" />
+                <h3 className="mb-4 text-xl font-semibold tracking-wide text-[#3C3833]">
                     {existingTrip ? 'Edit Trip' : 'Create New Trip'}
                 </h3>
 
@@ -202,7 +203,7 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
                                 type="button"
                                 onClick={handleDeleteTrip}
                                 disabled={loading}
-                                className="flex-1 py-3 text-sm font-medium transition-colors border border-red-200 text-red-500 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                                className="flex-1 py-3.5 text-sm font-medium transition-all active:scale-95 border border-red-200 text-red-500 rounded-xl hover:bg-red-50 disabled:opacity-50"
                             >
                                 Delete Trip
                             </button>
@@ -211,14 +212,14 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
                             type="button"
                             onClick={onClose}
                             disabled={loading}
-                            className="flex-1 py-3 text-sm font-medium transition-colors border border-[#EAE5DF] text-[#8A827A] rounded-lg hover:bg-[#FCFAF8] disabled:opacity-50"
+                            className="flex-1 py-3.5 text-sm font-medium transition-all active:scale-95 border border-[#EAE5DF] text-[#8A827A] rounded-xl hover:bg-[#FCFAF8] bg-white disabled:opacity-50"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 py-3 text-sm font-medium text-[#3C3833] transition-all bg-[#D1C3B4] rounded-lg hover:bg-[#C2B2A1] disabled:opacity-50"
+                            className="flex-1 py-3.5 text-sm font-medium text-[#3C3833] transition-all active:scale-95 bg-[#D1C3B4] rounded-xl hover:bg-[#C2B2A1] shadow-sm disabled:opacity-50"
                         >
                             {loading ? "Saving..." : (existingTrip ? "Save Details" : "Create")}
                         </button>
