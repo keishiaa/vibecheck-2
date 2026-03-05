@@ -713,7 +713,7 @@ export default function CalendarClientWrapper({
         </div>
 
         {activeTab === "itinerary" && (
-          <div className="flex flex-col gap-16 relative">
+          <div className="relative">
             {/* Horizontal Day Snapping (Mobile & Desktop) */}
             <div className="sticky top-[71px] xl:top-[140px] z-20 -mx-4 px-4 xl:mx-0 xl:px-0 py-3 mb-6 bg-white/80 backdrop-blur-xl border-b border-[#EAE5DF]/50 overflow-x-auto flex gap-3 hide-scrollbar snap-x shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
               {days.map((d) => (
@@ -727,153 +727,155 @@ export default function CalendarClientWrapper({
               ))}
             </div>
 
-            {days.map((dayNum) => {
-              const dayOutfits = outfitsByDay[dayNum] || [];
+            <div className="flex flex-col gap-12 sm:gap-16">
+              {days.map((dayNum) => {
+                const dayOutfits = outfitsByDay[dayNum] || [];
 
-              // Calculate the actual date for this slot
-              const currentDate = new Date(tripStartDate);
-              currentDate.setDate(currentDate.getDate() + (dayNum - 1));
+                // Calculate the actual date for this slot
+                const currentDate = new Date(tripStartDate);
+                currentDate.setDate(currentDate.getDate() + (dayNum - 1));
 
-              const formatter = new Intl.DateTimeFormat("en-US", {
-                weekday: "long",
-                month: "short",
-                day: "numeric",
-              });
+                const formatter = new Intl.DateTimeFormat("en-US", {
+                  weekday: "long",
+                  month: "short",
+                  day: "numeric",
+                });
 
-              // Check if currently rendering today's date
-              const isToday =
-                new Date().toDateString() === currentDate.toDateString();
+                // Check if currently rendering today's date
+                const isToday =
+                  new Date().toDateString() === currentDate.toDateString();
 
-              return (
-                <div
-                  key={dayNum}
-                  id={`day-${dayNum}`}
-                  className="flex flex-col gap-4 animate-in slide-in-from-bottom-8 fade-in duration-700"
-                  style={{
-                    animationDelay: `${dayNum * 50}ms`,
-                    animationFillMode: "both",
-                  }}
-                >
-                  {/* Day Header */}
-                  <div className="flex items-center gap-4 group">
-                    <div
-                      className="flex flex-col items-center justify-center w-12 h-12 bg-[#D1C3B4] text-[#3C3833] rounded-xl shrink-0 font-medium cursor-pointer"
-                      onClick={() => setActiveDayModal(dayNum)}
-                    >
-                      <span className="text-xs uppercase opacity-80 leading-none mb-0.5">
-                        Day
-                      </span>
-                      <span className="text-lg leading-none">{dayNum}</span>
-                    </div>
-                    <div className="flex flex-col flex-grow items-start">
-                      <h2 className="text-xl font-medium tracking-wide text-[#3C3833] flex items-center gap-2">
-                        {formatter.format(currentDate)}
-                        {isToday && (
-                          <span className="px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase bg-gradient-to-r from-amber-200 to-yellow-400 text-yellow-900 rounded-full shadow-sm">
-                            Today
-                          </span>
-                        )}
-                      </h2>
-                      <div className="flex flex-wrap items-center gap-2 mt-1">
-                        {(dayDetails[dayNum]?.activities || "")
-                          .split(" ||| ")
-                          .filter(Boolean)
-                          .map((plan: string, idx: number) => (
-                            <div
-                              key={idx}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F5F2EE] border border-[#EAE5DF] rounded-md group/edit shadow-sm"
+                return (
+                  <div
+                    key={dayNum}
+                    id={`day-${dayNum}`}
+                    className="flex flex-col gap-4 animate-in slide-in-from-bottom-8 fade-in duration-700"
+                    style={{
+                      animationDelay: `${dayNum * 50}ms`,
+                      animationFillMode: "both",
+                    }}
+                  >
+                    {/* Day Header */}
+                    <div className="flex items-center gap-4 group">
+                      <div
+                        className="flex flex-col items-center justify-center w-12 h-12 bg-[#D1C3B4] text-[#3C3833] rounded-xl shrink-0 font-medium cursor-pointer"
+                        onClick={() => setActiveDayModal(dayNum)}
+                      >
+                        <span className="text-xs uppercase opacity-80 leading-none mb-0.5">
+                          Day
+                        </span>
+                        <span className="text-lg leading-none">{dayNum}</span>
+                      </div>
+                      <div className="flex flex-col flex-grow items-start">
+                        <h2 className="text-xl font-medium tracking-wide text-[#3C3833] flex items-center gap-2">
+                          {formatter.format(currentDate)}
+                          {isToday && (
+                            <span className="px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase bg-gradient-to-r from-amber-200 to-yellow-400 text-yellow-900 rounded-full shadow-sm">
+                              Today
+                            </span>
+                          )}
+                        </h2>
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          {(dayDetails[dayNum]?.activities || "")
+                            .split(" ||| ")
+                            .filter(Boolean)
+                            .map((plan: string, idx: number) => (
+                              <div
+                                key={idx}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F5F2EE] border border-[#EAE5DF] rounded-md group/edit shadow-sm"
+                              >
+                                <span className="text-xs font-medium text-[#5C564D] line-clamp-1">
+                                  {plan}
+                                </span>
+                                <span
+                                  onClick={() =>
+                                    handleDeleteDayActivity(dayNum, idx)
+                                  }
+                                  className="text-[10px] cursor-pointer opacity-0 group-hover/edit:opacity-100 transition-opacity hover:text-red-500"
+                                  title="Remove plan"
+                                >
+                                  ✕
+                                </span>
+                              </div>
+                            ))}
+
+                          {editingDayDetails === dayNum ? (
+                            <form
+                              onSubmit={(e) => handleSaveDayDetails(dayNum, e)}
+                              className="flex items-center gap-2 w-full max-w-sm"
                             >
-                              <span className="text-xs font-medium text-[#5C564D] line-clamp-1">
-                                {plan}
-                              </span>
-                              <span
-                                onClick={() =>
-                                  handleDeleteDayActivity(dayNum, idx)
-                                }
-                                className="text-[10px] cursor-pointer opacity-0 group-hover/edit:opacity-100 transition-opacity hover:text-red-500"
-                                title="Remove plan"
+                              <input
+                                type="text"
+                                name="activities"
+                                placeholder="Add another plan..."
+                                className="flex-1 px-3 py-1.5 text-xs bg-white border border-[#EAE5DF] rounded-md focus:outline-none focus:ring-1 focus:ring-[#D1C3B4] text-[#3C3833]"
+                                autoFocus
+                              />
+                              <button
+                                type="submit"
+                                className="text-xs px-3 py-1.5 bg-[#3C3833] text-white rounded-md hover:bg-black transition-colors shadow-sm"
+                              >
+                                Save
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingDayDetails(null)}
+                                className="text-xs px-2 py-1.5 text-[#8A827A] hover:bg-[#EAE5DF] rounded-md transition-colors"
                               >
                                 ✕
-                              </span>
-                            </div>
-                          ))}
-
-                        {editingDayDetails === dayNum ? (
-                          <form
-                            onSubmit={(e) => handleSaveDayDetails(dayNum, e)}
-                            className="flex items-center gap-2 w-full max-w-sm"
-                          >
-                            <input
-                              type="text"
-                              name="activities"
-                              placeholder="Add another plan..."
-                              className="flex-1 px-3 py-1.5 text-xs bg-white border border-[#EAE5DF] rounded-md focus:outline-none focus:ring-1 focus:ring-[#D1C3B4] text-[#3C3833]"
-                              autoFocus
-                            />
+                              </button>
+                            </form>
+                          ) : (
                             <button
-                              type="submit"
-                              className="text-xs px-3 py-1.5 bg-[#3C3833] text-white rounded-md hover:bg-black transition-colors shadow-sm"
+                              onClick={() => setEditingDayDetails(dayNum)}
+                              className="text-xs font-medium text-[#A69B90] hover:text-[#59524A] flex items-center gap-1 transition-colors"
                             >
-                              Save
+                              <span>+ Add event or activities</span>
                             </button>
-                            <button
-                              type="button"
-                              onClick={() => setEditingDayDetails(null)}
-                              className="text-xs px-2 py-1.5 text-[#8A827A] hover:bg-[#EAE5DF] rounded-md transition-colors"
-                            >
-                              ✕
-                            </button>
-                          </form>
-                        ) : (
-                          <button
-                            onClick={() => setEditingDayDetails(dayNum)}
-                            className="text-xs font-medium text-[#A69B90] hover:text-[#59524A] flex items-center gap-1 transition-colors"
-                          >
-                            <span>+ Add event or activities</span>
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setActiveDayModal(dayNum)}
-                      className="px-3 py-1.5 text-xs font-medium text-[#8A827A] border border-[#C4BCB3] transition-colors bg-white hover:bg-[#FCFAF8] rounded-lg opacity-0 group-hover:opacity-100 hidden sm:block"
-                    >
-                      + Add Look
-                    </button>
-                  </div>
-
-                  {/* Day Content Area */}
-                  <div className="relative pl-6 ml-6 border-l-2 border-[#EAE5DF]">
-                    {dayOutfits.length === 0 ? (
-                      <div
-                        onClick={() => setActiveDayModal(dayNum)}
-                        className="flex items-center justify-center h-14 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group"
-                      >
-                        <span className="text-[#8A827A] font-medium text-sm transition-transform group-hover:scale-105">
-                          + Add Look to Day {dayNum}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col gap-6">
-                        <div className="grid grid-cols-2 gap-3 sm:gap-6 sm:grid-cols-3">
-                          {dayOutfits.map((outfit) =>
-                            renderOutfit(outfit, false),
                           )}
                         </div>
+                      </div>
+                      <button
+                        onClick={() => setActiveDayModal(dayNum)}
+                        className="px-3 py-1.5 text-xs font-medium text-[#8A827A] border border-[#C4BCB3] transition-colors bg-white hover:bg-[#FCFAF8] rounded-lg opacity-0 group-hover:opacity-100 hidden sm:block"
+                      >
+                        + Add Look
+                      </button>
+                    </div>
+
+                    {/* Day Content Area */}
+                    <div className="relative pl-6 ml-6 border-l-2 border-[#EAE5DF]">
+                      {dayOutfits.length === 0 ? (
                         <div
                           onClick={() => setActiveDayModal(dayNum)}
                           className="flex items-center justify-center h-14 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group"
                         >
                           <span className="text-[#8A827A] font-medium text-sm transition-transform group-hover:scale-105">
-                            + Add Another Look
+                            + Add Look to Day {dayNum}
                           </span>
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="flex flex-col gap-6">
+                          <div className="grid grid-cols-2 gap-3 sm:gap-6 sm:grid-cols-3">
+                            {dayOutfits.map((outfit) =>
+                              renderOutfit(outfit, false),
+                            )}
+                          </div>
+                          <div
+                            onClick={() => setActiveDayModal(dayNum)}
+                            className="flex items-center justify-center h-14 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group"
+                          >
+                            <span className="text-[#8A827A] font-medium text-sm transition-transform group-hover:scale-105">
+                              + Add Another Look
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
 
