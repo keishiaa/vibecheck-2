@@ -603,7 +603,7 @@ export default function CalendarClientWrapper({
   return (
     <>
       {/* Sticky Header */}
-      <div className="sticky top-0 z-30 flex items-center justify-between p-4 sm:p-6 bg-white/70 backdrop-blur-xl border-b border-[#EAE5DF]/50">
+      <div className="sticky top-0 z-30 flex items-center justify-between py-3 px-4 sm:p-6 bg-white/80 backdrop-blur-xl border-b border-[#EAE5DF]/50">
         <div className="flex items-center gap-3">
           <Link
             href="/"
@@ -728,7 +728,7 @@ export default function CalendarClientWrapper({
         {activeTab === "itinerary" && (
           <div className="flex flex-col gap-16 relative">
             {/* Horizontal Day Snapping (Mobile & Desktop) */}
-            <div className="sticky top-[73px] sm:top-[140px] z-20 -mx-4 px-4 sm:mx-0 sm:px-0 pb-4 pt-2 mb-2 bg-gradient-to-b from-[#FDFBF7] to-transparent overflow-x-auto flex gap-3 hide-scrollbar snap-x">
+            <div className="sticky top-[71px] sm:top-[140px] z-20 -mx-4 px-4 sm:mx-0 sm:px-0 py-3 mb-6 bg-white/80 backdrop-blur-xl border-b border-[#EAE5DF]/50 overflow-x-auto flex gap-3 hide-scrollbar snap-x shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
               {days.map((d) => (
                 <a
                   key={d}
