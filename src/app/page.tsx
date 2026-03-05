@@ -14,7 +14,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#3C3833] font-sans selection:bg-[#D1C3B4] selection:text-[#3C3833] flex flex-col">
       {/* Navigation Bar */}
-      <nav className="flex items-center justify-between p-6 border-b border-[#EAE5DF] bg-white">
+      <nav className="w-full flex items-center justify-between p-6 border-b border-[#EAE5DF] bg-white">
         <div className="flex items-center gap-3">
           <Image src="/vibecheck-logo.jpg" alt="VibeCheck" width={247} height={100} priority className="object-contain w-auto h-10 mix-blend-multiply" />
         </div>
@@ -31,7 +31,7 @@ export default async function Home() {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-5xl px-6 py-12 mx-auto">
+      <main className="w-full max-w-5xl px-6 py-12 mx-auto">
         {!user ? (
           <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
             <h2 className="text-4xl font-light tracking-tight md:text-5xl">

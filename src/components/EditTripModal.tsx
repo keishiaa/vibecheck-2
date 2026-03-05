@@ -5,6 +5,7 @@ import { updateTrip } from "@/actions/tripActions";
 import { useRouter } from "next/navigation";
 import { ImagePlus, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
+import { deleteTrip } from "@/actions/tripActions";
 
 export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boolean; onClose: () => void; trip: any }) {
     const [name, setName] = useState("");
@@ -85,6 +86,30 @@ export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boole
         }
     }
 
+    async function handleDeleteTrip(e: React.MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!trip?.id) return;
+
+        const confirmed = window.confirm("Are you sure you want to delete this trip entirely? This action cannot be undone and will permanently delete all associated looks and items.");
+        if (!confirmed) return;
+
+        setLoading(true);
+        try {
+            await deleteTrip(trip.id);
+            onClose();
+            router.push('/');
+        } catch (err: any) {
+            if (err?.message?.includes("NEXT_REDIRECT") || err?.digest?.includes("NEXT_REDIRECT")) {
+                return;
+            }
+            console.error(err);
+            alert("Failed to delete trip. " + (err.message || JSON.stringify(err)));
+            setLoading(false);
+        }
+    }
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
             <div className="w-full max-w-sm p-6 bg-white border border-[#EAE5DF] rounded-2xl shadow-xl animate-in fade-in zoom-in-95 duration-200">
@@ -103,7 +128,7 @@ export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boole
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-4">
                         <div>
                             <label className="block mb-1 text-sm text-[#8A827A]">Start Date</label>
                             <input
@@ -175,6 +200,16 @@ export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boole
                         )}
                     </div>
                     <div className="flex flex-col-reverse sm:flex-row gap-3 mt-8">
+                        {trip && (
+                            <button
+                                type="button"
+                                onClick={handleDeleteTrip}
+                                disabled={loading}
+                                className="flex-1 py-3 text-sm font-medium transition-colors border border-red-200 text-red-500 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                            >
+                                Delete Trip
+                            </button>
+                        )}
                         <button
                             type="button"
                             onClick={onClose}

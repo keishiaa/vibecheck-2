@@ -79,7 +79,7 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="grid grid-cols-1 gap-6 w-full md:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
 
                 {/* Dynamic Map of the database trips */}
@@ -105,13 +105,13 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                             <Link href={`/trips/${trip.id}`} className={`relative overflow-hidden h-28 border border-[#EAE5DF] rounded-xl transition-all shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col ${colorClass}`}>
                                 <div className={`absolute inset-0 p-3.5 flex flex-col justify-end bg-gradient-to-t from-black/20 to-transparent z-10`}>
                                     <h3 className={`text-base font-semibold tracking-wide leading-tight mb-1 text-[#3C3833]`}>{trip.name}</h3>
-                                    <div className="flex items-center justify-between gap-2">
-                                        <p className={`text-xs text-[#5C564D] opacity-90 font-medium`}>
-                                            {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()}
+                                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center justify-between sm:gap-2 w-full mt-1">
+                                        <p className={`text-[10px] sm:text-xs text-[#5C564D] opacity-90 font-medium whitespace-nowrap`}>
+                                            {new Date(trip.startDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} - {new Date(trip.endDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })}
                                         </p>
 
                                         {/* Floating Participant Bubbles */}
-                                        <div className="flex -space-x-1.5 z-20">
+                                        <div className="flex -space-x-1.5 z-20 self-end sm:self-auto">
                                             <UserBubble user={trip.owner} isOwner={true} />
                                             {trip.members && trip.members.map((member: any) => (
                                                 <UserBubble key={member.id} user={member.user} isOwner={false} />
