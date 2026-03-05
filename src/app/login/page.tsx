@@ -3,26 +3,34 @@ import Image from 'next/image'
 
 export default function LoginPage() {
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-[#FDFBF7] text-[#3C3833] selection:bg-[#D1C3B4] selection:text-[#3C3833] p-6 relative overflow-hidden">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[#FDFBF7] text-[#3C3833] selection:bg-[#3C3833] selection:text-[#FDFBF7] p-6 relative overflow-hidden">
 
-            {/* Soft background glow for aesthetics */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#E8DDD5] rounded-full mix-blend-multiply filter blur-[100px] opacity-60 animate-in fade-in duration-1000"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#D1C3B4] rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-in fade-in duration-1000 delay-300"></div>
+            {/* Elegant Atmospheric Background */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-[radial-gradient(circle,rgba(209,195,180,0.3)_0%,transparent_70%)] animate-pulse" style={{ animationDuration: '8s' }}></div>
+                <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-[radial-gradient(circle,rgba(232,221,213,0.5)_0%,transparent_70%)] animate-pulse" style={{ animationDuration: '12s' }}></div>
+                <div className="absolute top-[20%] left-[20%] w-[60%] h-[60%] bg-[radial-gradient(circle,rgba(255,255,255,0.8)_0%,transparent_70%)]"></div>
+            </div>
 
-            <div className="w-full max-w-sm z-10 animate-in slide-in-from-bottom-8 fade-in duration-700">
-                <div className="flex justify-center mb-8">
-                    <Image src="/vibecheck-logo.jpg" alt="VibeCheck" width={247} height={100} priority className="object-contain w-auto h-12 mix-blend-multiply drop-shadow-sm" />
+            <div className="w-full max-w-[400px] z-10 animate-in slide-in-from-bottom-8 fade-in duration-1000">
+
+                {/* Logo enclosed in a pristine white physical pill to mask the JPG background */}
+                <div className="flex justify-center mb-10 relative">
+                    <div className="absolute inset-0 bg-white/50 blur-xl opacity-60 rounded-full"></div>
+                    <div className="bg-white px-8 py-4 sm:py-5 rounded-[2rem] shadow-[0_10px_30px_rgba(0,0,0,0.04)] border border-[#EAE5DF]/30 relative z-10 flex justify-center items-center w-full max-w-[260px]">
+                        <Image src="/vibecheck-logo.jpg" alt="VibeCheck" width={247} height={100} priority className="object-contain w-full h-auto max-h-8 sm:max-h-9" />
+                    </div>
                 </div>
 
-                <div className="p-8 bg-white/70 backdrop-blur-2xl border border-[#EAE5DF]/50 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <div className="p-8 sm:p-10 bg-white/70 backdrop-blur-3xl border border-white rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)]">
                     <h2 className="mb-8 text-2xl font-light tracking-tight text-center text-[#3C3833]">
-                        Welcome back
+                        Welcome to the club.
                     </h2>
 
                     <form action={signInWithGoogle}>
                         <button
                             type="submit"
-                            className="flex items-center justify-center w-full px-5 py-3.5 text-sm font-medium transition-all active:scale-95 bg-white border border-[#EAE5DF] text-[#3C3833] rounded-xl hover:bg-[#FCFAF8] hover:border-[#D1C3B4] shadow-sm group"
+                            className="flex items-center justify-center w-full px-5 py-4 text-sm font-medium transition-all active:scale-95 bg-white border border-[#EAE5DF] text-[#3C3833] rounded-2xl hover:bg-[#FCFAF8] hover:border-[#D1C3B4] shadow-sm group"
                         >
                             <svg className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -35,12 +43,12 @@ export default function LoginPage() {
                     </form>
 
                     <div className="flex items-center my-6">
-                        <div className="flex-grow border-t border-[#EAE5DF]/60"></div>
+                        <div className="flex-grow border-t border-[#EAE5DF]/80"></div>
                         <span className="flex-shrink-0 mx-4 text-[10px] sm:text-xs font-semibold tracking-widest text-[#8A827A] uppercase">Or stay classic</span>
-                        <div className="flex-grow border-t border-[#EAE5DF]/60"></div>
+                        <div className="flex-grow border-t border-[#EAE5DF]/80"></div>
                     </div>
 
-                    <form className="flex flex-col gap-5">
+                    <form className="flex flex-col gap-6">
                         <div className="flex flex-col gap-4">
                             <div>
                                 <input
@@ -48,7 +56,7 @@ export default function LoginPage() {
                                     name="email"
                                     type="email"
                                     required
-                                    className="w-full px-4 py-3.5 text-sm bg-white/50 border border-[#EAE5DF] rounded-xl focus:outline-none focus:border-[#A69B90] focus:ring-4 focus:ring-[#D1C3B4]/10 transition-all placeholder:text-[#8A827A]/50 text-[#3C3833]"
+                                    className="w-full px-5 py-4 text-sm bg-white border border-[#EAE5DF]/80 rounded-2xl focus:outline-none focus:border-[#3C3833] focus:ring-1 focus:ring-[#3C3833] transition-all placeholder:text-[#8A827A]/50 text-[#3C3833]"
                                     placeholder="Email address"
                                 />
                             </div>
@@ -59,7 +67,7 @@ export default function LoginPage() {
                                     name="password"
                                     type="password"
                                     required
-                                    className="w-full px-4 py-3.5 text-sm bg-white/50 border border-[#EAE5DF] rounded-xl focus:outline-none focus:border-[#A69B90] focus:ring-4 focus:ring-[#D1C3B4]/10 transition-all placeholder:text-[#8A827A]/50 text-[#3C3833]"
+                                    className="w-full px-5 py-4 text-sm bg-white border border-[#EAE5DF]/80 rounded-2xl focus:outline-none focus:border-[#3C3833] focus:ring-1 focus:ring-[#3C3833] transition-all placeholder:text-[#8A827A]/50 text-[#3C3833]"
                                     placeholder="Password"
                                 />
                             </div>
@@ -68,13 +76,13 @@ export default function LoginPage() {
                         <div className="flex flex-col gap-3 mt-2">
                             <button
                                 formAction={login}
-                                className="w-full px-5 py-3.5 text-sm font-medium transition-all active:scale-95 bg-[#D1C3B4] text-[#3C3833] rounded-xl hover:bg-[#C2B2A1] shadow-sm"
+                                className="w-full px-5 py-4 text-sm font-semibold tracking-wide transition-all active:scale-95 bg-[#3C3833] text-white rounded-2xl hover:bg-black shadow-[0_8px_20px_rgba(60,56,51,0.15)]"
                             >
                                 Log in
                             </button>
                             <button
                                 formAction={signup}
-                                className="w-full px-5 py-3.5 text-sm font-medium transition-all active:scale-95 bg-transparent border border-[#EAE5DF] text-[#8A827A] rounded-xl hover:bg-[#FCFAF8] hover:text-[#3C3833]"
+                                className="w-full px-5 py-4 text-sm font-medium transition-all active:scale-95 bg-transparent border border-[#EAE5DF] text-[#8A827A] rounded-2xl hover:bg-white hover:text-[#3C3833] shadow-sm"
                             >
                                 Create an account
                             </button>
@@ -82,7 +90,7 @@ export default function LoginPage() {
                     </form>
                 </div>
 
-                <footer className="w-full text-center py-8 text-[11px] text-[#8A827A]/70 group flex justify-center items-center gap-1 font-medium mt-4">
+                <footer className="w-full text-center py-8 text-[11px] text-[#8A827A]/70 group flex justify-center items-center gap-1 font-medium mt-6">
                     vibecoded by keishia
                     <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">✨</span>
                 </footer>
