@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 
 // Force TS re-evaluation after prisma generate
 
-export async function addOutfit(tripId: string, dayNumber: number | null, data: { name?: string, description?: string, activity?: string, locationUrl?: string, isPrivate: boolean, products?: any[], existingProductIds?: string[] }) {
+export async function addOutfit(tripId: string, dayNumber: number | null, data: { name?: string, description?: string, activity?: string, locationUrl?: string, isPrivate: boolean, products?: any[], existingProductIds?: string[], coverImageUrl?: string }) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     const userId = user?.id;
@@ -44,6 +44,7 @@ export async function addOutfit(tripId: string, dayNumber: number | null, data: 
             locationUrl,
             isPrivate,
             userId,
+            coverImageUrl: data.coverImageUrl || null,
             products: {
                 create: newProducts,
                 connect: allProductIdsToConnect.map(id => ({ id }))
@@ -55,7 +56,7 @@ export async function addOutfit(tripId: string, dayNumber: number | null, data: 
     return outfit;
 }
 
-export async function updateOutfit(outfitId: string, tripId: string, data: { name?: string, description?: string, activity?: string, locationUrl?: string, isPrivate: boolean, products?: any[], existingProductIds?: string[] }) {
+export async function updateOutfit(outfitId: string, tripId: string, data: { name?: string, description?: string, activity?: string, locationUrl?: string, isPrivate: boolean, products?: any[], existingProductIds?: string[], coverImageUrl?: string }) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     const userId = user?.id;
@@ -102,6 +103,7 @@ export async function updateOutfit(outfitId: string, tripId: string, data: { nam
             activity,
             locationUrl,
             isPrivate,
+            coverImageUrl: data.coverImageUrl || null,
             products: {
                 create: newProducts,
                 connect: allProductIdsToConnect.map(id => ({ id }))
@@ -179,6 +181,7 @@ export async function copyOutfitToWardrobe(outfitId: string, tripId: string) {
             activity: existing.activity,
             locationUrl: existing.locationUrl,
             isPrivate: existing.isPrivate,
+            coverImageUrl: existing.coverImageUrl,
             products: {
                 create: existing.products.map((p: any) => ({
                     tripId: p.tripId,

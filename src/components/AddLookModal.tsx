@@ -56,6 +56,7 @@ export default function AddLookModal({
 
     // Products State
     const [products, setProducts] = useState<any[]>(existingOutfit?.products || []);
+    const [coverImageUrl, setCoverImageUrl] = useState<string | null>(existingOutfit?.coverImageUrl || null);
 
     const [loading, setLoading] = useState(false);
     const [uploadingImageIdx, setUploadingImageIdx] = useState<number | null>(null);
@@ -68,6 +69,7 @@ export default function AddLookModal({
             setActivity(existingOutfit?.activity || "");
             setIsPrivate(existingOutfit?.isPrivate || false);
             setProducts(existingOutfit?.products || []);
+            setCoverImageUrl(existingOutfit?.coverImageUrl || null);
         }
     }, [isOpen, existingOutfit]);
 
@@ -132,7 +134,8 @@ export default function AddLookModal({
                 description,
                 activity: activity || undefined,
                 isPrivate,
-                products
+                products,
+                coverImageUrl: coverImageUrl || undefined
             };
 
             if (existingOutfit) {
@@ -146,6 +149,7 @@ export default function AddLookModal({
             setActivity("");
             setIsPrivate(false);
             setProducts([]);
+            setCoverImageUrl(null);
             router.refresh();
         } catch (err: any) {
             console.error(err);
@@ -208,7 +212,7 @@ export default function AddLookModal({
                                 <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
                                     {savedOutfits.map(outfit => {
                                         const imgProd = outfit.products?.find((p: any) => p.imageUrl);
-                                        const displayImage = getDisplayUrl(imgProd?.imageUrl);
+                                        const displayImage = getDisplayUrl(outfit.coverImageUrl || imgProd?.imageUrl);
                                         return (
                                             <button
                                                 key={outfit.id}
@@ -275,6 +279,21 @@ export default function AddLookModal({
                                         className="w-full px-4 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] placeholder-[#C4BCB3] shadow-sm"
                                     />
                                 </div>
+                                {products.filter(p => p.imageUrl).length > 1 && (
+                                    <div>
+                                        <label className="flex items-center gap-1.5 mb-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90]"><span className="text-sm">🖼️</span> Cover Photo</label>
+                                        <select
+                                            value={coverImageUrl || ""}
+                                            onChange={(e) => setCoverImageUrl(e.target.value || null)}
+                                            className="w-full px-4 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] shadow-sm cursor-pointer"
+                                        >
+                                            <option value="">Default (First image)</option>
+                                            {products.filter(p => p.imageUrl).map((p, idx) => (
+                                                <option key={idx} value={p.imageUrl}>{p.name || `Item ${idx + 1}`}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -361,6 +380,19 @@ export default function AddLookModal({
                                                             >
                                                                 <X size={12} />
                                                             </button>
+                                                            {coverImageUrl === p.imageUrl ? (
+                                                                <div className="absolute bottom-1 left-1 bg-[#D1C3B4] text-[#3C3833] text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm z-20 pointer-events-none">
+                                                                    COVER
+                                                                </div>
+                                                            ) : (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCoverImageUrl(p.imageUrl); }}
+                                                                    className="absolute bottom-1 left-1 bg-white/80 backdrop-blur-sm text-[#3C3833] text-[9px] font-medium px-1.5 py-0.5 rounded shadow-sm opacity-0 group-hover/img:opacity-100 hover:bg-[#D1C3B4] transition-opacity z-20"
+                                                                >
+                                                                    Set Cover
+                                                                </button>
+                                                            )}
                                                         </>
                                                     )}
                                                     <input

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createTrip, updateTrip } from "@/actions/tripActions";
+import { createTrip, updateTrip, deleteTrip } from "@/actions/tripActions";
 import { useRouter } from "next/navigation";
 import { ImagePlus, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
@@ -79,6 +79,27 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
             console.error(err);
             alert("Failed to create trip, check inputs. " + (err.message || JSON.stringify(err)));
         } finally {
+            setLoading(false);
+        }
+    }
+
+    async function handleDeleteTrip(e: React.MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!existingTrip?.id) return;
+
+        const confirmed = window.confirm("Are you sure you want to delete this trip entirely? This action cannot be undone and will permanently delete all associated looks and items.");
+        if (!confirmed) return;
+
+        setLoading(true);
+        try {
+            await deleteTrip(existingTrip.id);
+            onClose();
+            router.push('/');
+        } catch (err: any) {
+            console.error(err);
+            alert("Failed to delete trip. " + (err.message || JSON.stringify(err)));
             setLoading(false);
         }
     }
@@ -175,6 +196,16 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
                         )}
                     </div>
                     <div className="flex flex-col-reverse sm:flex-row gap-3 mt-8">
+                        {existingTrip && (
+                            <button
+                                type="button"
+                                onClick={handleDeleteTrip}
+                                disabled={loading}
+                                className="flex-1 py-3 text-sm font-medium transition-colors border border-red-200 text-red-500 rounded-lg hover:bg-red-50 disabled:opacity-50"
+                            >
+                                Delete Trip
+                            </button>
+                        )}
                         <button
                             type="button"
                             onClick={onClose}

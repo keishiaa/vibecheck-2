@@ -60,18 +60,19 @@ model TripMember {
 }
 
 model Outfit {
-  id          String    @id @default(uuid())
-  tripId      String
-  dayNumber   Int?
-  name        String?
-  description String?
-  activity    String?
-  locationUrl String?
-  isPrivate   Boolean   @default(false)
-  userId      String
-  trip        Trip      @relation(fields: [tripId], references: [id])
-  user        User      @relation(fields: [userId], references: [id])
-  products    Product[]
+  id            String    @id @default(uuid())
+  tripId        String
+  dayNumber     Int?
+  name          String?
+  description   String?
+  activity      String?
+  locationUrl   String?
+  isPrivate     Boolean   @default(false)
+  userId        String
+  coverImageUrl String?
+  trip          Trip      @relation(fields: [tripId], references: [id])
+  user          User      @relation(fields: [userId], references: [id])
+  products      Product[]
 }
 
 
@@ -84,6 +85,6 @@ model Product {
   category String // dress, top, bottoms, shoes, accessories
   tags     String[]
   notes    String?
-  outfit   Outfit?  @relation(fields: [outfitId], references: [id], onDelete: Cascade)
+  outfit   Outfit?  @relation(fields: [outfitId], references: [id], onDelete: SetNull)
   trip     Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
 }

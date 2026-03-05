@@ -259,21 +259,54 @@ export default function CalendarClientWrapper({
     const handleSaveDayDetails = async (dayNum: number, e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        const activities = formData.get("activities") as string;
+        const newActivity = (formData.get("activities") as string || "").trim();
         const locationUrl = formData.get("locationUrl") as string;
+
+        if (!newActivity) {
+            setEditingDayDetails(null);
+            return;
+        }
+
+        const existingStr = dayDetails[dayNum]?.activities || "";
+        const combined = existingStr ? `${existingStr} ||| ${newActivity}` : newActivity;
 
         setDayDetails(prev => ({
             ...prev,
-            [dayNum]: { ...prev[dayNum], activities, locationUrl }
+            [dayNum]: { ...prev[dayNum], activities: combined, locationUrl }
         }));
         setEditingDayDetails(null);
 
         startTransition(async () => {
             try {
-                await updateDayDetails(tripId, dayNum, formData);
+                const submitData = new FormData();
+                submitData.append("activities", combined);
+                if (locationUrl) submitData.append("locationUrl", locationUrl);
+                await updateDayDetails(tripId, dayNum, submitData);
             } catch (err) {
                 console.error(err);
                 alert("Failed to save day details.");
+            }
+        });
+    };
+
+    const handleDeleteDayActivity = (dayNum: number, idx: number) => {
+        const existingStr = dayDetails[dayNum]?.activities || "";
+        const list = existingStr.split(" ||| ").filter(Boolean);
+        list.splice(idx, 1);
+        const combined = list.join(" ||| ");
+
+        setDayDetails(prev => ({
+            ...prev,
+            [dayNum]: { ...prev[dayNum], activities: combined }
+        }));
+
+        startTransition(async () => {
+            try {
+                const submitData = new FormData();
+                submitData.append("activities", combined);
+                await updateDayDetails(tripId, dayNum, submitData);
+            } catch (err) {
+                console.error(err);
             }
         });
     };
@@ -310,7 +343,7 @@ export default function CalendarClientWrapper({
 
     const renderOutfit = (outfit: any, isWardrobe: boolean = false) => {
         const hasImageProduct = outfit.products?.find((p: any) => p.imageUrl);
-        const displayImage = getDisplayUrl(hasImageProduct?.imageUrl);
+        const displayImage = getDisplayUrl(outfit.coverImageUrl || hasImageProduct?.imageUrl);
         const lookIdentifier = outfit.name ? outfit.name.replace(/\s+/g, '-').toLowerCase() : outfit.id;
 
         return (
@@ -552,31 +585,32 @@ export default function CalendarClientWrapper({
                                         </div>
                                         <div className="flex flex-col flex-grow items-start">
                                             <h2 className="text-xl font-medium tracking-wide text-[#3C3833]">{formatter.format(currentDate)}</h2>
-                                            {editingDayDetails === dayNum ? (
-                                                <form onSubmit={(e) => handleSaveDayDetails(dayNum, e)} className="flex items-center gap-2 mt-1 w-full max-w-sm">
-                                                    <input
-                                                        type="text"
-                                                        name="activities"
-                                                        defaultValue={dayDetails[dayNum]?.activities || ""}
-                                                        placeholder="e.g. Travel Day, Beach Setup..."
-                                                        className="flex-1 px-3 py-1.5 text-xs bg-white border border-[#EAE5DF] rounded-md focus:outline-none focus:ring-1 focus:ring-[#D1C3B4] text-[#3C3833]"
-                                                        autoFocus
-                                                    />
-                                                    <button type="submit" className="text-xs px-3 py-1.5 bg-[#3C3833] text-white rounded-md hover:bg-black transition-colors shadow-sm">Save</button>
-                                                    <button type="button" onClick={() => setEditingDayDetails(null)} className="text-xs px-2 py-1.5 text-[#8A827A] hover:bg-[#EAE5DF] rounded-md transition-colors">✕</button>
-                                                </form>
-                                            ) : (
-                                                dayDetails[dayNum]?.activities ? (
-                                                    <div onClick={() => setEditingDayDetails(dayNum)} className="mt-1 inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F5F2EE] border border-[#EAE5DF] rounded-md cursor-pointer hover:bg-[#EAE5DF] transition-colors group/edit w-fit shadow-sm">
-                                                        <span className="text-xs font-medium text-[#5C564D] line-clamp-1">{dayDetails[dayNum].activities}</span>
-                                                        <span className="text-[10px] opacity-0 group-hover/edit:opacity-100 transition-opacity">✏️</span>
+                                            <div className="flex flex-wrap items-center gap-2 mt-1">
+                                                {(dayDetails[dayNum]?.activities || "").split(" ||| ").filter(Boolean).map((plan: string, idx: number) => (
+                                                    <div key={idx} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F5F2EE] border border-[#EAE5DF] rounded-md group/edit shadow-sm">
+                                                        <span className="text-xs font-medium text-[#5C564D] line-clamp-1">{plan}</span>
+                                                        <span onClick={() => handleDeleteDayActivity(dayNum, idx)} className="text-[10px] cursor-pointer opacity-0 group-hover/edit:opacity-100 transition-opacity hover:text-red-500" title="Remove plan">✕</span>
                                                     </div>
+                                                ))}
+
+                                                {editingDayDetails === dayNum ? (
+                                                    <form onSubmit={(e) => handleSaveDayDetails(dayNum, e)} className="flex items-center gap-2 w-full max-w-sm">
+                                                        <input
+                                                            type="text"
+                                                            name="activities"
+                                                            placeholder="Add another plan..."
+                                                            className="flex-1 px-3 py-1.5 text-xs bg-white border border-[#EAE5DF] rounded-md focus:outline-none focus:ring-1 focus:ring-[#D1C3B4] text-[#3C3833]"
+                                                            autoFocus
+                                                        />
+                                                        <button type="submit" className="text-xs px-3 py-1.5 bg-[#3C3833] text-white rounded-md hover:bg-black transition-colors shadow-sm">Save</button>
+                                                        <button type="button" onClick={() => setEditingDayDetails(null)} className="text-xs px-2 py-1.5 text-[#8A827A] hover:bg-[#EAE5DF] rounded-md transition-colors">✕</button>
+                                                    </form>
                                                 ) : (
-                                                    <button onClick={() => setEditingDayDetails(dayNum)} className="mt-1 text-xs font-medium text-[#A69B90] opacity-0 group-hover:opacity-100 transition-opacity hover:text-[#59524A] flex items-center gap-1">
+                                                    <button onClick={() => setEditingDayDetails(dayNum)} className="text-xs font-medium text-[#A69B90] hover:text-[#59524A] flex items-center gap-1 transition-colors">
                                                         <span>+ Add daily plan</span>
                                                     </button>
-                                                )
-                                            )}
+                                                )}
+                                            </div>
                                         </div>
                                         <button onClick={() => setActiveDayModal(dayNum)} className="px-3 py-1.5 text-xs font-medium text-[#8A827A] border border-[#C4BCB3] transition-colors bg-white hover:bg-[#FCFAF8] rounded-lg opacity-0 group-hover:opacity-100 hidden sm:block">
                                             + Add Look

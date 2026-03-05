@@ -251,3 +251,26 @@ export async function updateDayDetails(tripId: string, dayNumber: number, formDa
 
     revalidatePath(`/trips/${tripId}`);
 }
+
+export async function deleteTrip(tripId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id;
+
+    if (!userId) throw new Error("Unauthorized");
+
+    const trip = await prisma.trip.findUnique({ where: { id: tripId } });
+    if (!trip || trip.ownerId !== userId) throw new Error("Unauthorized");
+
+    // Clean up related entities manually to bypass missing Cascades
+    await prisma.outfit.deleteMany({ where: { tripId } });
+    await (prisma as any).tripMember.deleteMany({ where: { tripId } });
+    await prisma.product.deleteMany({ where: { tripId } });
+    await (prisma as any).dayDetails.deleteMany({ where: { tripId } });
+
+    await prisma.trip.delete({
+        where: { id: tripId },
+    });
+
+    revalidatePath("/");
+}
