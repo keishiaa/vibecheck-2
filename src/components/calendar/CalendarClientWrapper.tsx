@@ -697,7 +697,7 @@ export default function CalendarClientWrapper({
         )}
 
         {/* Tabs - Hidden on Mobile */}
-        <div className="hidden sm:flex border-b border-[#EAE5DF] mb-8 sticky top-[73px] sm:top-[89px] bg-white/70 backdrop-blur-xl z-20 -mx-4 px-4 sm:-mx-0 sm:px-0">
+        <div className="hidden lg:flex border-b border-[#EAE5DF] mb-8 sticky top-[73px] lg:top-[89px] bg-white/70 backdrop-blur-xl z-20 -mx-4 px-4 lg:-mx-0 lg:px-0">
           <button
             className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === "itinerary" ? "border-[#3C3833] text-[#3C3833]" : "border-transparent text-[#8A827A] hover:text-[#3C3833]"}`}
             onClick={() => setActiveTab("itinerary")}
@@ -726,7 +726,7 @@ export default function CalendarClientWrapper({
         {activeTab === "itinerary" && (
           <div className="flex flex-col gap-16 relative">
             {/* Horizontal Day Snapping (Mobile & Desktop) */}
-            <div className="sticky top-[71px] sm:top-[140px] z-20 -mx-4 px-4 sm:mx-0 sm:px-0 py-3 mb-6 bg-white/80 backdrop-blur-xl border-b border-[#EAE5DF]/50 overflow-x-auto flex gap-3 hide-scrollbar snap-x shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
+            <div className="sticky top-[71px] lg:top-[140px] z-20 -mx-4 px-4 lg:mx-0 lg:px-0 py-3 mb-6 bg-white/80 backdrop-blur-xl border-b border-[#EAE5DF]/50 overflow-x-auto flex gap-3 hide-scrollbar snap-x shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
               {days.map((d) => (
                 <a
                   key={d}
@@ -1080,7 +1080,7 @@ export default function CalendarClientWrapper({
       />
 
       {/* Mobile Bottom Tab Bar */}
-      <nav className="sm:hidden fixed bottom-0 left-0 w-full z-40 bg-white/80 backdrop-blur-xl border-t border-[#EAE5DF]/50 pb-8 pt-4 px-4 flex justify-around items-center shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
+      <nav className="lg:hidden fixed bottom-0 left-0 w-full z-40 bg-white/80 backdrop-blur-xl border-t border-[#EAE5DF]/50 pb-8 pt-4 px-4 flex justify-around items-center shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
         <button
           onClick={() => setActiveTab("itinerary")}
           className={`flex flex-col items-center gap-1 transition-all active:scale-95 ${activeTab === "itinerary" ? "text-[#3C3833]" : "text-[#8A827A]"}`}
