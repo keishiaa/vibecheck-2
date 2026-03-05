@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { updateProductInTrip } from "@/actions/outfitActions";
+import { updateProductInTrip, deleteProduct } from "@/actions/outfitActions";
 import { useRouter } from "next/navigation";
 import { ImagePlus, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
@@ -72,6 +72,24 @@ export default function EditProductModal({
             }
         } catch (e) {
             console.error("Failed to scrape link for product image", e);
+        }
+    }
+
+    async function handleDeleteProduct() {
+        if (!product?.id) return;
+        const confirmed = window.confirm("Are you sure you want to delete this product? It will be removed from all looks.");
+        if (!confirmed) return;
+
+        setLoading(true);
+        try {
+            await deleteProduct(product.id, tripId);
+            onClose();
+            router.refresh();
+        } catch (err: any) {
+            console.error(err);
+            alert("Failed to delete product. " + (err.message || JSON.stringify(err)));
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -209,7 +227,7 @@ export default function EditProductModal({
                             <select
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
-                                className="w-full px-4 py-3 bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#3C3833 capitalize"
+                                className="w-full px-4 py-3 bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#3C3833] capitalize"
                             >
                                 <option value="top">Top</option>
                                 <option value="bottoms">Bottoms</option>
@@ -224,22 +242,31 @@ export default function EditProductModal({
                 </div>
 
                 {/* Footer Controls */}
-                <div className="p-4 bg-white border-t border-[#EAE5DF] flex justify-end gap-3">
+                <div className="p-4 bg-white border-t border-[#EAE5DF] flex flex-col sm:flex-row justify-between gap-3">
                     <button
                         type="button"
-                        onClick={onClose}
-                        className="px-5 py-2.5 text-sm font-medium text-[#5C564D] bg-white border border-[#EAE5DF] rounded-xl hover:bg-[#F5F2EE] transition-colors"
+                        onClick={handleDeleteProduct}
+                        className="w-full sm:w-auto px-5 py-2.5 text-sm font-medium text-red-600 bg-white border border-red-200 rounded-xl hover:bg-red-50 transition-colors"
                     >
-                        Cancel
+                        Delete Product
                     </button>
-                    <button
-                        form="add-product-form"
-                        type="submit"
-                        disabled={loading || !name.trim()}
-                        className="px-6 py-2.5 text-sm font-medium text-white bg-[#3C3833] hover:bg-black rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm active:scale-95"
-                    >
-                        {loading ? "Saving..." : "Save Changes"}
-                    </button>
+                    <div className="flex flex-col-reverse sm:flex-row gap-3">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="w-full sm:w-auto px-5 py-2.5 text-sm font-medium text-[#5C564D] bg-white border border-[#EAE5DF] rounded-xl hover:bg-[#F5F2EE] transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            form="add-product-form"
+                            type="submit"
+                            disabled={loading || !name.trim()}
+                            className="w-full sm:w-auto px-6 py-2.5 text-sm font-medium text-white bg-[#3C3833] hover:bg-black rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm active:scale-95"
+                        >
+                            {loading ? "Saving..." : "Save Changes"}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
