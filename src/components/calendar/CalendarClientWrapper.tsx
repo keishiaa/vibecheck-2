@@ -720,7 +720,7 @@ export default function CalendarClientWrapper({
                 <a
                   key={d}
                   href={`#day-${d}`}
-                  className="px-5 py-2.5 rounded-full whitespace-nowrap bg-white border border-[#EAE5DF] shadow-sm text-sm font-medium text-[#5C564D] snap-start hover:bg-[#F5F2EE] transition-colors active:scale-95"
+                  className="px-5 py-2.5 rounded-full whitespace-nowrap bg-[#F5F2EE] text-sm font-medium text-[#8A827A] snap-start hover:bg-[#EAE5DF] hover:text-[#3C3833] transition-colors active:scale-95"
                 >
                   Day {d}
                 </a>
