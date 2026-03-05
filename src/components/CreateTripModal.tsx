@@ -76,6 +76,7 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
             onClose(); // Close modal on success
             router.refresh(); // Tell Next to refetch the `getTrips` server action!
         } catch (err: any) {
+            if (err?.message?.includes("NEXT_REDIRECT")) return;
             console.error(err);
             alert("Failed to create trip, check inputs. " + (err.message || JSON.stringify(err)));
         } finally {
@@ -96,8 +97,11 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
         try {
             await deleteTrip(existingTrip.id);
             onClose();
-            router.push('/');
         } catch (err: any) {
+            if (err?.message?.includes("NEXT_REDIRECT") || err?.digest?.includes("NEXT_REDIRECT")) {
+                // Ignore redirect errors as they are expected when leaving a deleted trip
+                return;
+            }
             console.error(err);
             alert("Failed to delete trip. " + (err.message || JSON.stringify(err)));
             setLoading(false);
