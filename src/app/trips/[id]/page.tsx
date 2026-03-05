@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getOutfitsForTrip, getProductsForTrip } from "@/actions/outfitActions";
 import { getDayDetailsForTrip } from "@/actions/tripActions";
 import CalendarClientWrapper from "@/components/calendar/CalendarClientWrapper";
@@ -19,7 +19,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
     });
 
     if (!trip) {
-        notFound();
+        redirect("/");
     }
 
     const supabase = await createClient();

@@ -184,7 +184,7 @@ export default function AddLookModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white sm:bg-black/40 backdrop-blur-sm sm:p-4 text-left">
-            <div className="w-full h-full sm:h-[90vh] sm:max-w-5xl p-4 sm:p-6 bg-white sm:border border-[#EAE5DF] sm:rounded-2xl sm:shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 flex flex-col">
+            <div className="w-full h-[100dvh] sm:h-[90vh] sm:max-w-5xl p-4 pb-8 sm:p-6 bg-white sm:border border-[#EAE5DF] sm:rounded-2xl sm:shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 flex flex-col overflow-hidden">
                 <div className="flex items-center justify-between mb-4 shrink-0 pt-4 sm:pt-0 pb-3 border-b border-[#EAE5DF] gap-2">
                     <h3 className="text-lg sm:text-xl font-semibold tracking-wide text-[#3C3833] truncate">
                         {existingOutfit ? 'The Ensemble' : (dayNumber ? `Day ${dayNumber} Ensemble` : 'New Wardrobe Look')}
@@ -214,7 +214,7 @@ export default function AddLookModal({
                     </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+                <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
                     <div className="flex-1 overflow-y-auto pr-2 pb-6 -mr-2 flex flex-col gap-6">
 
                         {!existingOutfit && dayNumber !== null && savedOutfits && savedOutfits.length > 0 && (
