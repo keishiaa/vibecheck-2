@@ -69,11 +69,11 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
 
     return (
         <>
-            <div className="flex items-end justify-between mb-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
                 <h2 className="text-3xl font-light tracking-tight text-[#59524A]">Current Trips</h2>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="px-5 py-2 text-sm font-medium transition-all bg-[#D1C3B4] text-[#3C3833] rounded-full hover:bg-[#C2B2A1]"
+                    className="w-full sm:w-auto px-5 py-2.5 text-sm font-medium transition-all bg-[#D1C3B4] text-[#3C3833] rounded-full hover:bg-[#C2B2A1]"
                 >
                     + Create New Trip
                 </button>

@@ -577,7 +577,7 @@ export default function AddLookModal({
                             )}
                         </div>
 
-                        <div className="flex gap-2 w-full sm:w-auto">
+                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                             {existingOutfit && existingOutfit.dayNumber !== null && (
                                 <button
                                     type="button"

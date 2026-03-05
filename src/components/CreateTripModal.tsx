@@ -14,9 +14,38 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
     const [locationImageUrl, setLocationImageUrl] = useState("");
     const [showWeather, setShowWeather] = useState(false);
     const [weatherLocation, setWeatherLocation] = useState("");
+    const [weatherSuggestions, setWeatherSuggestions] = useState<any[]>([]);
+    const [isSearchingWeather, setIsSearchingWeather] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        if (!showWeather || weatherLocation.length < 2 || !showSuggestions) {
+            setWeatherSuggestions([]);
+            return;
+        }
+
+        const delayDebounceFn = setTimeout(async () => {
+            setIsSearchingWeather(true);
+            try {
+                const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(weatherLocation)}&count=5&language=en&format=json`);
+                const data = await res.json();
+                if (data.results) {
+                    setWeatherSuggestions(data.results);
+                } else {
+                    setWeatherSuggestions([]);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setIsSearchingWeather(false);
+            }
+        }, 500);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [weatherLocation, showWeather, showSuggestions]);
 
     useEffect(() => {
         if (isOpen) {
@@ -182,21 +211,41 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
                         </label>
 
                         {showWeather && (
-                            <div className="mt-3 animate-in fade-in slide-in-from-top-2">
+                            <div className="mt-3 animate-in fade-in slide-in-from-top-2 relative">
                                 <label className="block mb-1 text-sm text-[#8A827A]">Weather Location (City, Country)</label>
                                 <input
                                     type="text"
                                     value={weatherLocation}
-                                    onChange={e => setWeatherLocation(e.target.value)}
+                                    onChange={e => {
+                                        setWeatherLocation(e.target.value);
+                                        setShowSuggestions(true);
+                                    }}
+                                    onFocus={() => setShowSuggestions(true)}
                                     placeholder="e.g. Paris, France"
                                     required={showWeather}
                                     className="w-full px-4 py-3 text-sm bg-[#FCFAF8] border border-[#EAE5DF] rounded-lg focus:outline-none focus:border-[#A69B90] transition-colors text-[#3C3833] placeholder-[#C4BCB3]"
                                 />
+                                {showSuggestions && weatherSuggestions.length > 0 && (
+                                    <ul className="absolute z-50 w-full mt-1 bg-white border border-[#EAE5DF] rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                        {weatherSuggestions.map((suggestion, idx) => (
+                                            <li
+                                                key={idx}
+                                                className="px-4 py-2 text-sm text-[#3C3833] cursor-pointer hover:bg-[#FCFAF8] border-b border-[#EAE5DF] last:border-b-0"
+                                                onClick={() => {
+                                                    const formatted = `${suggestion.name}, ${suggestion.country}`;
+                                                    setWeatherLocation(formatted);
+                                                    setShowSuggestions(false);
+                                                }}
+                                            >
+                                                {suggestion.name}, {suggestion.admin1 ? `${suggestion.admin1}, ` : ''}{suggestion.country}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </div>
                         )}
                     </div>
-
-                    <div className="flex gap-3 mt-4">
+                    <div className="flex flex-col-reverse sm:flex-row gap-3 mt-8">
                         <button
                             type="button"
                             onClick={onClose}

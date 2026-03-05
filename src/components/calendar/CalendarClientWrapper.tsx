@@ -519,15 +519,16 @@ export default function CalendarClientWrapper({
                                     {/* Day Content Area */}
                                     <div className="relative pl-6 ml-6 border-l-2 border-[#EAE5DF]">
                                         {dayOutfits.length === 0 ? (
-                                            <div onClick={() => setActiveDayModal(dayNum)} className="flex items-center justify-center h-40 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group">
+                                            <div onClick={() => setActiveDayModal(dayNum)} className="flex items-center justify-center h-16 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group">
                                                 <span className="text-[#8A827A] font-medium text-sm transition-transform group-hover:scale-105">+ Add Look to Day {dayNum}</span>
                                             </div>
                                         ) : (
-                                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                                {dayOutfits.map((outfit) => renderOutfit(outfit, false))}
-
-                                                <div onClick={() => setActiveDayModal(dayNum)} className="flex items-center justify-center border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group aspect-square">
-                                                    <span className="text-[#8A827A] font-medium text-sm transition-transform group-hover:scale-105">+ Add</span>
+                                            <div className="flex flex-col gap-6">
+                                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                                    {dayOutfits.map((outfit) => renderOutfit(outfit, false))}
+                                                </div>
+                                                <div onClick={() => setActiveDayModal(dayNum)} className="flex items-center justify-center h-14 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group">
+                                                    <span className="text-[#8A827A] font-medium text-sm transition-transform group-hover:scale-105">+ Add Another Look</span>
                                                 </div>
                                             </div>
                                         )}
@@ -558,9 +559,11 @@ export default function CalendarClientWrapper({
                                 <span className="text-[#8A827A] font-medium transition-transform group-hover:scale-105">+ Create your first saved look</span>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                                {savedOutfits.map((outfit) => renderOutfit(outfit, true))}
-                                <div onClick={() => setActiveDayModal(0)} className="flex items-center justify-center border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group aspect-square">
+                            <div className="flex flex-col gap-6">
+                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                                    {savedOutfits.map((outfit) => renderOutfit(outfit, true))}
+                                </div>
+                                <div onClick={() => setActiveDayModal(0)} className="flex items-center justify-center h-14 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group">
                                     <span className="text-[#8A827A] font-medium text-sm transition-transform group-hover:scale-105">+ Add Saved Look</span>
                                 </div>
                             </div>

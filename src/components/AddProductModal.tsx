@@ -201,7 +201,7 @@ export default function AddProductModal({
                             <select
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
-                                className="w-full px-4 py-3 bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#3C3833 capitalize"
+                                className="w-full px-4 py-3 bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#3C3833] capitalize"
                             >
                                 <option value="top">Top</option>
                                 <option value="bottoms">Bottoms</option>
@@ -216,11 +216,11 @@ export default function AddProductModal({
                 </div>
 
                 {/* Footer Controls */}
-                <div className="p-4 bg-white border-t border-[#EAE5DF] flex justify-end gap-3">
+                <div className="p-4 bg-white border-t border-[#EAE5DF] flex flex-col-reverse sm:flex-row justify-end gap-3">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-5 py-2.5 text-sm font-medium text-[#5C564D] bg-white border border-[#EAE5DF] rounded-xl hover:bg-[#F5F2EE] transition-colors"
+                        className="w-full sm:w-auto px-5 py-2.5 text-sm font-medium text-[#5C564D] bg-white border border-[#EAE5DF] rounded-xl hover:bg-[#F5F2EE] transition-colors"
                     >
                         Cancel
                     </button>
@@ -228,7 +228,7 @@ export default function AddProductModal({
                         form="add-product-form"
                         type="submit"
                         disabled={loading || !name.trim()}
-                        className="px-6 py-2.5 text-sm font-medium text-white bg-[#3C3833] hover:bg-black rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm active:scale-95"
+                        className="w-full sm:w-auto px-6 py-2.5 text-sm font-medium text-white bg-[#3C3833] hover:bg-black rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm active:scale-95"
                     >
                         {loading ? "Adding..." : "Add to Catalog"}
                     </button>
