@@ -119,7 +119,7 @@ export default function EditProductModal({
 
     return (
         <div className="fixed inset-0 z-[100] flex flex-col justify-end sm:justify-center items-center bg-black/40 backdrop-blur-sm pb-0 sm:p-4">
-            <div className="w-full max-w-lg bg-[#FAF8F5] sm:rounded-2xl rounded-t-2xl shadow-2xl flex flex-col max-h-[90dvh] sm:max-h-[85vh] mt-auto sm:mt-0 overflow-hidden relative">
+            <div className="w-full max-w-lg bg-[#FAF8F5] sm:rounded-2xl rounded-t-2xl shadow-2xl flex flex-col max-h-[90dvh] sm:max-h-[85vh] mt-auto sm:mt-0 relative">
 
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 bg-white border-b border-[#EAE5DF]">
