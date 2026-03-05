@@ -674,7 +674,7 @@ export default function CalendarClientWrapper({
         </div>
       </div>
       <main className="max-w-md px-4 py-8 mx-auto sm:max-w-2xl">
-        {tripShowWeather && weatherData && !weatherData.error && (
+        {activeTab === "itinerary" && tripShowWeather && weatherData && !weatherData.error && (
           <div className="mb-10 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col sm:flex-row items-center justify-between p-4 sm:p-5 bg-gradient-to-r from-white to-[#FCFAF8]">
             <div className="flex items-center gap-4">
               <span className="text-3xl">{weatherData.icon}</span>

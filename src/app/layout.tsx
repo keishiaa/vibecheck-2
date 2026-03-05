@@ -15,6 +15,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "VibeCheck | Aesthetic Trip Outfit Planner",
   description: "Collaborative event-driven dynamic outfit planner for your next trip.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "VibeCheck",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export const viewport: Viewport = {
@@ -22,6 +30,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
