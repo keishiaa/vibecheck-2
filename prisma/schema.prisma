@@ -18,6 +18,7 @@ model User {
   trips       Trip[]
   memberTrips TripMember[]
   outfits     Outfit[]
+  products    Product[]
 }
 
 model Trip {
@@ -83,8 +84,10 @@ model Product {
   imageUrl String?
   name     String
   category String // dress, top, bottoms, shoes, accessories
+  userId   String?
   tags     String[]
   notes    String?
   outfit   Outfit?  @relation(fields: [outfitId], references: [id], onDelete: SetNull)
   trip     Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  user     User?    @relation(fields: [userId], references: [id])
 }

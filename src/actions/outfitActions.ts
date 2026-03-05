@@ -189,7 +189,8 @@ export async function copyOutfitToWardrobe(outfitId: string, tripId: string) {
                     category: p.category,
                     imageUrl: p.imageUrl,
                     tags: p.tags,
-                    notes: p.notes
+                    notes: p.notes,
+                    userId: existing.userId
                 }))
             }
         }
@@ -209,6 +210,7 @@ export async function addProductToTrip(tripId: string, data: { imageUrl?: string
             imageUrl: data.imageUrl || null,
             name: data.name,
             category: data.category,
+            userId: user.id,
             tags: data.tags || [],
             notes: data.notes || null,
         }

@@ -69,6 +69,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
                 outfits={outfits}
                 products={products}
                 initialDayDetails={initialDayDetails}
+                currentUserId={userId}
                 userAvatar={userAvatar}
                 userEmail={userEmail}
                 tripOwner={(trip as any).owner}

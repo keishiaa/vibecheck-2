@@ -101,6 +101,7 @@ export default function CalendarClientWrapper({
   outfits,
   products = [],
   initialDayDetails = {},
+  currentUserId,
   userAvatar,
   userEmail,
   tripOwner,
@@ -117,6 +118,7 @@ export default function CalendarClientWrapper({
   outfits: any[];
   products?: any[];
   initialDayDetails?: Record<number, any>;
+  currentUserId?: string;
   userAvatar?: string | null;
   userEmail?: string | null;
   tripOwner?: any;
@@ -132,6 +134,7 @@ export default function CalendarClientWrapper({
     "itinerary" | "wardrobe" | "catalog"
   >("itinerary");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [ownerFilter, setOwnerFilter] = useState<string>("mine");
 
   // State for day details
   const [dayDetails, setDayDetails] =
@@ -936,6 +939,14 @@ export default function CalendarClientWrapper({
               <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                 <select
                   className="w-full sm:w-auto px-3 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#3C3833]"
+                  value={ownerFilter}
+                  onChange={(e) => setOwnerFilter(e.target.value)}
+                >
+                  <option value="mine">My Catalog</option>
+                  <option value="all">Everyones Products</option>
+                </select>
+                <select
+                  className="w-full sm:w-auto px-3 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#3C3833]"
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
                 >
@@ -971,6 +982,10 @@ export default function CalendarClientWrapper({
                   .filter(
                     (p) =>
                       categoryFilter === "all" || p.category === categoryFilter,
+                  )
+                  .filter(
+                    (p) =>
+                      ownerFilter === "all" || p.userId === currentUserId,
                   )
                   .map((p: any) => (
                     <div
