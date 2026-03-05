@@ -517,7 +517,7 @@ export default function CalendarClientWrapper({
                                     {/* Day Content Area */}
                                     <div className="relative pl-6 ml-6 border-l-2 border-[#EAE5DF]">
                                         {dayOutfits.length === 0 ? (
-                                            <div onClick={() => setActiveDayModal(dayNum)} className="flex items-center justify-center h-16 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group">
+                                            <div onClick={() => setActiveDayModal(dayNum)} className="flex items-center justify-center h-14 border-2 border-dashed border-[#C4BCB3] rounded-xl bg-white transition-colors hover:border-[#A69B90] hover:bg-[#FCFAF8] cursor-pointer group">
                                                 <span className="text-[#8A827A] font-medium text-sm transition-transform group-hover:scale-105">+ Add Look to Day {dayNum}</span>
                                             </div>
                                         ) : (
