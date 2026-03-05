@@ -164,7 +164,6 @@ export default function EditProductModal({
                                             <input
                                                 type="file"
                                                 accept="image/*"
-                                                capture="environment"
                                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                                 onChange={async (e) => {
                                                     const file = e.target.files?.[0];
