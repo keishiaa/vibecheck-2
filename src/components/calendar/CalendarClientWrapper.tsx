@@ -133,24 +133,30 @@ export default function CalendarClientWrapper({
                 const { latitude, longitude } = geoData.results[0];
 
                 // 2. Weather
-                const wxRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=relative_humidity_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&temperature_unit=celsius`);
+                // Convert dates to YYYY-MM-DD
+                const startStr = tripStartDate.toISOString().split('T')[0];
+                const endStr = tripEndDate.toISOString().split('T')[0];
+
+                // Open-meteo allows start_date and end_date for historical and forecast data. 
+                // We'll ask for daily max/min and weather codes over the trip duration.
+                const wxRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`);
                 const wxData = await wxRes.json();
 
-                if (!wxData || !wxData.current || !wxData.daily) {
+                if (!wxData || !wxData.daily) {
                     setWeatherData({ error: true });
                     return;
                 }
 
-                const current = wxData.current;
                 const daily = wxData.daily;
 
-                const highC = Math.round(daily.temperature_2m_max[0]);
-                const lowC = Math.round(daily.temperature_2m_min[0]);
+                // We find the overall highest High and lowest Low over the trip snippet
+                const highC = Math.round(Math.max(...daily.temperature_2m_max.filter((v: number) => v !== null && !isNaN(v))));
+                const lowC = Math.round(Math.min(...daily.temperature_2m_min.filter((v: number) => v !== null && !isNaN(v))));
                 const highF = Math.round((highC * 9 / 5) + 32);
                 const lowF = Math.round((lowC * 9 / 5) + 32);
 
-                // Decode WMO code (simplified)
-                const code = current.weather_code;
+                // Decode WMO code from the first day of the trip (simplified representation for the trip)
+                const code = daily.weather_code.length > 0 ? daily.weather_code[0] : 0;
                 let conditions = "Clear";
                 let icon = "☀️";
                 if (code >= 1 && code <= 3) { conditions = "Partly Cloudy"; icon = "🌤️"; }
@@ -167,7 +173,6 @@ export default function CalendarClientWrapper({
                     lowF,
                     conditions,
                     icon,
-                    humidity: current.relative_humidity_2m,
                 });
             } catch (err) {
                 console.error(err);
@@ -176,7 +181,7 @@ export default function CalendarClientWrapper({
         }
 
         fetchWeather();
-    }, [tripShowWeather, tripWeatherLocation]);
+    }, [tripShowWeather, tripWeatherLocation, tripStartDate, tripEndDate]);
 
     // Group outfits by day
     const outfitsByDay: Record<number, any[]> = {};
@@ -445,16 +450,12 @@ export default function CalendarClientWrapper({
                         <div className="flex items-center gap-4">
                             <span className="text-3xl">{weatherData.icon}</span>
                             <div className="flex flex-col">
-                                <h3 className="text-xs font-semibold tracking-wider text-[#3C3833] uppercase">Current Conditions in {tripWeatherLocation}</h3>
+                                <h3 className="text-xs font-semibold tracking-wider text-[#3C3833] uppercase">Trip Forecast for {tripWeatherLocation}</h3>
                                 <div className="flex items-baseline gap-2 mt-0.5">
                                     <span className="text-xl font-light tracking-tighter text-[#3C3833]">H: {weatherData.highC}°C | L: {weatherData.lowC}°C</span>
                                     <span className="text-sm font-medium text-[#8A827A]">• {weatherData.conditions}</span>
                                 </div>
                             </div>
-                        </div>
-
-                        <div className="hidden sm:flex flex-col items-end gap-1 mt-3 sm:mt-0 text-right">
-                            <span className="text-xs text-[#8A827A] font-medium tracking-wide uppercase px-2 py-1 bg-black/5 rounded-md backdrop-blur-sm">Humidity: {weatherData.humidity}%</span>
                         </div>
                     </div>
                 )}

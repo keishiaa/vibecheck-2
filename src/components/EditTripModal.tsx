@@ -10,15 +10,12 @@ export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boole
     const [name, setName] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
-    const [locationUrl, setLocationUrl] = useState("");
-    const [locationImageUrl, setLocationImageUrl] = useState("");
     const [showWeather, setShowWeather] = useState(false);
     const [weatherLocation, setWeatherLocation] = useState("");
     const [weatherSuggestions, setWeatherSuggestions] = useState<any[]>([]);
     const [isSearchingWeather, setIsSearchingWeather] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [isUploadingImage, setIsUploadingImage] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -58,16 +55,6 @@ export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boole
                 const date = new Date(trip.endDate);
                 setEndDate(date.toISOString().split('T')[0]);
             }
-            if (trip.locationUrl) {
-                setLocationUrl(trip.locationUrl);
-            } else {
-                setLocationUrl("");
-            }
-            if (trip.locationImageUrl) {
-                setLocationImageUrl(trip.locationImageUrl);
-            } else {
-                setLocationImageUrl("");
-            }
             setShowWeather(trip.showWeather || false);
             setWeatherLocation(trip.weatherLocation || "");
         }
@@ -83,8 +70,6 @@ export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boole
         formData.append("name", name);
         formData.append("startDate", startDate);
         formData.append("endDate", endDate);
-        if (locationUrl) formData.append("locationUrl", locationUrl);
-        if (locationImageUrl) formData.append("locationImageUrl", locationImageUrl);
         formData.append("showWeather", showWeather ? "true" : "false");
         if (weatherLocation) formData.append("weatherLocation", weatherLocation);
 
@@ -143,72 +128,8 @@ export default function EditTripModal({ isOpen, onClose, trip }: { isOpen: boole
                         </div>
                     </div>
 
-                    <div>
-                        <label className="block mb-1 text-sm text-[#8A827A]">Location Image (Optional)</label>
-                        <div className={`relative w-full h-32 overflow-hidden flex items-center justify-center border-2 border-dashed rounded-xl transition-colors mt-2 mb-4 ${(locationImageUrl || isUploadingImage) ? 'border-[#C4BCB3] bg-white' : 'border-[#EAE5DF] bg-[#FCFAF8] hover:border-[#A69B90]'}`}>
-                            {isUploadingImage ? (
-                                <div className="flex flex-col items-center">
-                                    <div className="w-6 h-6 border-2 border-[#D1C3B4] border-t-transparent rounded-full animate-spin mb-2"></div>
-                                    <span className="text-xs text-[#8A827A]">Uploading...</span>
-                                </div>
-                            ) : locationImageUrl ? (
-                                <>
-                                    <img src={locationImageUrl} className="w-full h-full object-cover rounded-xl" alt="Location preview" />
-                                    <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLocationImageUrl(""); }} className="absolute z-20 top-2 right-2 p-1.5 bg-black/50 text-white rounded-full hover:bg-black transition-colors">
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                </>
-                            ) : (
-                                <div className="flex flex-col items-center justify-center p-2 text-[#8A827A]">
-                                    <ImagePlus className="w-5 h-5 mb-1 opacity-60" />
-                                    <span className="text-[10px] font-medium text-center">Upload Cover Image</span>
-                                </div>
-                            )}
-
-                            {!locationImageUrl && !isUploadingImage && (
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    capture="environment"
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                    onChange={async (e) => {
-                                        const file = e.target.files?.[0];
-                                        if (!file) return;
-                                        try {
-                                            setIsUploadingImage(true);
-                                            const supabase = createClient();
-                                            const fileExt = file.name ? file.name.split('.').pop() : 'jpg';
-                                            const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-                                            const { data, error } = await supabase.storage.from('vibecheck-images').upload(fileName, file);
-
-                                            if (error) {
-                                                alert("Upload failed: " + error.message);
-                                            } else if (data) {
-                                                const { data: publicUrlData } = supabase.storage.from('vibecheck-images').getPublicUrl(data.path);
-                                                setLocationImageUrl(publicUrlData.publicUrl);
-                                            }
-                                        } catch (err: any) {
-                                            console.error("Upload failed", err);
-                                            alert("Upload failed. Please check your connection.");
-                                        } finally {
-                                            setIsUploadingImage(false);
-                                            e.target.value = "";
-                                        }
-                                    }}
-                                />
-                            )}
-                        </div>
-
-                        <label className="block mb-1 text-sm text-[#8A827A]">Location URL (Google Maps etc.) - Optional</label>
-                        <input
-                            type="url"
-                            value={locationUrl}
-                            onChange={e => setLocationUrl(e.target.value)}
-                            placeholder="https://maps.google.com/..."
-                            className="w-full px-4 py-3 text-sm bg-[#FCFAF8] border border-[#EAE5DF] rounded-lg focus:outline-none focus:border-[#A69B90] transition-colors text-[#3C3833] placeholder-[#C4BCB3]"
-                        />
-
-                        <label className="flex items-center gap-2 mt-4 text-sm font-medium text-[#3C3833] cursor-pointer">
+                    <div className="flex flex-col gap-2 mt-2">
+                        <label className="flex items-center gap-2 text-sm font-medium text-[#3C3833] cursor-pointer">
                             <input
                                 type="checkbox"
                                 checked={showWeather}

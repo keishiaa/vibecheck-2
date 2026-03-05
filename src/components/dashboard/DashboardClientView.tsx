@@ -84,20 +84,29 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
 
                 {/* Dynamic Map of the database trips */}
                 {trips.map((trip) => {
-                    const displayImage = trip.locationImageUrl ? getDisplayUrl(trip.locationImageUrl) : null;
+                    // Generate a deterministic color based on the trip's id string length + name chars
+                    const TRIP_COLORS = [
+                        "bg-[#E8DDD5]", // Warm Sand
+                        "bg-[#D5DCE8]", // Muted Blue
+                        "bg-[#E8D5D5]", // Dusty Rose
+                        "bg-[#D5E8DD]", // Sage Green
+                        "bg-[#E6E8D5]", // Soft Olive
+                        "bg-[#DDD5E8]", // Lavender Gray
+                        "bg-[#E8E2D5]", // Warm Cream
+                        "bg-[#D5E8E8]", // Pale Cyan
+                    ];
+                    let hashCode = 0;
+                    const hashStr = trip.id + trip.name;
+                    for (let i = 0; i < hashStr.length; i++) hashCode += hashStr.charCodeAt(i);
+                    const colorClass = TRIP_COLORS[hashCode % TRIP_COLORS.length];
 
                     return (
                         <div key={trip.id} className="relative group block">
-                            <Link href={`/trips/${trip.id}`} className="relative overflow-hidden h-28 border border-[#EAE5DF] rounded-xl bg-white transition-all shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col">
-                                {displayImage && (
-                                    <div className="absolute inset-0">
-                                        <img src={displayImage} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.style.display = 'none'; }} alt={trip.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                    </div>
-                                )}
-                                <div className={`absolute inset-0 p-3.5 flex flex-col justify-end ${displayImage ? 'bg-gradient-to-t from-black/80 via-black/20 to-transparent' : 'bg-gradient-to-t from-white via-white/80 to-transparent'} z-10`}>
-                                    <h3 className={`text-base font-medium tracking-wide leading-tight mb-1 ${displayImage ? 'text-white drop-shadow-md' : 'text-[#3C3833]'}`}>{trip.name}</h3>
+                            <Link href={`/trips/${trip.id}`} className={`relative overflow-hidden h-28 border border-[#EAE5DF] rounded-xl transition-all shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col ${colorClass}`}>
+                                <div className={`absolute inset-0 p-3.5 flex flex-col justify-end bg-gradient-to-t from-black/20 to-transparent z-10`}>
+                                    <h3 className={`text-base font-semibold tracking-wide leading-tight mb-1 text-[#3C3833]`}>{trip.name}</h3>
                                     <div className="flex items-center justify-between gap-2">
-                                        <p className={`text-xs ${displayImage ? 'text-white/80' : 'text-[#8A827A]'}`}>
+                                        <p className={`text-xs text-[#5C564D] opacity-90 font-medium`}>
                                             {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()}
                                         </p>
 
@@ -111,7 +120,7 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                                     </div>
                                 </div>
 
-                                {!displayImage && <div className="absolute inset-0 bg-[#A69B90] opacity-0 group-hover:opacity-5 transition-opacity"></div>}
+                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
                             </Link>
 
                             {/* Edit Button overlay */}

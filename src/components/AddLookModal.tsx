@@ -52,8 +52,6 @@ export default function AddLookModal({
     const [name, setName] = useState(existingOutfit?.name || "");
     const [description, setDescription] = useState(existingOutfit?.description || "");
     const [activity, setActivity] = useState(existingOutfit?.activity || "");
-    const [locationUrl, setLocationUrl] = useState(existingOutfit?.locationUrl || "");
-    const [locationImage, setLocationImage] = useState<string | null>(null);
     const [isPrivate, setIsPrivate] = useState(existingOutfit?.isPrivate || false);
 
     // Products State
@@ -68,39 +66,10 @@ export default function AddLookModal({
             setName(existingOutfit?.name || "");
             setDescription(existingOutfit?.description || "");
             setActivity(existingOutfit?.activity || "");
-            setLocationUrl(existingOutfit?.locationUrl || "");
-            setLocationImage(null); // Reset until fetched
             setIsPrivate(existingOutfit?.isPrivate || false);
             setProducts(existingOutfit?.products || []);
         }
     }, [isOpen, existingOutfit]);
-
-    // Auto-fetch location image
-    useEffect(() => {
-        if (!locationUrl || !isOpen) {
-            setLocationImage(null);
-            return;
-        }
-
-        const fetchImage = async () => {
-            try {
-                // Using internal scraper API to extract og:image
-                const res = await fetch(`/api/scrape?url=${encodeURIComponent(locationUrl)}`);
-                const data = await res.json();
-                if (data.imageUrl) {
-                    setLocationImage(data.imageUrl);
-                } else {
-                    setLocationImage(null);
-                }
-            } catch (e) {
-                console.error("Failed fetching location image preview", e);
-                setLocationImage(null);
-            }
-        };
-
-        const timer = setTimeout(fetchImage, 500); // Debounce
-        return () => clearTimeout(timer);
-    }, [locationUrl, isOpen]);
 
     if (!isOpen) return null;
 
@@ -162,7 +131,6 @@ export default function AddLookModal({
                 name: name || undefined,
                 description,
                 activity: activity || undefined,
-                locationUrl: locationUrl || undefined,
                 isPrivate,
                 products
             };
@@ -176,7 +144,6 @@ export default function AddLookModal({
             setName("");
             setDescription("");
             setActivity("");
-            setLocationUrl("");
             setIsPrivate(false);
             setProducts([]);
             router.refresh();
@@ -271,30 +238,6 @@ export default function AddLookModal({
                             </div>
                         )}
 
-                        {/* Hero Banner Section */}
-                        <div className="relative w-full h-48 md:h-56 rounded-2xl overflow-hidden bg-[#FCFAF8] border border-[#EAE5DF] shrink-0 group">
-                            {locationImage ? (
-                                <img src={locationImage} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Location Cover" />
-                            ) : (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center text-[#C4BCB3] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat opacity-40">
-                                    <span className="text-5xl opacity-30 grayscale mb-2">🗺️</span>
-                                </div>
-                            )}
-
-                            {/* Gradient Overlay & Title overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
-
-                            <div className="absolute bottom-0 left-0 w-full p-5 flex flex-col justify-end text-white">
-                                {activity && <span className="text-[10px] font-bold uppercase tracking-widest text-white/80 mb-1 dropshadow-md">{activity}</span>}
-                                <h2 className="text-3xl font-bold tracking-tight dropshadow-xl leading-tight">
-                                    {name || "Untitled Look"}
-                                </h2>
-                                {locationUrl && !locationImage && (
-                                    <span className="text-xs text-white/70 mt-1 flex items-center gap-1">📍 Searching for location preview...</span>
-                                )}
-                            </div>
-                        </div>
-
                         {/* Top Header Section: Metadata */}
                         <div className="bg-[#FCFAF8] p-5 rounded-2xl border border-[#EAE5DF] shadow-inner grid grid-cols-1 md:grid-cols-2 gap-5 shrink-0">
                             <div className="flex flex-col gap-4 border-r-0 md:border-r border-[#EAE5DF] md:pr-5">
@@ -329,16 +272,6 @@ export default function AddLookModal({
                                         value={activity}
                                         onChange={e => setActivity(e.target.value)}
                                         placeholder="Dinner, Beach, Museum..."
-                                        className="w-full px-4 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] placeholder-[#C4BCB3] shadow-sm"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="flex items-center gap-1.5 mb-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90]"><span className="text-sm">📍</span> Location Link</label>
-                                    <input
-                                        type="url"
-                                        value={locationUrl}
-                                        onChange={e => setLocationUrl(e.target.value)}
-                                        placeholder="Google Maps URL..."
                                         className="w-full px-4 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] placeholder-[#C4BCB3] shadow-sm"
                                     />
                                 </div>
