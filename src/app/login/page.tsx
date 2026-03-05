@@ -17,8 +17,8 @@ export default function LoginPage() {
                 {/* Logo enclosed in a pristine white physical pill to mask the JPG background */}
                 <div className="flex justify-center mb-10 relative">
                     <div className="absolute inset-0 bg-white/50 blur-xl opacity-60 rounded-full"></div>
-                    <div className="bg-white px-8 py-4 sm:py-5 rounded-[2rem] shadow-[0_10px_30px_rgba(0,0,0,0.04)] border border-[#EAE5DF]/30 relative z-10 flex justify-center items-center w-full max-w-[260px]">
-                        <Image src="/vibecheck-logo.jpg" alt="VibeCheck" width={247} height={100} priority className="object-contain w-full h-auto max-h-8 sm:max-h-9" />
+                    <div className="bg-white px-10 py-5 sm:py-6 rounded-[2.5rem] shadow-[0_10px_30px_rgba(0,0,0,0.04)] border border-[#EAE5DF]/30 relative z-10 flex justify-center items-center w-full max-w-[320px]">
+                        <Image src="/vibecheck-logo.jpg" alt="VibeCheck" width={247} height={100} priority className="object-contain w-full h-auto max-h-12 sm:max-h-14 md:max-h-16" />
                     </div>
                 </div>
 
