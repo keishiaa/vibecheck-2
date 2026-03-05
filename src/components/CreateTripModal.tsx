@@ -129,7 +129,7 @@ export default function CreateTripModal({ isOpen, onClose, existingTrip }: { isO
                         />
                     </div>
 
-                    <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-4">
                         <div>
                             <label className="block mb-1 text-sm text-[#8A827A]">Start Date</label>
                             <input
