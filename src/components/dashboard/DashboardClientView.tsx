@@ -69,11 +69,11 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
 
     return (
         <>
-            <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
+            <div className="flex items-center justify-between gap-4 mb-8">
                 <h2 className="text-3xl font-light tracking-tight text-[#59524A]">Current Trips</h2>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="w-full sm:w-auto px-5 py-2.5 text-sm font-medium transition-all active:scale-95 bg-[#D1C3B4] text-[#3C3833] rounded-full hover:bg-[#C2B2A1]"
+                    className="hidden md:block px-5 py-2.5 text-sm font-medium transition-all active:scale-95 bg-[#D1C3B4] text-[#3C3833] rounded-full hover:bg-[#C2B2A1]"
                 >
                     + Create New Trip
                 </button>
@@ -140,6 +140,13 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                     )
                 })}
             </div>
+
+            <button
+                onClick={() => setIsModalOpen(true)}
+                className="mt-8 w-full block md:hidden px-5 py-4 text-sm font-medium tracking-wide transition-all active:scale-95 bg-white border border-[#EAE5DF] text-[#3C3833] rounded-2xl hover:bg-[#FCFAF8] shadow-sm"
+            >
+                + Create New Trip
+            </button>
 
             <CreateTripModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
             <EditTripModal isOpen={!!editingTrip} onClose={() => setEditingTrip(null)} trip={editingTrip} />
