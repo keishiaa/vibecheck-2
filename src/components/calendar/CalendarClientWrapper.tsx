@@ -1006,6 +1006,13 @@ export default function CalendarClientWrapper({
         catalogProducts={products || []}
         savedOutfits={savedOutfits}
         existingOutfit={editingOutfit}
+        dayActivities={
+          activeDayModal !== null && activeDayModal > 0
+            ? (dayDetails[activeDayModal]?.activities || "").split(" ||| ").filter(Boolean)
+            : editingOutfit?.dayNumber
+              ? (dayDetails[editingOutfit.dayNumber]?.activities || "").split(" ||| ").filter(Boolean)
+              : []
+        }
       />
       <AddProductModal
         isOpen={activeCatalogModal}

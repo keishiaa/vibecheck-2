@@ -39,7 +39,8 @@ export default function AddLookModal({
     dayNumber,
     catalogProducts = [],
     savedOutfits = [],
-    existingOutfit
+    existingOutfit,
+    dayActivities = []
 }: {
     isOpen: boolean;
     onClose: () => void;
@@ -48,6 +49,7 @@ export default function AddLookModal({
     catalogProducts?: any[];
     savedOutfits?: any[];
     existingOutfit?: any;
+    dayActivities?: string[];
 }) {
     const [name, setName] = useState(existingOutfit?.name || "");
     const [description, setDescription] = useState(existingOutfit?.description || "");
@@ -282,6 +284,20 @@ export default function AddLookModal({
                             <div className="flex flex-col gap-4">
                                 <div>
                                     <label className="flex items-center gap-1.5 mb-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90]"><span className="text-sm">🎫</span> Activity / Event</label>
+                                    {dayActivities && dayActivities.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mb-2">
+                                            {dayActivities.map((act, i) => (
+                                                <button
+                                                    key={i}
+                                                    type="button"
+                                                    onClick={() => setActivity(act)}
+                                                    className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${activity === act ? "bg-[#D1C3B4] text-[#3C3833]" : "bg-[#F5F2EE] text-[#8A827A] hover:bg-[#EAE5DF]"}`}
+                                                >
+                                                    {act}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                     <input
                                         type="text"
                                         value={activity}
