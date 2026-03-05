@@ -677,13 +677,7 @@ export default function CalendarClientWrapper({
             <div className="flex items-center gap-4">
               <span className="text-3xl">{weatherData.icon}</span>
               <div className="flex flex-col">
-                <h3 className="text-[11px] font-medium text-[#8A827A] mb-0.5">
-                  {weatherData.isHistorical
-                    ? "Historical estimate for "
-                    : "Trip forecast for "}
-                  {tripWeatherLocation}
-                </h3>
-                <div className="flex items-baseline gap-2 mt-0.5">
+                <div className="flex items-baseline gap-2 mb-0.5 mt-0.5">
                   <span className="text-xl font-light tracking-tighter text-[#3C3833]">
                     H: {weatherData.highC}°C | L: {weatherData.lowC}°C
                   </span>
@@ -691,6 +685,12 @@ export default function CalendarClientWrapper({
                     • {weatherData.conditions}
                   </span>
                 </div>
+                <h3 className="text-[11px] font-medium text-[#8A827A]">
+                  {weatherData.isHistorical
+                    ? "Historical estimate for "
+                    : "Trip forecast for "}
+                  {tripWeatherLocation}
+                </h3>
               </div>
             </div>
           </div>
@@ -740,6 +740,10 @@ export default function CalendarClientWrapper({
                 day: "numeric",
               });
 
+              // Check if currently rendering today's date
+              const isToday =
+                new Date().toDateString() === currentDate.toDateString();
+
               return (
                 <div
                   key={dayNum}
@@ -762,8 +766,13 @@ export default function CalendarClientWrapper({
                       <span className="text-lg leading-none">{dayNum}</span>
                     </div>
                     <div className="flex flex-col flex-grow items-start">
-                      <h2 className="text-xl font-medium tracking-wide text-[#3C3833]">
+                      <h2 className="text-xl font-medium tracking-wide text-[#3C3833] flex items-center gap-2">
                         {formatter.format(currentDate)}
+                        {isToday && (
+                          <span className="px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase bg-gradient-to-r from-amber-200 to-yellow-400 text-yellow-900 rounded-full shadow-sm">
+                            Today
+                          </span>
+                        )}
                       </h2>
                       <div className="flex flex-wrap items-center gap-2 mt-1">
                         {(dayDetails[dayNum]?.activities || "")
