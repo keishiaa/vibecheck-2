@@ -116,7 +116,7 @@ export default function CalendarClientWrapper({
     const [dayDetails, setDayDetails] = useState<Record<number, any>>(initialDayDetails);
     const [editingDayDetails, setEditingDayDetails] = useState<number | null>(null);
 
-    const [weatherData, setWeatherData] = useState<{ tempC?: number; tempF?: number; conditions?: string; icon?: string; humidity?: number; wind?: string; error?: boolean } | null>(null);
+    const [weatherData, setWeatherData] = useState<{ highC?: number; lowC?: number; highF?: number; lowF?: number; conditions?: string; icon?: string; humidity?: number; error?: boolean } | null>(null);
 
     useEffect(() => {
         if (!tripShowWeather || !tripWeatherLocation) return;
@@ -133,17 +133,21 @@ export default function CalendarClientWrapper({
                 const { latitude, longitude } = geoData.results[0];
 
                 // 2. Weather
-                const wxRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&wind_speed_unit=mph&temperature_unit=celsius`);
+                const wxRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=relative_humidity_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&temperature_unit=celsius`);
                 const wxData = await wxRes.json();
 
-                if (!wxData || !wxData.current) {
+                if (!wxData || !wxData.current || !wxData.daily) {
                     setWeatherData({ error: true });
                     return;
                 }
 
                 const current = wxData.current;
-                const tempC = Math.round(current.temperature_2m);
-                const tempF = Math.round((tempC * 9 / 5) + 32);
+                const daily = wxData.daily;
+
+                const highC = Math.round(daily.temperature_2m_max[0]);
+                const lowC = Math.round(daily.temperature_2m_min[0]);
+                const highF = Math.round((highC * 9 / 5) + 32);
+                const lowF = Math.round((lowC * 9 / 5) + 32);
 
                 // Decode WMO code (simplified)
                 const code = current.weather_code;
@@ -157,12 +161,13 @@ export default function CalendarClientWrapper({
                 if (code >= 95) { conditions = "Thunderstorm"; icon = "⛈️"; }
 
                 setWeatherData({
-                    tempC,
-                    tempF,
+                    highC,
+                    lowC,
+                    highF,
+                    lowF,
                     conditions,
                     icon,
                     humidity: current.relative_humidity_2m,
-                    wind: `${Math.round(current.wind_speed_10m)} mph`,
                 });
             } catch (err) {
                 console.error(err);
@@ -442,21 +447,14 @@ export default function CalendarClientWrapper({
                             <div className="flex flex-col">
                                 <h3 className="text-xs font-semibold tracking-wider text-[#3C3833] uppercase">Current Conditions in {tripWeatherLocation}</h3>
                                 <div className="flex items-baseline gap-2 mt-0.5">
-                                    <span className="text-2xl font-light tracking-tighter text-[#3C3833]">{weatherData.tempC}°C</span>
-                                    <span className="text-sm font-medium text-[#8A827A]">/ {weatherData.tempF}°F • {weatherData.conditions}</span>
+                                    <span className="text-xl font-light tracking-tighter text-[#3C3833]">H: {weatherData.highC}°C | L: {weatherData.lowC}°C</span>
+                                    <span className="text-sm font-medium text-[#8A827A]">• {weatherData.conditions}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-4 sm:mt-0 flex items-center gap-6">
-                            <div className="flex flex-col items-end">
-                                <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Humidity</span>
-                                <span className="text-sm font-medium text-[#3C3833]">{weatherData.humidity}%</span>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[10px] uppercase tracking-wider text-[#A69B90] font-semibold">Wind</span>
-                                <span className="text-sm font-medium text-[#3C3833]">{weatherData.wind}</span>
-                            </div>
+                        <div className="hidden sm:flex flex-col items-end gap-1 mt-3 sm:mt-0 text-right">
+                            <span className="text-xs text-[#8A827A] font-medium tracking-wide uppercase px-2 py-1 bg-black/5 rounded-md backdrop-blur-sm">Humidity: {weatherData.humidity}%</span>
                         </div>
                     </div>
                 )}
