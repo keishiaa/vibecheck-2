@@ -12,7 +12,7 @@ import {
 import { updateDayDetails } from "@/actions/tripActions";
 import CreateTripModal from "@/components/CreateTripModal";
 import Link from "next/link";
-import { UserPlus } from "lucide-react";
+import { UserPlus, CalendarDays, Shirt, ShoppingBag } from "lucide-react";
 
 function getDisplayUrl(url: string | null | undefined): string {
   if (!url) return "";
@@ -698,8 +698,8 @@ export default function CalendarClientWrapper({
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="flex border-b border-[#EAE5DF] mb-8 sticky top-[73px] sm:top-[89px] bg-white/70 backdrop-blur-xl z-20 -mx-4 px-4 sm:-mx-0 sm:px-0">
+        {/* Tabs - Hidden on Mobile */}
+        <div className="hidden sm:flex border-b border-[#EAE5DF] mb-8 sticky top-[73px] sm:top-[89px] bg-white/70 backdrop-blur-xl z-20 -mx-4 px-4 sm:-mx-0 sm:px-0">
           <button
             className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === "itinerary" ? "border-[#3C3833] text-[#3C3833]" : "border-transparent text-[#8A827A] hover:text-[#3C3833]"}`}
             onClick={() => setActiveTab("itinerary")}
@@ -726,7 +726,20 @@ export default function CalendarClientWrapper({
         </div>
 
         {activeTab === "itinerary" && (
-          <div className="flex flex-col gap-16">
+          <div className="flex flex-col gap-16 relative">
+            {/* Horizontal Day Snapping (Mobile & Desktop) */}
+            <div className="sticky top-[73px] sm:top-[140px] z-20 -mx-4 px-4 sm:mx-0 sm:px-0 pb-4 pt-2 mb-2 bg-gradient-to-b from-[#FDFBF7] to-transparent overflow-x-auto flex gap-3 hide-scrollbar snap-x">
+              {days.map((d) => (
+                <a
+                  key={d}
+                  href={`#day-${d}`}
+                  className="px-5 py-2.5 rounded-full whitespace-nowrap bg-white border border-[#EAE5DF] shadow-sm text-sm font-medium text-[#5C564D] snap-start hover:bg-[#F5F2EE] transition-colors active:scale-95"
+                >
+                  Day {d}
+                </a>
+              ))}
+            </div>
+
             {days.map((dayNum) => {
               const dayOutfits = outfitsByDay[dayNum] || [];
 
@@ -743,6 +756,7 @@ export default function CalendarClientWrapper({
               return (
                 <div
                   key={dayNum}
+                  id={`day-${dayNum}`}
                   className="flex flex-col gap-4 animate-in slide-in-from-bottom-8 fade-in duration-700"
                   style={{
                     animationDelay: `${dayNum * 50}ms`,
@@ -1054,6 +1068,36 @@ export default function CalendarClientWrapper({
           locationImageUrl: tripLocationImageUrl,
         }}
       />
+
+      {/* Mobile Bottom Tab Bar */}
+      <nav className="sm:hidden fixed bottom-0 left-0 w-full z-40 bg-white/80 backdrop-blur-xl border-t border-[#EAE5DF]/50 pb-safe pb-6 pt-3 px-6 flex justify-between items-center shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
+        <button
+          onClick={() => setActiveTab("itinerary")}
+          className={`flex flex-col items-center gap-1 transition-all active:scale-95 ${activeTab === "itinerary" ? "text-[#3C3833]" : "text-[#8A827A]"}`}
+        >
+          <CalendarDays strokeWidth={activeTab === "itinerary" ? 2.5 : 1.5} size={24} />
+          <span className="text-[10px] font-medium">Events</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("wardrobe")}
+          className={`flex flex-col items-center gap-1 transition-all active:scale-95 relative ${activeTab === "wardrobe" ? "text-[#3C3833]" : "text-[#8A827A]"}`}
+        >
+          <Shirt strokeWidth={activeTab === "wardrobe" ? 2.5 : 1.5} size={24} />
+          <span className="text-[10px] font-medium">Looks</span>
+          {savedOutfits.length > 0 && (
+            <span className="absolute -top-1 -right-2 bg-[#D1C3B4] text-[#3C3833] text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white">
+              {savedOutfits.length}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab("catalog")}
+          className={`flex flex-col items-center gap-1 transition-all active:scale-95 ${activeTab === "catalog" ? "text-[#3C3833]" : "text-[#8A827A]"}`}
+        >
+          <ShoppingBag strokeWidth={activeTab === "catalog" ? 2.5 : 1.5} size={24} />
+          <span className="text-[10px] font-medium">Products</span>
+        </button>
+      </nav>
     </>
   );
 }
