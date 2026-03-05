@@ -263,10 +263,10 @@ export async function deleteTrip(tripId: string) {
     if (!trip || trip.ownerId !== userId) throw new Error("Unauthorized");
 
     // Clean up related entities manually to bypass missing Cascades
-    await prisma.outfit.deleteMany({ where: { tripId } });
-    await (prisma as any).tripMember.deleteMany({ where: { tripId } });
     await prisma.product.deleteMany({ where: { tripId } });
-    await (prisma as any).dayDetails.deleteMany({ where: { tripId } });
+    await prisma.outfit.deleteMany({ where: { tripId } });
+    await prisma.tripMember.deleteMany({ where: { tripId } });
+    await prisma.dayDetails.deleteMany({ where: { tripId } });
 
     await prisma.trip.delete({
         where: { id: tripId },
