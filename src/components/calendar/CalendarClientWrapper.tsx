@@ -116,7 +116,7 @@ export default function CalendarClientWrapper({
     const [dayDetails, setDayDetails] = useState<Record<number, any>>(initialDayDetails);
     const [editingDayDetails, setEditingDayDetails] = useState<number | null>(null);
 
-    const [weatherData, setWeatherData] = useState<{ highC?: number; lowC?: number; highF?: number; lowF?: number; conditions?: string; icon?: string; humidity?: number; error?: boolean } | null>(null);
+    const [weatherData, setWeatherData] = useState<{ highC?: number; lowC?: number; highF?: number; lowF?: number; conditions?: string; icon?: string; isHistorical?: boolean; error?: boolean } | null>(null);
 
     useEffect(() => {
         if (!tripShowWeather || !tripWeatherLocation) return;
@@ -134,15 +134,54 @@ export default function CalendarClientWrapper({
 
                 // 2. Weather
                 // Convert dates to YYYY-MM-DD
-                const startStr = tripStartDate.toISOString().split('T')[0];
-                const endStr = tripEndDate.toISOString().split('T')[0];
+                let start = new Date(tripStartDate);
+                let end = new Date(tripEndDate);
 
                 // Open-meteo allows start_date and end_date for historical and forecast data. 
-                // We'll ask for daily max/min and weather codes over the trip duration.
-                const wxRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`);
+                // Note: Trip > 14 days will be capped so API works without exceeding span limits.
+                const diffMs = end.getTime() - start.getTime();
+                if (diffMs > 14 * 24 * 60 * 60 * 1000) {
+                    end = new Date(start);
+                    end.setDate(start.getDate() + 14);
+                }
+
+                const today = new Date();
+                const minForecastDate = new Date();
+                minForecastDate.setDate(today.getDate() - 90);
+
+                const maxForecastDate = new Date();
+                maxForecastDate.setDate(today.getDate() + 14);
+
+                let isHistorical = false;
+                let apiUrl = "";
+                let startStr = "";
+                let endStr = "";
+
+                if (start >= minForecastDate && end <= maxForecastDate) {
+                    startStr = start.toISOString().split('T')[0];
+                    endStr = end.toISOString().split('T')[0];
+                    apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
+                } else {
+                    isHistorical = true;
+                    // Shift dates back year by year until they are safe for the archive API (5 day lag)
+                    const maxArchiveDate = new Date();
+                    maxArchiveDate.setDate(today.getDate() - 5);
+
+                    while (start > maxArchiveDate || end > maxArchiveDate) {
+                        start.setFullYear(start.getFullYear() - 1);
+                        end.setFullYear(end.getFullYear() - 1);
+                    }
+
+                    startStr = start.toISOString().split('T')[0];
+                    endStr = end.toISOString().split('T')[0];
+                    apiUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
+                }
+
+                const wxRes = await fetch(apiUrl);
                 const wxData = await wxRes.json();
 
-                if (!wxData || !wxData.daily) {
+                if (wxData.error || !wxData.daily) {
+                    console.error("Open-Meteo Error:", wxData.reason);
                     setWeatherData({ error: true });
                     return;
                 }
@@ -173,6 +212,7 @@ export default function CalendarClientWrapper({
                     lowF,
                     conditions,
                     icon,
+                    isHistorical,
                 });
             } catch (err) {
                 console.error(err);
@@ -450,7 +490,10 @@ export default function CalendarClientWrapper({
                         <div className="flex items-center gap-4">
                             <span className="text-3xl">{weatherData.icon}</span>
                             <div className="flex flex-col">
-                                <h3 className="text-xs font-semibold tracking-wider text-[#3C3833] uppercase">Trip Forecast for {tripWeatherLocation}</h3>
+                                <h3 className="text-xs font-semibold tracking-wider text-[#3C3833] uppercase">
+                                    {weatherData.isHistorical ? 'Historical Estimate for ' : 'Trip Forecast for '}
+                                    {tripWeatherLocation}
+                                </h3>
                                 <div className="flex items-baseline gap-2 mt-0.5">
                                     <span className="text-xl font-light tracking-tighter text-[#3C3833]">H: {weatherData.highC}°C | L: {weatherData.lowC}°C</span>
                                     <span className="text-sm font-medium text-[#8A827A]">• {weatherData.conditions}</span>
