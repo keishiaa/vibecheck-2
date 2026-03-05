@@ -624,14 +624,8 @@ export default function CalendarClientWrapper({
             </svg>
           </Link>
           <div>
-            <h1
-              onClick={() => setActiveEditTripModal(true)}
-              className="text-xl sm:text-2xl font-semibold tracking-wide text-[#3C3833] line-clamp-1 cursor-pointer hover:underline group-title flex items-center gap-2"
-            >
+            <h1 className="text-xl sm:text-2xl font-semibold tracking-wide text-[#3C3833] line-clamp-1 group-title flex items-center gap-2">
               {tripName}
-              <span className="text-[#8A827A] text-sm opacity-50 hover:opacity-100">
-                ✏️
-              </span>
             </h1>
             <div className="flex items-center gap-3 mt-1 sm:mt-2">
               <span className="text-[10px] sm:text-sm text-[#8A827A] font-medium tracking-wide">
@@ -659,9 +653,10 @@ export default function CalendarClientWrapper({
         <div className="flex gap-2 ml-4">
           <button
             onClick={() => setActiveEditTripModal(true)}
-            className="hidden sm:block px-4 py-2 text-sm font-medium transition-all active:scale-95 bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm"
+            className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-all active:scale-95 bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm flex items-center gap-1.5"
           >
-            Edit Trip
+            <span className="hidden sm:inline">Edit Trip</span>
+            <span className="sm:hidden">Edit</span>
           </button>
           <button
             onClick={handleCopyInvite}

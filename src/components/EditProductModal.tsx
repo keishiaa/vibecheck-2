@@ -132,7 +132,7 @@ export default function EditProductModal({
                 </div>
 
                 <div className="overflow-y-auto flex-grow bg-[#FAF8F5]">
-                    <form id="add-product-form" onSubmit={handleSubmit} className="p-6 flex flex-col gap-6">
+                    <form id="add-product-form" onSubmit={handleSubmit} className="p-6 pb-48 sm:pb-6 flex flex-col gap-6">
 
                         {/* Image Upload Area */}
                         <div>
