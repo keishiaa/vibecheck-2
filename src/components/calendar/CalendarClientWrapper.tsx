@@ -8,6 +8,7 @@ import { assignOutfitToDay, deleteProduct, removeProductFromOutfit } from "@/act
 import { updateDayDetails } from "@/actions/tripActions";
 import CreateTripModal from "@/components/CreateTripModal";
 import Link from "next/link";
+import { UserPlus } from "lucide-react";
 
 function getDisplayUrl(url: string | null | undefined): string {
     if (!url) return "";
@@ -373,9 +374,9 @@ export default function CalendarClientWrapper({
                             <span className="px-2 py-1 text-xs font-medium text-black bg-[#D1C3B4] rounded-md shadow">Draft</span>
                         )}
                         {outfit.user && (
-                            <span className="ml-auto flex items-center justify-center w-6 h-6 text-xs bg-white text-[#3C3833] rounded-full shadow-sm" title={outfit.user.email}>
-                                {outfit.user.email[0].toUpperCase()}
-                            </span>
+                            <div className="ml-auto flex shrink-0 -m-1">
+                                <UserBubble user={outfit.user} isOwner={outfit.user.id === tripOwner?.id} />
+                            </div>
                         )}
                     </div>
                 </div>
@@ -510,9 +511,11 @@ export default function CalendarClientWrapper({
                     </button>
                     <button
                         onClick={handleCopyInvite}
-                        className="px-4 py-2 text-sm font-medium transition-colors bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm"
+                        className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-colors bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm flex items-center gap-1.5"
                     >
-                        + Invite Friends
+                        <UserPlus size={14} className="sm:w-4 sm:h-4 text-[#8A827A]" />
+                        <span className="hidden sm:inline">Invite Friends</span>
+                        <span className="sm:hidden">Invite</span>
                     </button>
                 </div>
             </div>
