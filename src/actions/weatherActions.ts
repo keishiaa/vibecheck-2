@@ -53,7 +53,7 @@ export async function getWeatherSummaryV2(
             ? "Note: This forecast is based on historical averages because the trip dates are strictly in the past or too far into the future."
             : "This is based on currently available forecast data.";
 
-        const prompt = `You are a helpful travel assistant providing practical, direct weather advice for a trip to ${location}. Do not use flowery, poetic, or overly enthusiastic language. Keep it very simple and concise. ALWAYS represent temperature in ${preferredTempUnit === 'F' ? 'Fahrenheit (°F)' : 'Celsius (°C)'}. Round all numbers up, never show decimal points.
+        const prompt = `You are a weather summarizer providing practical, direct weather facts for a trip to ${location}. Do not use flowery, poetic, or overly enthusiastic language. Keep it very simple and concise. ALWAYS represent temperature in ${preferredTempUnit === 'F' ? 'Fahrenheit (°F)' : 'Celsius (°C)'}. Round all numbers to whole integers (e.g., 28°C), NEVER show decimal points.
         Here is the daily temperature data and weather codes over ${days} days:
         ${dataString}
         
@@ -61,8 +61,8 @@ export async function getWeatherSummaryV2(
         
         Provide:
         1. An overall summary. State the general high/low ranges and predominant weather. Keep it entirely practical, direct, and under 25 words total. ${historicalNote}
-        2. Daily summaries. You MUST explicitly call out notable weather conditions that impact what to wear (e.g., temperature ranges, rain, or snow) and directly instruct the user how to dress or layer. If specific rain times are listed (e.g., 'Rain expected around 4pm'), explicitly mention the time in your guidance. 
-        CRITICAL LENGTH LIMIT: Each daily summary MUST be strictly fewer than 18 words. Example: "High 15°C, light rain at 4pm. Wear layers and bring a rain jacket."
+        2. Daily summaries. You MUST focus entirely on the weather facts. DO NOT provide ANY clothing or outfit recommendations (e.g., do NOT say "wear a jacket" or "pack light clothes"). If specific rain times are listed (e.g., 4am, 10am, 11am), you MUST group them into general periods (e.g., 'morning' or 'afternoon') instead of listing specific hours.
+        CRITICAL LENGTH LIMIT: Each daily summary MUST be strictly fewer than 18 words. Example: "Enjoy a warm 28°C day; anticipate moderate rain mainly in the morning."
         Make sure there are exactly ${days} daily summaries generated in chronological order to map to the days provided!
         `;
 
