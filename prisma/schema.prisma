@@ -31,6 +31,8 @@ model Trip {
   locationImageUrl String?
   showWeather      Boolean      @default(false)
   weatherLocation  String?
+  weatherCachedAt  DateTime?    // Store when weather was last generated
+  weatherCacheData Json?        // Store JSON structure from Open-Meteo & Gemini
   owner            User         @relation(fields: [ownerId], references: [id])
   outfits          Outfit[]
   members          TripMember[]

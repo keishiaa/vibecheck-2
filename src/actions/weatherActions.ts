@@ -3,6 +3,7 @@
 import { generateObject } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { z } from "zod";
+import prisma from "@/lib/prisma";
 
 export async function getWeatherSummaryV2(
     location: string,
@@ -115,4 +116,152 @@ function getFrequentConditions(codes: number[]) {
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
     const top2 = sorted.slice(0, 2).map(x => x[0]);
     return top2.join(" and ");
+}
+
+export async function getOrFetchWeather(
+    tripId: string,
+    tripWeatherLocation: string,
+    tripStartDate: Date,
+    tripEndDate: Date
+) {
+    try {
+        const trip = await prisma.trip.findUnique({
+            where: { id: tripId },
+            select: { weatherCacheData: true, weatherCachedAt: true },
+        });
+
+        // Check if cache exists and is less than 12 hours old
+        if (trip?.weatherCacheData && trip?.weatherCachedAt) {
+            const now = new Date();
+            const diffHrs = (now.getTime() - new Date(trip.weatherCachedAt).getTime()) / (1000 * 60 * 60);
+            if (diffHrs < 12) {
+                return trip.weatherCacheData as any;
+            }
+        }
+
+        // Cache is stale or non-existent, do the full fetch
+        const geoRes = await fetch(
+            `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(tripWeatherLocation)}&count=1&language=en&format=json`
+        );
+        const geoData = await geoRes.json();
+        if (!geoData.results || geoData.results.length === 0) {
+            return { error: true };
+        }
+        const { latitude, longitude } = geoData.results[0];
+
+        let start = new Date(tripStartDate);
+        let end = new Date(tripEndDate);
+
+        const diffMs = end.getTime() - start.getTime();
+        if (diffMs > 14 * 24 * 60 * 60 * 1000) {
+            end = new Date(start);
+            end.setDate(start.getDate() + 14);
+        }
+
+        const today = new Date();
+        const minForecastDate = new Date();
+        minForecastDate.setDate(today.getDate() - 90);
+        const maxForecastDate = new Date();
+        maxForecastDate.setDate(today.getDate() + 14);
+
+        let isHistorical = false;
+        let apiUrl = "";
+
+        if (start >= minForecastDate && end <= maxForecastDate) {
+            const startStr = start.toISOString().split("T")[0];
+            const endStr = end.toISOString().split("T")[0];
+            apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_hours&hourly=precipitation&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
+        } else {
+            isHistorical = true;
+            const maxArchiveDate = new Date();
+            maxArchiveDate.setDate(today.getDate() - 5);
+            while (start > maxArchiveDate || end > maxArchiveDate) {
+                start.setFullYear(start.getFullYear() - 1);
+                end.setFullYear(end.getFullYear() - 1);
+            }
+            const startStr = start.toISOString().split("T")[0];
+            const endStr = end.toISOString().split("T")[0];
+            apiUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_hours&hourly=precipitation&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
+        }
+
+        const wxRes = await fetch(apiUrl);
+        const wxData = await wxRes.json();
+
+        if (wxData.error || !wxData.daily) {
+            return { error: true };
+        }
+
+        const daily = wxData.daily;
+
+        if (wxData.hourly && wxData.hourly.time) {
+            daily.rain_times = [];
+            for (let i = 0; i < daily.time.length; i++) {
+                const dayStartIdx = i * 24;
+                const dayEndIdx = dayStartIdx + 24;
+                const precipSlice = wxData.hourly.precipitation.slice(dayStartIdx, dayEndIdx);
+                let rainStrings = [];
+                for (let h = 0; h < 24; h++) {
+                    if (precipSlice[h] > 0.1) {
+                        const ampm = h >= 12 ? (h === 12 ? '12pm' : `${h - 12}pm`) : (h === 0 ? '12am' : `${h}am`);
+                        rainStrings.push(ampm);
+                    }
+                }
+                if (rainStrings.length > 0) {
+                    if (rainStrings.length > 18) daily.rain_times[i] = "Raining most of the day";
+                    else daily.rain_times[i] = "Rain expected around " + rainStrings.join(", ");
+                } else {
+                    daily.rain_times[i] = "No precipitation";
+                }
+            }
+        }
+
+        const highC = Math.round(Math.max(...daily.temperature_2m_max.filter((v: number) => v !== null && !isNaN(v))));
+        const lowC = Math.round(Math.min(...daily.temperature_2m_min.filter((v: number) => v !== null && !isNaN(v))));
+        const highF = Math.round((highC * 9) / 5 + 32);
+        const lowF = Math.round((lowC * 9) / 5 + 32);
+
+        const code = daily.weather_code.length > 0 ? daily.weather_code[0] : 0;
+        let conditions = "Clear";
+        let icon = "☀️";
+        if (code >= 1 && code <= 3) { conditions = "Partly Cloudy"; icon = "🌤️"; }
+        if (code >= 45 && code <= 48) { conditions = "Fog"; icon = "🌫️"; }
+        if (code >= 51 && code <= 67) { conditions = "Rain"; icon = "🌧️"; }
+        if (code >= 71 && code <= 77) { conditions = "Snow"; icon = "❄️"; }
+        if (code >= 80 && code <= 82) { conditions = "Rain Showers"; icon = "🌦️"; }
+        if (code >= 95) { conditions = "Thunderstorm"; icon = "⛈️"; }
+
+        const dailyIcons = daily.weather_code.map((c: number, idx: number) => {
+            const precipHours = daily.precipitation_hours ? (daily.precipitation_hours[idx] || 0) : 0;
+            if (c >= 1 && c <= 3) return "🌤️";
+            if (c >= 45 && c <= 48) return "🌫️";
+            if (c >= 51 && c <= 67) return precipHours > 0 && precipHours <= 3 ? "🌦️" : "🌧️";
+            if (c >= 71 && c <= 77) return "❄️";
+            if (c >= 80 && c <= 82) return precipHours > 0 && precipHours <= 3 ? "🌦️" : "🌧️";
+            if (c >= 95) return precipHours > 0 && precipHours <= 3 ? "🌦️" : "⛈️";
+            return "☀️";
+        });
+
+        const aiResult = await getWeatherSummaryV2(tripWeatherLocation, daily, isHistorical);
+
+        const weatherDataObj = {
+            highC, lowC, highF, lowF, conditions, icon, isHistorical,
+            aiSummary: aiResult.summary,
+            dailySummaries: aiResult.dailySummaries,
+            dailyIcons
+        };
+
+        // Cache the result in DB
+        await prisma.trip.update({
+            where: { id: tripId },
+            data: {
+                weatherCacheData: weatherDataObj,
+                weatherCachedAt: new Date(),
+            }
+        });
+
+        return weatherDataObj;
+    } catch (err) {
+        console.error("Error in getOrFetchWeather:", err);
+        return { error: true };
+    }
 }

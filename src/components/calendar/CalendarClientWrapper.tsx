@@ -14,7 +14,7 @@ import CreateTripModal from "@/components/CreateTripModal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserPlus, CalendarDays, Shirt, ShoppingBag } from "lucide-react";
-import { getWeatherSummaryV2 } from "@/actions/weatherActions";
+import { getOrFetchWeather } from "@/actions/weatherActions";
 
 function getDisplayUrl(url: string | null | undefined): string {
   if (!url) return "";
@@ -194,193 +194,29 @@ export default function CalendarClientWrapper({
 
     async function fetchWeather() {
       try {
-        // 1. Geocode
-        const geoRes = await fetch(
-          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(tripWeatherLocation as string)}&count=1&language=en&format=json`,
-        );
-        const geoData = await geoRes.json();
-        if (!geoData.results || geoData.results.length === 0) {
-          setWeatherData({ error: true });
-          return;
-        }
-        const { latitude, longitude } = geoData.results[0];
-
-        // 2. Weather
-        // Convert dates to YYYY-MM-DD
-        let start = new Date(tripStartDate);
-        let end = new Date(tripEndDate);
-
-        // Open-meteo allows start_date and end_date for historical and forecast data.
-        // Note: Trip > 14 days will be capped so API works without exceeding span limits.
-        const diffMs = end.getTime() - start.getTime();
-        if (diffMs > 14 * 24 * 60 * 60 * 1000) {
-          end = new Date(start);
-          end.setDate(start.getDate() + 14);
-        }
-
-        const today = new Date();
-        const minForecastDate = new Date();
-        minForecastDate.setDate(today.getDate() - 90);
-
-        const maxForecastDate = new Date();
-        maxForecastDate.setDate(today.getDate() + 14);
-
-        let isHistorical = false;
-        let apiUrl = "";
-        let startStr = "";
-        let endStr = "";
-
-        if (start >= minForecastDate && end <= maxForecastDate) {
-          startStr = start.toISOString().split("T")[0];
-          endStr = end.toISOString().split("T")[0];
-          apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_hours&hourly=precipitation&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
-        } else {
-          isHistorical = true;
-          // Shift dates back year by year until they are safe for the archive API (5 day lag)
-          const maxArchiveDate = new Date();
-          maxArchiveDate.setDate(today.getDate() - 5);
-
-          while (start > maxArchiveDate || end > maxArchiveDate) {
-            start.setFullYear(start.getFullYear() - 1);
-            end.setFullYear(end.getFullYear() - 1);
-          }
-
-          startStr = start.toISOString().split("T")[0];
-          endStr = end.toISOString().split("T")[0];
-          apiUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_hours&hourly=precipitation&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
-        }
-
-        const wxRes = await fetch(apiUrl);
-        const wxData = await wxRes.json();
-
-        if (wxData.error || !wxData.daily) {
-          console.error("Open-Meteo Error:", wxData.reason);
-          setWeatherData({ error: true });
-          return;
-        }
-
-        const daily = wxData.daily;
-
-        // Parse hourly precipitation into readable times (e.g., '4pm')
-        if (wxData.hourly && wxData.hourly.time) {
-          daily.rain_times = [];
-          // The API returns exactly 24 hours per day requested
-          for (let i = 0; i < daily.time.length; i++) {
-            const dayStartIdx = i * 24;
-            const dayEndIdx = dayStartIdx + 24;
-            const precipSlice = wxData.hourly.precipitation.slice(dayStartIdx, dayEndIdx);
-
-            let rainStrings = [];
-            for (let h = 0; h < 24; h++) {
-              if (precipSlice[h] > 0.1) { // Only log if there's notable precip > 0.1mm
-                const ampm = h >= 12 ? (h === 12 ? '12pm' : `${h - 12}pm`) : (h === 0 ? '12am' : `${h}am`);
-                rainStrings.push(ampm);
-              }
-            }
-            if (rainStrings.length > 0) {
-              // Condense if it's raining all day
-              if (rainStrings.length > 18) {
-                daily.rain_times[i] = "Raining most of the day";
-              } else {
-                daily.rain_times[i] = "Rain expected around " + rainStrings.join(", ");
-              }
-            } else {
-              daily.rain_times[i] = "No precipitation";
-            }
-          }
-        }
-
-        // We find the overall highest High and lowest Low over the trip snippet
-        const highC = Math.round(
-          Math.max(
-            ...daily.temperature_2m_max.filter(
-              (v: number) => v !== null && !isNaN(v),
-            ),
-          ),
-        );
-        const lowC = Math.round(
-          Math.min(
-            ...daily.temperature_2m_min.filter(
-              (v: number) => v !== null && !isNaN(v),
-            ),
-          ),
-        );
-        const highF = Math.round((highC * 9) / 5 + 32);
-        const lowF = Math.round((lowC * 9) / 5 + 32);
-
-        // Decode WMO code from the first day of the trip (simplified representation for the trip)
-        const code = daily.weather_code.length > 0 ? daily.weather_code[0] : 0;
-        let conditions = "Clear";
-        let icon = "☀️";
-        if (code >= 1 && code <= 3) {
-          conditions = "Partly Cloudy";
-          icon = "🌤️";
-        }
-        if (code >= 45 && code <= 48) {
-          conditions = "Fog";
-          icon = "🌫️";
-        }
-        if (code >= 51 && code <= 67) {
-          conditions = "Rain";
-          icon = "🌧️";
-        }
-        if (code >= 71 && code <= 77) {
-          conditions = "Snow";
-          icon = "❄️";
-        }
-        if (code >= 80 && code <= 82) {
-          conditions = "Rain Showers";
-          icon = "🌦️";
-        }
-        if (code >= 95) {
-          conditions = "Thunderstorm";
-          icon = "⛈️";
-        }
-
-        // Generate daily icons based on each day's code and precip hours
-        const dailyIcons = daily.weather_code.map((c: number, idx: number) => {
-          const precipHours = daily.precipitation_hours ? (daily.precipitation_hours[idx] || 0) : 0;
-
-          if (c >= 1 && c <= 3) return "🌤️";
-          if (c >= 45 && c <= 48) return "🌫️";
-
-          if (c >= 51 && c <= 67) {
-            // It's raining, but if it's less than 3 hours of rain in the day, consider it brief showers
-            if (precipHours > 0 && precipHours <= 3) return "🌦️";
-            return "🌧️";
-          }
-          if (c >= 71 && c <= 77) return "❄️";
-
-          if (c >= 80 && c <= 82) {
-            if (precipHours > 0 && precipHours <= 3) return "🌦️";
-            return "🌧️";
-          }
-
-          if (c >= 95) {
-            if (precipHours > 0 && precipHours <= 3) return "🌦️";
-            return "⛈️";
-          }
-          return "☀️";
-        });
-
-        // Get AI summary
-        const aiResult = await getWeatherSummaryV2(
+        const weatherObj = await getOrFetchWeather(
+          tripId,
           tripWeatherLocation as string,
-          daily,
-          isHistorical
+          tripStartDate,
+          tripEndDate
         );
+
+        if (weatherObj.error) {
+          setWeatherData({ error: true });
+          return;
+        }
 
         setWeatherData({
-          highC,
-          lowC,
-          highF,
-          lowF,
-          conditions,
-          icon,
-          isHistorical,
-          aiSummary: aiResult.summary,
-          dailySummaries: aiResult.dailySummaries,
-          dailyIcons
+          highC: weatherObj.highC,
+          lowC: weatherObj.lowC,
+          highF: weatherObj.highF,
+          lowF: weatherObj.lowF,
+          conditions: weatherObj.conditions,
+          icon: weatherObj.icon,
+          isHistorical: weatherObj.isHistorical,
+          aiSummary: weatherObj.aiSummary,
+          dailySummaries: weatherObj.dailySummaries,
+          dailyIcons: weatherObj.dailyIcons
         });
       } catch (err) {
         console.error(err);
