@@ -35,7 +35,7 @@ export default function AuraBackground() {
                     className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vh] rounded-full"
                     style={{
                         background: "radial-gradient(circle, rgba(244,208,181,1) 0%, rgba(244,208,181,0) 70%)",
-                        animation: "aura-float-1 25s infinite ease-in-out"
+                        animation: "aura-float-1 12s infinite ease-in-out"
                     }}
                 />
 
@@ -44,7 +44,7 @@ export default function AuraBackground() {
                     className="absolute top-[30%] right-[-10%] w-[70vw] h-[70vh] rounded-full"
                     style={{
                         background: "radial-gradient(circle, rgba(209,195,180,1) 0%, rgba(209,195,180,0) 70%)",
-                        animation: "aura-float-2 30s infinite ease-in-out"
+                        animation: "aura-float-2 15s infinite ease-in-out"
                     }}
                 />
 
@@ -53,7 +53,7 @@ export default function AuraBackground() {
                     className="absolute bottom-[-20%] left-[20%] w-[80vw] h-[60vh] rounded-full"
                     style={{
                         background: "radial-gradient(circle, rgba(232,221,213,1) 0%, rgba(232,221,213,0) 70%)",
-                        animation: "aura-float-3 28s infinite ease-in-out"
+                        animation: "aura-float-3 14s infinite ease-in-out"
                     }}
                 />
 
@@ -62,7 +62,7 @@ export default function AuraBackground() {
                     className="absolute top-[10%] left-[30%] w-[50vw] h-[50vh] rounded-full"
                     style={{
                         background: "radial-gradient(circle, rgba(224,122,95,0.55) 0%, rgba(224,122,95,0) 70%)",
-                        animation: "aura-float-4 35s infinite ease-in-out"
+                        animation: "aura-float-4 18s infinite ease-in-out"
                     }}
                 />
             </div>

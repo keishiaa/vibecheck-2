@@ -10,7 +10,8 @@ export default async function Home() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const trips = user ? await getTrips() : [];
+  // Temp forced to empty array so Keishia can preview the empty state!
+  const trips: any[] = [];
   const dbUser = user ? await prisma.user.findUnique({ where: { id: user.id } }) : null;
 
   return (
