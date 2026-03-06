@@ -135,6 +135,7 @@ export default function CalendarClientWrapper({
   >("itinerary");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [ownerFilter, setOwnerFilter] = useState<string>("mine");
+  const [eventsOwnerFilter, setEventsOwnerFilter] = useState<string>("mine");
 
   // State for day details
   const [dayDetails, setDayDetails] =
@@ -718,7 +719,29 @@ export default function CalendarClientWrapper({
         </div>
 
         {activeTab === "itinerary" && (
-          <div className="relative">
+          <div className="relative animate-in fade-in duration-500">
+            {/* Header & Filter */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 mt-2 sm:mt-0">
+              <div>
+                <h3 className="text-2xl font-light tracking-tight text-[#3C3833]">
+                  Events
+                </h3>
+                <p className="text-sm text-[#8A827A]">
+                  Daily itinerary and scheduled looks.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                <select
+                  className="w-full sm:w-auto px-3 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#3C3833]"
+                  value={eventsOwnerFilter}
+                  onChange={(e) => setEventsOwnerFilter(e.target.value)}
+                >
+                  <option value="mine">Your Looks</option>
+                  <option value="all">Everyone's Looks</option>
+                </select>
+              </div>
+            </div>
+
             {/* Horizontal Day Snapping (Mobile & Desktop) */}
             <div className="sticky top-[71px] xl:top-[140px] z-20 -mx-4 px-4 xl:mx-0 xl:px-0 py-2 mb-6 bg-white/80 backdrop-blur-xl border-b border-[#EAE5DF]/50 overflow-x-auto flex gap-3 hide-scrollbar snap-x shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
               {days.map((d) => (
@@ -734,7 +757,8 @@ export default function CalendarClientWrapper({
 
             <div className="flex flex-col gap-12 sm:gap-16">
               {days.map((dayNum) => {
-                const dayOutfits = outfitsByDay[dayNum] || [];
+                const baseOutfits = outfitsByDay[dayNum] || [];
+                const dayOutfits = baseOutfits.filter((o: any) => eventsOwnerFilter === "all" || o.userId === currentUserId);
 
                 // Calculate the actual date for this slot
                 const currentDate = new Date(tripStartDate);
