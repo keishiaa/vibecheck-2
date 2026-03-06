@@ -187,6 +187,7 @@ export default function CalendarClientWrapper({
     aiSummary?: string;
     dailySummaries?: string[];
     dailyIcons?: string[];
+    unit?: string;
   } | null>(null);
 
   useEffect(() => {
@@ -217,7 +218,8 @@ export default function CalendarClientWrapper({
           isHistorical: weatherObj.isHistorical,
           aiSummary: weatherObj.aiSummary,
           dailySummaries: weatherObj.dailySummaries,
-          dailyIcons: weatherObj.dailyIcons
+          dailyIcons: weatherObj.dailyIcons,
+          unit: weatherObj.unit
         });
       } catch (err) {
         console.error(err);
@@ -650,7 +652,7 @@ export default function CalendarClientWrapper({
                   <div className="flex flex-col">
                     <div className="flex items-baseline gap-2 mb-0.5 mt-0.5">
                       <span className="text-xl font-light tracking-tighter text-[#3C3833]">
-                        H: {weatherData.highC}°C | L: {weatherData.lowC}°C
+                        H: {weatherData.unit === "F" ? weatherData.highF : weatherData.highC}°{weatherData.unit || "C"} | L: {weatherData.unit === "F" ? weatherData.lowF : weatherData.lowC}°{weatherData.unit || "C"}
                       </span>
                       <span className="text-sm font-medium text-[#8A827A]">
                         • {weatherData.conditions}

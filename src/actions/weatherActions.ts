@@ -265,7 +265,8 @@ export async function getOrFetchWeather(
             highC, lowC, highF, lowF, conditions, icon, isHistorical,
             aiSummary: aiResult.summary,
             dailySummaries: aiResult.dailySummaries,
-            dailyIcons
+            dailyIcons,
+            unit: preferredTempUnit
         };
 
         // Cache the result in DB
