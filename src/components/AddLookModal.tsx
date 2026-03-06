@@ -59,6 +59,7 @@ export default function AddLookModal({
     // Products State
     const [products, setProducts] = useState<any[]>(existingOutfit?.products || []);
     const [coverImageUrl, setCoverImageUrl] = useState<string | null>(existingOutfit?.coverImageUrl || null);
+    const [showDetails, setShowDetails] = useState(!existingOutfit);
 
     const [loading, setLoading] = useState(false);
     const [uploadingImageIdx, setUploadingImageIdx] = useState<number | null>(null);
@@ -72,6 +73,7 @@ export default function AddLookModal({
             setIsPrivate(existingOutfit?.isPrivate || false);
             setProducts(existingOutfit?.products || []);
             setCoverImageUrl(existingOutfit?.coverImageUrl || null);
+            setShowDetails(!existingOutfit);
         }
     }, [isOpen, existingOutfit]);
 
@@ -255,84 +257,97 @@ export default function AddLookModal({
                             </div>
                         )}
 
-                        {/* Top Header Section: Metadata */}
-                        <div className="bg-[#FCFAF8] p-5 rounded-2xl border border-[#EAE5DF] shadow-inner grid grid-cols-1 md:grid-cols-2 gap-5 shrink-0">
-                            <div className="flex flex-col gap-4 border-r-0 md:border-r border-[#EAE5DF] md:pr-5">
-                                <div>
-                                    <label className="block mb-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90]">Look Name</label>
-                                    <input
-                                        required
-                                        type="text"
-                                        value={name}
-                                        onChange={e => setName(e.target.value)}
-                                        placeholder="e.g. Dinner by the Sea"
-                                        className="w-full px-4 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] placeholder-[#C4BCB3] shadow-sm font-medium"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block mb-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90]">Concept / Notes</label>
-                                    <textarea
-                                        value={description}
-                                        onChange={e => setDescription(e.target.value)}
-                                        placeholder="A breezy white linen look for walking the coast..."
-                                        rows={2}
-                                        className="w-full px-4 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] placeholder-[#C4BCB3] resize-none shadow-sm"
-                                    />
-                                </div>
-                            </div>
+                        {/* Top Header Section: Metadata Toggle */}
+                        <div className="flex items-center justify-between mt-1 mb-2 bg-[#F5F2EE] px-4 py-2 rounded-xl">
+                            <h4 className="font-medium text-[#3C3833] text-sm tracking-wide">Look Details <span className="opacity-60 font-normal">({name || "Untitled"})</span></h4>
+                            <button
+                                type="button"
+                                onClick={() => setShowDetails(!showDetails)}
+                                className="text-xs font-semibold text-[#8A827A] hover:text-[#3C3833] transition-colors bg-white border border-[#EAE5DF] px-3 py-1.5 rounded-full shadow-sm"
+                            >
+                                {showDetails ? "Hide" : "Show"}
+                            </button>
+                        </div>
 
-                            <div className="flex flex-col gap-4">
-                                <div>
-                                    <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90] mb-2"><span className="text-sm">🎫</span> Tag an Event</label>
-
-                                    {dayActivities && dayActivities.length > 0 && (
-                                        <div className="mb-4">
-                                            <span className="block text-[10px] font-medium text-[#8A827A] uppercase tracking-wide mb-1.5 opacity-80">Select from Itinerary</span>
-                                            <div className="flex flex-wrap gap-2">
-                                                {dayActivities.map((act, i) => (
-                                                    <button
-                                                        key={i}
-                                                        type="button"
-                                                        onClick={() => setActivity(act)}
-                                                        className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all border ${activity === act ? "bg-[#3C3833] text-white border-[#3C3833] shadow-md scale-105" : "bg-white text-[#8A827A] border-[#EAE5DF] hover:border-[#D1C3B4] hover:bg-[#FCFAF8]"}`}
-                                                    >
-                                                        {act}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
+                        {showDetails && (
+                            <div className="bg-[#FCFAF8] p-5 rounded-2xl border border-[#EAE5DF] shadow-inner grid grid-cols-1 md:grid-cols-2 gap-5 shrink-0 animate-in slide-in-from-top-2 fade-in duration-300">
+                                <div className="flex flex-col gap-4 border-r-0 md:border-r border-[#EAE5DF] md:pr-5">
                                     <div>
-                                        {dayActivities && dayActivities.length > 0 && (
-                                            <span className="block text-[10px] font-medium text-[#8A827A] uppercase tracking-wide mb-1.5 opacity-80">Or enter custom activity</span>
-                                        )}
+                                        <label className="block mb-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90]">Look Name</label>
                                         <input
+                                            required
                                             type="text"
-                                            value={activity}
-                                            onChange={e => setActivity(e.target.value)}
-                                            placeholder="e.g. Museum Tour, Dinner"
-                                            className="w-full px-4 py-2.5 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] placeholder-[#C4BCB3] shadow-sm"
+                                            value={name}
+                                            onChange={e => setName(e.target.value)}
+                                            placeholder="e.g. Dinner by the Sea"
+                                            className="w-full px-4 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] placeholder-[#C4BCB3] shadow-sm font-medium"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block mb-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90]">Concept / Notes</label>
+                                        <textarea
+                                            value={description}
+                                            onChange={e => setDescription(e.target.value)}
+                                            placeholder="A breezy white linen look for walking the coast..."
+                                            rows={2}
+                                            className="w-full px-4 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] placeholder-[#C4BCB3] resize-none shadow-sm"
                                         />
                                     </div>
                                 </div>
-                                {products.filter(p => p.imageUrl).length > 1 && (
+
+                                <div className="flex flex-col gap-4">
                                     <div>
-                                        <label className="flex items-center gap-1.5 mb-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90]"><span className="text-sm">🖼️</span> Cover Photo</label>
-                                        <select
-                                            value={coverImageUrl || ""}
-                                            onChange={(e) => setCoverImageUrl(e.target.value || null)}
-                                            className="w-full px-4 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] shadow-sm cursor-pointer"
-                                        >
-                                            <option value="">Default (First image)</option>
-                                            {products.filter(p => p.imageUrl).map((p, idx) => (
-                                                <option key={idx} value={p.imageUrl}>{p.name || `Item ${idx + 1}`}</option>
-                                            ))}
-                                        </select>
+                                        <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90] mb-2"><span className="text-sm">🎫</span> Tag an Event</label>
+
+                                        {dayActivities && dayActivities.length > 0 && (
+                                            <div className="mb-4">
+                                                <span className="block text-[10px] font-medium text-[#8A827A] uppercase tracking-wide mb-1.5 opacity-80">Select from Itinerary</span>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {dayActivities.map((act, i) => (
+                                                        <button
+                                                            key={i}
+                                                            type="button"
+                                                            onClick={() => setActivity(act)}
+                                                            className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all border ${activity === act ? "bg-[#3C3833] text-white border-[#3C3833] shadow-md scale-105" : "bg-white text-[#8A827A] border-[#EAE5DF] hover:border-[#D1C3B4] hover:bg-[#FCFAF8]"}`}
+                                                        >
+                                                            {act}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div>
+                                            {dayActivities && dayActivities.length > 0 && (
+                                                <span className="block text-[10px] font-medium text-[#8A827A] uppercase tracking-wide mb-1.5 opacity-80">Or enter custom activity</span>
+                                            )}
+                                            <input
+                                                type="text"
+                                                value={activity}
+                                                onChange={e => setActivity(e.target.value)}
+                                                placeholder="e.g. Museum Tour, Dinner"
+                                                className="w-full px-4 py-2.5 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] placeholder-[#C4BCB3] shadow-sm"
+                                            />
+                                        </div>
                                     </div>
-                                )}
+                                    {products.filter(p => p.imageUrl).length > 1 && (
+                                        <div>
+                                            <label className="flex items-center gap-1.5 mb-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90]"><span className="text-sm">🖼️</span> Cover Photo</label>
+                                            <select
+                                                value={coverImageUrl || ""}
+                                                onChange={(e) => setCoverImageUrl(e.target.value || null)}
+                                                className="w-full px-4 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] shadow-sm cursor-pointer"
+                                            >
+                                                <option value="">Default (First image)</option>
+                                                {products.filter(p => p.imageUrl).map((p, idx) => (
+                                                    <option key={idx} value={p.imageUrl}>{p.name || `Item ${idx + 1}`}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Split Editor/Preview View */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 min-h-[400px]">
@@ -523,7 +538,7 @@ export default function AddLookModal({
                             </div>
 
                             {/* Right Column: Visual Preview */}
-                            <div className="flex flex-col bg-[#FDFBF7] rounded-2xl border border-[#EAE5DF] p-4 shadow-inner relative min-h-[300px] lg:sticky lg:top-0 lg:max-h-[calc(100vh-16rem)] overflow-y-auto">
+                            <div className="flex flex-col bg-[#FDFBF7] rounded-2xl border border-[#EAE5DF] p-4 shadow-inner relative min-h-[300px] lg:sticky lg:top-0 h-fit">
                                 <div className="absolute top-0 left-0 w-full px-4 pt-3 pb-2 bg-gradient-to-b from-[#FDFBF7] to-transparent z-10 flex justify-between items-center">
                                     <h4 className="font-semibold text-[#8A827A] text-xs uppercase tracking-widest bg-white/60 px-2 py-0.5 rounded backdrop-blur-sm shadow-sm border border-white/50">Moodboard Preview</h4>
                                 </div>
