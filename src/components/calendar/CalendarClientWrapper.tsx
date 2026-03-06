@@ -233,7 +233,7 @@ export default function CalendarClientWrapper({
         if (start >= minForecastDate && end <= maxForecastDate) {
           startStr = start.toISOString().split("T")[0];
           endStr = end.toISOString().split("T")[0];
-          apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_hours&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
+          apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_hours&hourly=precipitation&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
         } else {
           isHistorical = true;
           // Shift dates back year by year until they are safe for the archive API (5 day lag)
@@ -247,7 +247,7 @@ export default function CalendarClientWrapper({
 
           startStr = start.toISOString().split("T")[0];
           endStr = end.toISOString().split("T")[0];
-          apiUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_hours&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
+          apiUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_hours&hourly=precipitation&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
         }
 
         const wxRes = await fetch(apiUrl);
@@ -260,6 +260,35 @@ export default function CalendarClientWrapper({
         }
 
         const daily = wxData.daily;
+
+        // Parse hourly precipitation into readable times (e.g., '4pm')
+        if (wxData.hourly && wxData.hourly.time) {
+          daily.rain_times = [];
+          // The API returns exactly 24 hours per day requested
+          for (let i = 0; i < daily.time.length; i++) {
+            const dayStartIdx = i * 24;
+            const dayEndIdx = dayStartIdx + 24;
+            const precipSlice = wxData.hourly.precipitation.slice(dayStartIdx, dayEndIdx);
+
+            let rainStrings = [];
+            for (let h = 0; h < 24; h++) {
+              if (precipSlice[h] > 0.1) { // Only log if there's notable precip > 0.1mm
+                const ampm = h >= 12 ? (h === 12 ? '12pm' : `${h - 12}pm`) : (h === 0 ? '12am' : `${h}am`);
+                rainStrings.push(ampm);
+              }
+            }
+            if (rainStrings.length > 0) {
+              // Condense if it's raining all day
+              if (rainStrings.length > 18) {
+                daily.rain_times[i] = "Raining most of the day";
+              } else {
+                daily.rain_times[i] = "Rain expected around " + rainStrings.join(", ");
+              }
+            } else {
+              daily.rain_times[i] = "No precipitation";
+            }
+          }
+        }
 
         // We find the overall highest High and lowest Low over the trip snippet
         const highC = Math.round(

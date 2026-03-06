@@ -34,7 +34,8 @@ export async function getWeatherSummaryV2(
         for (let i = 0; i < days; i++) {
             const pHours = precipHours ? precipHours[i] : null;
             const pHoursStr = pHours !== null ? `${pHours} hrs of rain` : "unknown";
-            dataString += `Day ${i + 1}: High ${maxTemps[i]}°C, Low ${minTemps[i]}°C, WMO Weather Code ${codes[i]}, Precip: ${pHoursStr}\n`;
+            const rainTimes = dailyData.rain_times ? dailyData.rain_times[i] : "";
+            dataString += `Day ${i + 1}: High ${maxTemps[i]}°C, Low ${minTemps[i]}°C, WMO Weather Code ${codes[i]}, Precip: ${pHoursStr} ${rainTimes ? `[${rainTimes}]` : ''}\n`;
         }
 
         const historicalNote = isHistorical
@@ -49,7 +50,7 @@ export async function getWeatherSummaryV2(
         
         Provide:
         1. An overall summary (2-3 sentences) weaving in what the high/low ranges generally look like, and mentioning the predominant weather conditions. Keep it concise, friendly, and helpful for someone packing clothes. ${historicalNote}
-        2. Specifically tailored daily summaries (exactly 1 sentence per day) explicitly instructing the user what kind of attire/layers to wear based on that specific day's highs, lows, and conditions. Example: "Pretty cool day, light rain expected at 4pm, pack a light waterproof jacket."
+        2. Highly specific daily summaries (exactly 1-2 sentences per day). You MUST explicitly call out notable weather conditions that impact what to wear (e.g., temperature ranges, amount of expected rain, or snow) and directly instruct the user how to dress or layer for those specific conditions. If specific rain times are listed (e.g., 'Rain expected around 4pm'), explicitly mention the time in your guidance. Example: "Pretty cool day with a high of 15°C, light rain expected around 4pm, so bring a water-resistant jacket and dress in layers."
         Make sure there are exactly ${days} daily summaries generated in chronological order to map to the days provided!
         `;
 
