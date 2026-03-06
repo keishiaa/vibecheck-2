@@ -283,28 +283,38 @@ export default function AddLookModal({
 
                             <div className="flex flex-col gap-4">
                                 <div>
-                                    <label className="flex items-center gap-1.5 mb-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90]"><span className="text-sm">🎫</span> Activity / Event</label>
+                                    <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#A69B90] mb-2"><span className="text-sm">🎫</span> Tag an Event</label>
+
                                     {dayActivities && dayActivities.length > 0 && (
-                                        <div className="flex flex-wrap gap-2 mb-2">
-                                            {dayActivities.map((act, i) => (
-                                                <button
-                                                    key={i}
-                                                    type="button"
-                                                    onClick={() => setActivity(act)}
-                                                    className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${activity === act ? "bg-[#D1C3B4] text-[#3C3833]" : "bg-[#F5F2EE] text-[#8A827A] hover:bg-[#EAE5DF]"}`}
-                                                >
-                                                    {act}
-                                                </button>
-                                            ))}
+                                        <div className="mb-4">
+                                            <span className="block text-[10px] font-medium text-[#8A827A] uppercase tracking-wide mb-1.5 opacity-80">Select from Itinerary</span>
+                                            <div className="flex flex-wrap gap-2">
+                                                {dayActivities.map((act, i) => (
+                                                    <button
+                                                        key={i}
+                                                        type="button"
+                                                        onClick={() => setActivity(act)}
+                                                        className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all border ${activity === act ? "bg-[#3C3833] text-white border-[#3C3833] shadow-md scale-105" : "bg-white text-[#8A827A] border-[#EAE5DF] hover:border-[#D1C3B4] hover:bg-[#FCFAF8]"}`}
+                                                    >
+                                                        {act}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
-                                    <input
-                                        type="text"
-                                        value={activity}
-                                        onChange={e => setActivity(e.target.value)}
-                                        placeholder="Dinner, Beach, Museum..."
-                                        className="w-full px-4 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] placeholder-[#C4BCB3] shadow-sm"
-                                    />
+
+                                    <div>
+                                        {dayActivities && dayActivities.length > 0 && (
+                                            <span className="block text-[10px] font-medium text-[#8A827A] uppercase tracking-wide mb-1.5 opacity-80">Or enter custom activity</span>
+                                        )}
+                                        <input
+                                            type="text"
+                                            value={activity}
+                                            onChange={e => setActivity(e.target.value)}
+                                            placeholder="e.g. Museum Tour, Dinner"
+                                            className="w-full px-4 py-2.5 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] transition-all text-[#3C3833] placeholder-[#C4BCB3] shadow-sm"
+                                        />
+                                    </div>
                                 </div>
                                 {products.filter(p => p.imageUrl).length > 1 && (
                                     <div>
