@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "@/utils/cropImage";
-import { uploadToCloudinary } from "@/utils/cloudinary";
+import { uploadToSupabase } from "@/utils/supabaseStorage";
 
 export default function ImageCropperModal({
     imageSrc,
@@ -30,7 +30,7 @@ export default function ImageCropperModal({
             const croppedBase64 = await getCroppedImg(imageSrc, croppedAreaPixels, 0);
             if (!croppedBase64) throw new Error("Failed to crop image (null context)");
 
-            const url = await uploadToCloudinary(croppedBase64);
+            const url = await uploadToSupabase(croppedBase64);
             onUploadComplete(url);
         } catch (e: any) {
             console.error("Cropping/upload failed", e);

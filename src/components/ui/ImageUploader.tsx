@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import ImageCropperModal from "./ImageCropperModal";
-import { uploadToCloudinary } from "@/utils/cloudinary";
+
 
 export default function ImageUploader({
     onUploadSuccess,
