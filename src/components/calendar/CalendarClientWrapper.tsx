@@ -13,6 +13,7 @@ import { updateDayDetails } from "@/actions/tripActions";
 import CreateTripModal from "@/components/CreateTripModal";
 import Link from "next/link";
 import { UserPlus, CalendarDays, Shirt, ShoppingBag } from "lucide-react";
+import { getWeatherSummary } from "@/actions/weatherActions";
 
 function getDisplayUrl(url: string | null | undefined): string {
   if (!url) return "";
@@ -153,6 +154,8 @@ export default function CalendarClientWrapper({
     icon?: string;
     isHistorical?: boolean;
     error?: boolean;
+    aiSummary?: string;
+    dailyIcons?: string[];
   } | null>(null);
 
   useEffect(() => {
@@ -274,6 +277,24 @@ export default function CalendarClientWrapper({
           icon = "⛈️";
         }
 
+        // Generate daily icons based on each day's code
+        const dailyIcons = daily.weather_code.map((c: number) => {
+          if (c >= 1 && c <= 3) return "🌤️";
+          if (c >= 45 && c <= 48) return "🌫️";
+          if (c >= 51 && c <= 67) return "🌧️";
+          if (c >= 71 && c <= 77) return "❄️";
+          if (c >= 80 && c <= 82) return "🌦️";
+          if (c >= 95) return "⛈️";
+          return "☀️";
+        });
+
+        // Get AI summary
+        const aiSummary = await getWeatherSummary(
+          tripWeatherLocation as string,
+          daily,
+          isHistorical
+        );
+
         setWeatherData({
           highC,
           lowC,
@@ -282,6 +303,8 @@ export default function CalendarClientWrapper({
           conditions,
           icon,
           isHistorical,
+          aiSummary,
+          dailyIcons
         });
       } catch (err) {
         console.error(err);
@@ -679,7 +702,7 @@ export default function CalendarClientWrapper({
       </div>
       <main className="max-w-md px-4 py-8 mx-auto sm:max-w-2xl">
         {activeTab === "itinerary" && tripShowWeather && weatherData && !weatherData.error && (
-          <div className="mb-6 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col sm:flex-row items-center justify-between p-4 sm:p-5 bg-gradient-to-r from-white to-[#FCFAF8]">
+          <div className="mb-6 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col p-4 sm:p-5 bg-gradient-to-r from-white to-[#FCFAF8]">
             <div className="flex items-center gap-4">
               <span className="text-3xl">{weatherData.icon}</span>
               <div className="flex flex-col">
@@ -699,6 +722,14 @@ export default function CalendarClientWrapper({
                 </h3>
               </div>
             </div>
+
+            {weatherData.aiSummary && (
+              <div className="mt-4 pt-4 border-t border-[#EAE5DF]/60">
+                <p className="text-sm text-[#5C564D] leading-relaxed max-w-3xl">
+                  {weatherData.aiSummary}
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -798,6 +829,11 @@ export default function CalendarClientWrapper({
                       <div className="flex flex-col flex-grow items-start">
                         <h2 className="text-xl font-medium tracking-wide text-[#3C3833] flex items-center gap-2">
                           {formatter.format(currentDate)}
+                          {tripShowWeather && weatherData?.dailyIcons?.[dayNum - 1] && (
+                            <span className="text-lg" title="Daily Forecast">
+                              {weatherData.dailyIcons[dayNum - 1]}
+                            </span>
+                          )}
                           {isToday && (
                             <span className="px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase bg-gradient-to-r from-amber-200 to-yellow-400 text-yellow-900 rounded-full shadow-sm">
                               Today

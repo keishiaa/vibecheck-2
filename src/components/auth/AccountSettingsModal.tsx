@@ -102,7 +102,29 @@ export default function AccountSettingsModal({ isOpen, onClose, user }: { isOpen
                                     )}
                                     <CldUploadWidget
                                         uploadPreset="vibecheck"
-                                        options={{ multiple: false, cropping: true, clientAllowedFormats: ["image"] }}
+                                        options={{
+                                            multiple: false,
+                                            cropping: true,
+                                            clientAllowedFormats: ["image"],
+                                            sources: ["local", "url", "camera"],
+                                            styles: {
+                                                palette: {
+                                                    window: "#FFFFFF",
+                                                    windowBorder: "#EAE5DF",
+                                                    tabIcon: "#3C3833",
+                                                    menuIcons: "#8A827A",
+                                                    textDark: "#3C3833",
+                                                    textLight: "#FFFFFF",
+                                                    link: "#3C3833",
+                                                    action: "#3C3833",
+                                                    inactiveTabIcon: "#8A827A",
+                                                    error: "#EF4444",
+                                                    inProgress: "#D1C3B4",
+                                                    complete: "#22C55E",
+                                                    sourceBg: "#F5F2EE"
+                                                }
+                                            }
+                                        }}
                                         onSuccess={(result) => {
                                             const info = result.info as any;
                                             if (info && typeof info !== 'string' && info.secure_url) {
