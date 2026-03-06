@@ -131,7 +131,7 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
 
                     return (
                         <div key={trip.id} className="relative group block">
-                            <Link href={`/trips/${trip.id}`} className={`relative overflow-hidden h-40 border border-[#EAE5DF] rounded-2xl transition-all active:scale-[0.98] shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col ${colorClass} bg-opacity-90 backdrop-blur-sm`}>
+                            <Link href={`/trips/${trip.id}`} className={`relative overflow-hidden h-32 sm:h-40 border border-[#EAE5DF] rounded-2xl transition-all active:scale-[0.98] shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col ${colorClass} bg-opacity-90 backdrop-blur-sm`}>
 
                                 {/* Soft Glassmorphic Bottom Gradient */}
                                 <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/10 to-transparent pointer-events-none z-0" />
@@ -154,8 +154,8 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                                 </div>
 
                                 {/* Center: Large Trip Title */}
-                                <div className="absolute inset-0 flex items-center justify-center p-6 z-10 pointer-events-none">
-                                    <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#3C3833] text-center drop-shadow-[0_2px_10px_rgba(255,255,255,0.4)] line-clamp-2 leading-tight px-4">{trip.name}</h3>
+                                <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6 z-10 pointer-events-none">
+                                    <h3 className="text-xl sm:text-2xl xl:text-3xl font-bold tracking-tight text-[#3C3833] text-center drop-shadow-[0_2px_10px_rgba(255,255,255,0.4)] line-clamp-2 leading-tight px-4">{trip.name}</h3>
                                 </div>
 
                                 {/* Bottom Right: Scaled User Bubbles */}

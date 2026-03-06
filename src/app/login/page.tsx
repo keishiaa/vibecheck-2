@@ -2,14 +2,14 @@
 
 import { login, signup, signInWithGoogle } from './actions'
 import Image from 'next/image'
-import VantaBackground from '@/components/vanta/VantaBackground'
+import AuraBackground from '@/components/backgrounds/AuraBackground'
 
 export default function LoginPage() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-[#FDFBF7] text-[#3C3833] selection:bg-[#3C3833] selection:text-[#FDFBF7] p-6 relative overflow-hidden">
 
-            {/* Elegant Atmospheric Vanta Background */}
-            <VantaBackground />
+            {/* Elegant Atmospheric Aura Background */}
+            <AuraBackground />
 
             <div className="w-full max-w-[400px] z-10 animate-in slide-in-from-bottom-8 fade-in duration-1000">
 
