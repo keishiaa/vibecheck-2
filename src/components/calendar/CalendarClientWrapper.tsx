@@ -637,7 +637,7 @@ export default function CalendarClientWrapper({
                   <div className="h-3 bg-[#F5F2EE] rounded-md w-full mb-2"></div>
                   <div className="h-3 bg-[#F5F2EE] rounded-md w-5/6 mb-2"></div>
                   <div className="h-3 bg-[#F5F2EE] rounded-md w-4/6"></div>
-                  <div className="flex items-center gap-1 mt-4 text-[10px] text-[#C4BCB3] font-medium tracking-wide uppercase">
+                  <div className="flex items-center justify-end gap-1 mt-4 text-[10px] text-[#C4BCB3] font-medium tracking-wide">
                     <Sparkles className="w-3 h-3" />
                     <span>Connecting to Gemini...</span>
                   </div>
@@ -670,7 +670,7 @@ export default function CalendarClientWrapper({
                     <p className="text-sm text-[#5C564D] leading-relaxed max-w-3xl">
                       {weatherData.aiSummary}
                     </p>
-                    <div className="flex items-center gap-1 mt-2.5 text-[10px] text-[#A69B90] font-medium tracking-wide uppercase">
+                    <div className="flex items-center justify-end gap-1 mt-2.5 text-[10px] text-[#A69B90] font-medium tracking-wide">
                       <Sparkles className="w-3 h-3" />
                       <span>Summarized by Gemini</span>
                     </div>
