@@ -367,6 +367,8 @@ export default function CalendarClientWrapper({
   };
 
   const handleDeleteDayActivity = (dayNum: number, idx: number) => {
+    if (!window.confirm("Remove this plan?")) return;
+
     const existingStr = dayDetails[dayNum]?.activities || "";
     const list = existingStr.split(" ||| ").filter(Boolean);
     list.splice(idx, 1);
