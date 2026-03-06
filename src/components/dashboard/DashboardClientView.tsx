@@ -140,19 +140,26 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                                     </span>
                                 </div>
 
-                                <div className="absolute inset-0 p-3.5 flex flex-col justify-end bg-gradient-to-t from-black/25 via-transparent to-transparent z-10">
-                                    <h3 className={`text-base font-semibold tracking-wide leading-tight text-[#3C3833] mb-1`}>{trip.name}</h3>
-                                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center justify-between sm:gap-2 w-full">
-                                        <p className={`text-[10px] sm:text-xs text-[#5C564D] opacity-90 font-medium whitespace-nowrap`}>
-                                            {new Date(trip.startDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} - {new Date(trip.endDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} <span className="opacity-50 mx-1">•</span> {tripDurationDays} {tripDurationDays === 1 ? 'Day' : 'Days'}
+                                <div className="absolute inset-0 p-4 flex flex-col justify-end bg-gradient-to-t from-black/20 via-transparent to-transparent z-10">
+                                    <h3 className={`text-lg font-semibold tracking-tight text-[#3C3833] mb-1`}>{trip.name}</h3>
+                                    <div className="flex items-center justify-between w-full">
+                                        <p className={`text-[10px] sm:text-[11px] text-[#5C564D] opacity-75 font-medium tracking-wide whitespace-nowrap`}>
+                                            {new Date(trip.startDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} - {new Date(trip.endDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })}
+                                            <span className="opacity-40 mx-1.5">•</span>
+                                            {tripDurationDays} {tripDurationDays === 1 ? 'Day' : 'Days'}
                                         </p>
 
-                                        {/* Floating Participant Bubbles */}
-                                        <div className="flex -space-x-1.5 z-20 self-end sm:self-auto">
+                                        {/* Floating Participant Bubbles with Scale Fallback */}
+                                        <div className="flex -space-x-1.5 z-20 shrink-0 ml-3">
                                             <UserBubble user={trip.owner} isOwner={true} />
-                                            {trip.members && trip.members.map((member: any) => (
+                                            {trip.members && trip.members.slice(0, 3).map((member: any) => (
                                                 <UserBubble key={member.id} user={member.user} isOwner={false} />
                                             ))}
+                                            {trip.members && trip.members.length > 3 && (
+                                                <div className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[9px] font-bold bg-[#FCFAF8] text-[#8A827A] shadow-sm shrink-0 relative z-10">
+                                                    +{trip.members.length - 3}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
