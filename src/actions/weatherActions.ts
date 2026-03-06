@@ -3,7 +3,7 @@
 import { generateText } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
-export async function getWeatherSummary(
+export async function getWeatherSummaryV2(
     location: string,
     dailyData: any,
     isHistorical: boolean

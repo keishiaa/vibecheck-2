@@ -14,7 +14,7 @@ import CreateTripModal from "@/components/CreateTripModal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserPlus, CalendarDays, Shirt, ShoppingBag } from "lucide-react";
-import { getWeatherSummary } from "@/actions/weatherActions";
+import { getWeatherSummaryV2 } from "@/actions/weatherActions";
 
 function getDisplayUrl(url: string | null | undefined): string {
   if (!url) return "";
@@ -334,7 +334,7 @@ export default function CalendarClientWrapper({
         });
 
         // Get AI summary
-        const aiSummary = await getWeatherSummary(
+        const aiSummary = await getWeatherSummaryV2(
           tripWeatherLocation as string,
           daily,
           isHistorical
