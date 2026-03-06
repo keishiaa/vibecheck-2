@@ -505,13 +505,13 @@ export default function CalendarClientWrapper({
         )}
 
         {/* Look Metadata */}
-        <div className="mt-3 px-1 flex flex-col gap-1">
-          <div className="flex justify-between items-start gap-2">
-            <h3 className="text-[15px] font-semibold text-[#3C3833] leading-tight line-clamp-1">
+        <div className="mt-3 px-1 flex flex-col gap-1 w-full">
+          <div className="flex flex-col items-start gap-1.5 w-full">
+            <h3 className="text-[15px] font-semibold text-[#3C3833] leading-tight line-clamp-1 w-full">
               {outfit.name || "Untitled Look"}
             </h3>
             {outfit.activity && (
-              <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-[#A69B90] bg-[#FCFAF8] border border-[#EAE5DF] px-2 py-0.5 rounded-full mt-0.5">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-[#A69B90] bg-[#FCFAF8] border border-[#EAE5DF] px-2 py-0.5 rounded-full line-clamp-1 max-w-full">
                 {outfit.activity}
               </span>
             )}
