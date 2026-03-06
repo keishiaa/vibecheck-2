@@ -12,6 +12,7 @@ import {
 import { updateDayDetails } from "@/actions/tripActions";
 import CreateTripModal from "@/components/CreateTripModal";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { UserPlus, CalendarDays, Shirt, ShoppingBag } from "lucide-react";
 import { getWeatherSummary } from "@/actions/weatherActions";
 
@@ -144,6 +145,35 @@ export default function CalendarClientWrapper({
   const [editingDayDetails, setEditingDayDetails] = useState<number | null>(
     null,
   );
+
+  const router = useRouter();
+
+  useEffect(() => {
+    let startX = 0;
+    let endX = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      startX = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      endX = e.changedTouches[0].clientX;
+      if (endX - startX > 100 && startX < 50) {
+        // Swiped right starting from the very left edge
+        router.replace('/');
+      }
+    };
+
+    window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [router]);
+
+  const tripDurationDays = Math.ceil((tripEndDate.getTime() - tripStartDate.getTime()) / (1000 * 3600 * 24)) + 1;
 
   const [weatherData, setWeatherData] = useState<{
     highC?: number;
@@ -670,9 +700,14 @@ export default function CalendarClientWrapper({
           </Link>
           <div className="flex flex-col flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2 w-full">
-              <h1 className="text-lg sm:text-2xl font-semibold tracking-wide text-[#3C3833] line-clamp-1">
-                {tripName}
-              </h1>
+              <div className="flex flex-col">
+                <h1 className="text-lg sm:text-2xl font-semibold tracking-wide text-[#3C3833] line-clamp-1">
+                  {tripName}
+                </h1>
+                <span className="text-[11px] sm:text-xs font-medium text-[#8A827A] tracking-wider uppercase mt-0.5">
+                  {tripDurationDays} {tripDurationDays === 1 ? 'Day' : 'Days'}
+                </span>
+              </div>
               <div className="flex gap-1.5 sm:gap-2 shrink-0">
                 <button
                   onClick={() => setActiveEditTripModal(true)}
