@@ -1,6 +1,6 @@
 export async function uploadToCloudinary(file: File | Blob): Promise<string> {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", file, "upload.jpg");
     formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "vibecheck");
 
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
@@ -12,7 +12,9 @@ export async function uploadToCloudinary(file: File | Blob): Promise<string> {
     });
 
     if (!res.ok) {
-        throw new Error("Failed to upload image.");
+        const errorText = await res.text();
+        console.error("Cloudinary upload failed:", errorText);
+        throw new Error(`Failed to upload image. Cloudinary says: ${errorText}`);
     }
 
     const data = await res.json();

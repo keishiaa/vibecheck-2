@@ -32,9 +32,9 @@ export default function ImageCropperModal({
 
             const url = await uploadToCloudinary(croppedBlob);
             onUploadComplete(url);
-        } catch (e) {
+        } catch (e: any) {
             console.error("Cropping/upload failed", e);
-            alert("Failed to process image.");
+            alert("Failed to process image: " + (e.message || String(e)));
         } finally {
             setIsUploading(false);
         }
