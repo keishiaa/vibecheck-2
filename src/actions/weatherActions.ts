@@ -43,15 +43,16 @@ export async function getWeatherSummaryV2(
             ? "Note: This forecast is based on historical averages because the trip dates are strictly in the past or too far into the future."
             : "This is based on currently available forecast data.";
 
-        const prompt = `You are a helpful travel assistant. Please write an enthusiastic and aesthetically-minded weather summary for a trip to ${location}. 
+        const prompt = `You are a helpful travel assistant providing practical, direct weather advice for a trip to ${location}. Do not use flowery, poetic, or overly enthusiastic language. Keep it very simple and concise.
         Here is the daily temperature data (in Celsius) and weather codes over ${days} days:
         ${dataString}
         
-        CRITICAL INSTRUCTION: Pay very close attention to "Precip" (precipitation hours). If the weather code indicates rain but the precipitation hours are low (e.g., 0 to 3 hours), you MUST explicitly reassure the reader that the rain is only brief/passing showers and the day is otherwise fine for outdoor activities! Do not say it will rain all day.
+        CRITICAL INSTRUCTION: Pay very close attention to "Precip" (precipitation hours). If the weather code indicates rain but the precipitation hours are low (e.g., 0 to 3 hours), clarify the rain is brief. Do not say it will rain all day.
         
         Provide:
-        1. An overall summary (2-3 sentences) weaving in what the high/low ranges generally look like, and mentioning the predominant weather conditions. Keep it concise, friendly, and helpful for someone packing clothes. ${historicalNote}
-        2. Highly specific daily summaries (exactly 1-2 sentences per day). You MUST explicitly call out notable weather conditions that impact what to wear (e.g., temperature ranges, amount of expected rain, or snow) and directly instruct the user how to dress or layer for those specific conditions. If specific rain times are listed (e.g., 'Rain expected around 4pm'), explicitly mention the time in your guidance. Example: "Pretty cool day with a high of 15°C, light rain expected around 4pm, so bring a water-resistant jacket and dress in layers."
+        1. An overall summary. State the general high/low ranges and predominant weather. Keep it entirely practical, direct, and under 25 words total. ${historicalNote}
+        2. Daily summaries. You MUST explicitly call out notable weather conditions that impact what to wear (e.g., temperature ranges, rain, or snow) and directly instruct the user how to dress or layer. If specific rain times are listed (e.g., 'Rain expected around 4pm'), explicitly mention the time in your guidance. 
+        CRITICAL LENGTH LIMIT: Each daily summary MUST be strictly fewer than 18 words. Example: "High 15°C, light rain at 4pm. Wear layers and bring a rain jacket."
         Make sure there are exactly ${days} daily summaries generated in chronological order to map to the days provided!
         `;
 
