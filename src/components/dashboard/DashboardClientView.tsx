@@ -162,12 +162,12 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                                 <div className="absolute bottom-3 right-3 z-20 pointer-events-none">
                                     <div className="flex -space-x-1.5 shrink-0 scale-90 origin-bottom-right drop-shadow-sm">
                                         <UserBubble user={trip.owner} isOwner={true} />
-                                        {trip.members && trip.members.slice(0, 3).map((member: any) => (
+                                        {trip.members && trip.members.slice(0, 8).map((member: any) => (
                                             <UserBubble key={member.id} user={member.user} isOwner={false} />
                                         ))}
-                                        {trip.members && trip.members.length > 3 && (
+                                        {trip.members && trip.members.length > 8 && (
                                             <div className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[9px] font-bold bg-[#FCFAF8] text-[#8A827A] shadow-sm shrink-0 relative z-10">
-                                                +{trip.members.length - 3}
+                                                +{trip.members.length - 8}
                                             </div>
                                         )}
                                     </div>
