@@ -447,25 +447,16 @@ export default function CalendarClientWrapper({
       >
         <div className="relative group overflow-hidden rounded-2xl bg-white aspect-[4/5] shadow-sm hover:shadow-lg transition-shadow">
           {displayImage ? (
-            <>
-              <img
-                src={displayImage}
-                onError={(e) => handleImageError(e, displayImage)}
-                alt="Main Visual"
-                className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 pointer-events-none">
-                <h3 className="text-white font-medium text-lg leading-tight dropshadow-md">
-                  {outfit.name || "Untitled Look"}
-                </h3>
-              </div>
-            </>
+            <img
+              src={displayImage}
+              onError={(e) => handleImageError(e, displayImage)}
+              alt="Main Visual"
+              className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+            />
           ) : (
-            <div className="flex flex-col items-center justify-center w-full h-full text-[#8A827A] bg-[#FCFAF8] p-6 text-center">
-              <span className="font-semibold text-[#3C3833] mt-2 text-lg">
-                {outfit.name || "Untitled Look"}
-              </span>
-              <span className="text-xs opacity-70 mt-1">
+            <div className="flex flex-col items-center justify-center w-full h-full text-[#C4BCB3] bg-[#FCFAF8] p-6 text-center">
+              <Shirt size={40} strokeWidth={1} className="mb-2" />
+              <span className="text-xs opacity-70 font-medium text-[#8A827A]">
                 {outfit.products?.length || 0} items
               </span>
             </div>
@@ -513,32 +504,35 @@ export default function CalendarClientWrapper({
           </div>
         )}
 
-        {/* Itinerary Details & Description */}
-        {(outfit.activity || outfit.locationUrl || outfit.description) && (
-          <div className="mt-3 px-1 flex flex-col gap-1.5">
+        {/* Look Metadata */}
+        <div className="mt-3 px-1 flex flex-col gap-1">
+          <div className="flex justify-between items-start gap-2">
+            <h3 className="text-[15px] font-semibold text-[#3C3833] leading-tight line-clamp-1">
+              {outfit.name || "Untitled Look"}
+            </h3>
             {outfit.activity && (
-              <h4 className="text-sm font-bold text-[#3C3833]">
+              <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-[#A69B90] bg-[#FCFAF8] border border-[#EAE5DF] px-2 py-0.5 rounded-full mt-0.5">
                 {outfit.activity}
-              </h4>
-            )}
-            {outfit.locationUrl && (
-              <a
-                href={outfit.locationUrl}
-                onClick={(e) => e.stopPropagation()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-[#8A827A] truncate hover:text-[#3C3833] hover:underline flex items-center gap-1"
-              >
-                📍 {outfit.locationUrl.replace(/^https?:\/\//, "")}
-              </a>
-            )}
-            {outfit.description && (
-              <p className="text-sm text-[#3C3833] line-clamp-2 mt-1">
-                {outfit.description}
-              </p>
+              </span>
             )}
           </div>
-        )}
+          {outfit.locationUrl && (
+            <a
+              href={outfit.locationUrl}
+              onClick={(e) => e.stopPropagation()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] text-[#8A827A] truncate hover:text-[#3C3833] hover:underline flex items-center gap-1 mt-0.5"
+            >
+              📍 {outfit.locationUrl.replace(/^https?:\/\//, "")}
+            </a>
+          )}
+          {outfit.description && (
+            <p className="text-xs text-[#5C564D] line-clamp-2 mt-1 leading-snug">
+              {outfit.description}
+            </p>
+          )}
+        </div>
 
         {/* Mini Products Row */}
         {outfit.products && outfit.products.length > 0 && (
