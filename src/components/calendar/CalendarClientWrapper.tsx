@@ -432,12 +432,16 @@ export default function CalendarClientWrapper({
       ? outfit.name.replace(/\s+/g, "-").toLowerCase()
       : outfit.id;
 
+    const canEditOutfit = outfit.userId === currentUserId || tripOwner?.id === currentUserId;
+
     return (
       <div
         key={outfit.id}
         id={`look-${lookIdentifier}`}
-        onClick={() => setEditingOutfit(outfit)}
-        className="flex flex-col animate-in fade-in duration-500 relative cursor-pointer group/card active:scale-[0.98] transition-transform"
+        onClick={() => {
+          if (canEditOutfit) setEditingOutfit(outfit);
+        }}
+        className={`flex flex-col animate-in fade-in duration-500 relative group/card transition-transform ${canEditOutfit ? "cursor-pointer active:scale-[0.98]" : ""}`}
       >
         <div className="relative group overflow-hidden rounded-2xl bg-white aspect-[4/5] shadow-sm hover:shadow-lg transition-shadow">
           {displayImage ? (
@@ -562,14 +566,16 @@ export default function CalendarClientWrapper({
                       </span>
                     </div>
                   )}
-                  <button
-                    onClick={(e) =>
-                      handleRemoveProductFromLook(e, prod.id, outfit.id)
-                    }
-                    className="absolute top-0 right-0 z-10 w-4 h-4 flex items-center justify-center bg-white/90 backdrop-blur-sm text-[#8A827A] hover:text-red-500 rounded-bl-md opacity-0 group-hover:opacity-100 transition-all text-[8px]"
-                  >
-                    ✕
-                  </button>
+                  {canEditOutfit && (
+                    <button
+                      onClick={(e) =>
+                        handleRemoveProductFromLook(e, prod.id, outfit.id)
+                      }
+                      className="absolute top-0 right-0 z-10 w-4 h-4 flex items-center justify-center bg-white/90 backdrop-blur-sm text-[#8A827A] hover:text-red-500 rounded-bl-md opacity-0 group-hover:opacity-100 transition-all text-[8px]"
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
               );
             })}
