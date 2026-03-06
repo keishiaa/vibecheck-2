@@ -970,6 +970,11 @@ export default function CalendarClientWrapper({
                             No Image
                           </div>
                         )}
+                        {p.user && (
+                          <div className="absolute bottom-2 left-2 z-10 scale-90 shadow-[0_2px_8px_rgba(0,0,0,0.1)] rounded-full border border-white/60">
+                            <UserBubble user={p.user} isOwner={p.userId === tripOwner?.id} />
+                          </div>
+                        )}
                       </div>
                       <h3 className="text-sm font-medium text-[#3C3833] line-clamp-1 w-full text-center">
                         {p.name}

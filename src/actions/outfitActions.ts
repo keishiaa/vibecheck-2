@@ -227,6 +227,7 @@ export async function getProductsForTrip(tripId: string) {
 
     return prisma.product.findMany({
         where: { tripId },
+        include: { user: true },
         orderBy: { name: 'asc' }
     });
 }
