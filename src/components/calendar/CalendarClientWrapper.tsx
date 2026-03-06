@@ -185,6 +185,7 @@ export default function CalendarClientWrapper({
     isHistorical?: boolean;
     error?: boolean;
     aiSummary?: string;
+    dailySummaries?: string[];
     dailyIcons?: string[];
   } | null>(null);
 
@@ -334,7 +335,7 @@ export default function CalendarClientWrapper({
         });
 
         // Get AI summary
-        const aiSummary = await getWeatherSummaryV2(
+        const aiResult = await getWeatherSummaryV2(
           tripWeatherLocation as string,
           daily,
           isHistorical
@@ -348,7 +349,8 @@ export default function CalendarClientWrapper({
           conditions,
           icon,
           isHistorical,
-          aiSummary,
+          aiSummary: aiResult.summary,
+          dailySummaries: aiResult.dailySummaries,
           dailyIcons
         });
       } catch (err) {
@@ -891,7 +893,12 @@ export default function CalendarClientWrapper({
                             </span>
                           )}
                         </h2>
-                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                        {tripShowWeather && weatherData?.dailySummaries?.[dayNum - 1] && (
+                          <p className="text-xs font-medium text-[#8A827A] mt-1 pr-4">
+                            ✨ {weatherData.dailySummaries[dayNum - 1]}
+                          </p>
+                        )}
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
                           {(dayDetails[dayNum]?.activities || "")
                             .split(" ||| ")
                             .filter(Boolean)

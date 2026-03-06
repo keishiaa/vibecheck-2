@@ -1,7 +1,8 @@
 "use server";
 
-import { generateText } from "ai";
+import { generateObject } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { z } from "zod";
 
 export async function getWeatherSummaryV2(
     location: string,
@@ -10,8 +11,11 @@ export async function getWeatherSummaryV2(
 ) {
     const actualKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim();
     if (!actualKey) {
-        return "⚠️ Google Generative AI API Key is missing. Please add GOOGLE_GENERATIVE_AI_API_KEY to your .env files to enable AI weather summaries. For now, expect a mix of the following conditions: " +
-            getFrequentConditions(dailyData.weather_code) + ".";
+        return {
+            summary: "⚠️ Google Generative AI API Key is missing. Please add GOOGLE_GENERATIVE_AI_API_KEY to your .env files to enable AI weather summaries. For now, expect a mix of the following conditions: " +
+                getFrequentConditions(dailyData.weather_code) + ".",
+            dailySummaries: dailyData.time.map(() => "No AI summary available.")
+        };
     }
 
     try {
@@ -37,25 +41,46 @@ export async function getWeatherSummaryV2(
             ? "Note: This forecast is based on historical averages because the trip dates are strictly in the past or too far into the future."
             : "This is based on currently available forecast data.";
 
-        const prompt = `You are a helpful travel assistant. Please write a 2-3 sentence, enthusiastic and aesthetically-minded weather summary for a trip to ${location}. 
-        Here is the daily temperature data (in Celsius) and weather codes:
+        const prompt = `You are a helpful travel assistant. Please write an enthusiastic and aesthetically-minded weather summary for a trip to ${location}. 
+        Here is the daily temperature data (in Celsius) and weather codes over ${days} days:
         ${dataString}
         
         CRITICAL INSTRUCTION: Pay very close attention to "Precip" (precipitation hours). If the weather code indicates rain but the precipitation hours are low (e.g., 0 to 3 hours), you MUST explicitly reassure the reader that the rain is only brief/passing showers and the day is otherwise fine for outdoor activities! Do not say it will rain all day.
         
-        Make sure to weave in what the high/low ranges generally look like, and mention the predominant weather conditions based on the WMO codes and precip hours. Keep it concise, friendly, and helpful for someone packing clothes.
-        ${historicalNote}
+        Provide:
+        1. An overall summary (2-3 sentences) weaving in what the high/low ranges generally look like, and mentioning the predominant weather conditions. Keep it concise, friendly, and helpful for someone packing clothes. ${historicalNote}
+        2. Specifically tailored daily summaries (exactly 1 sentence per day) explicitly instructing the user what kind of attire/layers to wear based on that specific day's highs, lows, and conditions. Example: "Pretty cool day, light rain expected at 4pm, pack a light waterproof jacket."
+        Make sure there are exactly ${days} daily summaries generated in chronological order to map to the days provided!
         `;
 
-        const { text } = await generateText({
+        const { object } = await generateObject({
             model: google("gemini-2.5-flash"),
+            schema: z.object({
+                overallSummary: z.string(),
+                dailySummaries: z.array(z.string()).describe(`Exactly ${days} strings containing short daily advice on what to wear/expect based on the specific day's data.`)
+            }),
             prompt,
         });
 
-        return text;
+        // Ensure we gracefully handle if gemini returns wrong length
+        let finalDaily = object.dailySummaries;
+        if (finalDaily.length !== days) {
+            finalDaily = Array(days).fill("No specific summary generated for this day.");
+            for (let i = 0; i < Math.min(days, object.dailySummaries.length); i++) {
+                finalDaily[i] = object.dailySummaries[i];
+            }
+        }
+
+        return {
+            summary: object.overallSummary,
+            dailySummaries: finalDaily
+        };
     } catch (e: any) {
         console.error("Error generating AI weather summary:", e);
-        return "Failed to generate AI weather summary. Please check your API keys or quota.";
+        return {
+            summary: "Failed to generate AI weather summary. Please check your API keys or quota.",
+            dailySummaries: dailyData.time.map(() => "Failed to load summary.")
+        };
     }
 }
 
