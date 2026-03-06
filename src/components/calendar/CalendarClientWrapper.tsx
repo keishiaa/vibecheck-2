@@ -620,40 +620,65 @@ export default function CalendarClientWrapper({
         </div>
       </div>
       <main className="max-w-md px-4 py-8 mx-auto sm:max-w-2xl">
-        {activeTab === "itinerary" && tripShowWeather && weatherData && !weatherData.error && (
-          <div className="mb-6 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col p-4 sm:p-5 bg-gradient-to-r from-white to-[#FCFAF8]">
-            <div className="flex items-center gap-4">
-              <span className="text-3xl">{weatherData.icon}</span>
-              <div className="flex flex-col">
-                <div className="flex items-baseline gap-2 mb-0.5 mt-0.5">
-                  <span className="text-xl font-light tracking-tighter text-[#3C3833]">
-                    H: {weatherData.highC}°C | L: {weatherData.lowC}°C
-                  </span>
-                  <span className="text-sm font-medium text-[#8A827A]">
-                    • {weatherData.conditions}
-                  </span>
+        {activeTab === "itinerary" && tripShowWeather && (
+          <>
+            {!weatherData && tripWeatherLocation ? (
+              <div className="mb-6 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm overflow-hidden flex flex-col p-4 sm:p-5 bg-gradient-to-r from-white to-[#FCFAF8] animate-pulse">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-center w-10 h-10 text-[#C4BCB3]">
+                    <Sparkles className="w-7 h-7 animate-pulse text-[#D1C3B4]" />
+                  </div>
+                  <div className="flex flex-col gap-2 w-full max-w-xs">
+                    <div className="h-5 bg-[#F5F2EE] rounded-md w-1/3"></div>
+                    <div className="h-3 bg-[#F5F2EE] rounded-md w-2/3"></div>
+                  </div>
                 </div>
-                <h3 className="text-[11px] font-medium text-[#8A827A]">
-                  {weatherData.isHistorical
-                    ? "Historical estimate for "
-                    : "Trip forecast for "}
-                  {tripWeatherLocation}
-                </h3>
+                <div className="mt-4 pt-4 border-t border-[#EAE5DF]/60">
+                  <div className="h-3 bg-[#F5F2EE] rounded-md w-full mb-2"></div>
+                  <div className="h-3 bg-[#F5F2EE] rounded-md w-5/6 mb-2"></div>
+                  <div className="h-3 bg-[#F5F2EE] rounded-md w-4/6"></div>
+                  <div className="flex items-center gap-1 mt-4 text-[10px] text-[#C4BCB3] font-medium tracking-wide uppercase">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Connecting to Gemini...</span>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            {weatherData.aiSummary && (
-              <div className="mt-4 pt-4 border-t border-[#EAE5DF]/60">
-                <p className="text-sm text-[#5C564D] leading-relaxed max-w-3xl">
-                  {weatherData.aiSummary}
-                </p>
-                <div className="flex items-center gap-1 mt-2.5 text-[10px] text-[#A69B90] font-medium tracking-wide uppercase">
-                  <Sparkles className="w-3 h-3" />
-                  <span>Summarized by Gemini</span>
+            ) : weatherData && !weatherData.error && (
+              <div className="mb-6 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col p-4 sm:p-5 bg-gradient-to-r from-white to-[#FCFAF8]">
+                <div className="flex items-center gap-4">
+                  <span className="text-3xl">{weatherData.icon}</span>
+                  <div className="flex flex-col">
+                    <div className="flex items-baseline gap-2 mb-0.5 mt-0.5">
+                      <span className="text-xl font-light tracking-tighter text-[#3C3833]">
+                        H: {weatherData.highC}°C | L: {weatherData.lowC}°C
+                      </span>
+                      <span className="text-sm font-medium text-[#8A827A]">
+                        • {weatherData.conditions}
+                      </span>
+                    </div>
+                    <h3 className="text-[11px] font-medium text-[#8A827A]">
+                      {weatherData.isHistorical
+                        ? "Historical estimate for "
+                        : "Trip forecast for "}
+                      {tripWeatherLocation}
+                    </h3>
+                  </div>
                 </div>
+
+                {weatherData.aiSummary && (
+                  <div className="mt-4 pt-4 border-t border-[#EAE5DF]/60">
+                    <p className="text-sm text-[#5C564D] leading-relaxed max-w-3xl">
+                      {weatherData.aiSummary}
+                    </p>
+                    <div className="flex items-center gap-1 mt-2.5 text-[10px] text-[#A69B90] font-medium tracking-wide uppercase">
+                      <Sparkles className="w-3 h-3" />
+                      <span>Summarized by Gemini</span>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
-          </div>
+          </>
         )}
 
         {/* Tabs - Hidden on Mobile */}

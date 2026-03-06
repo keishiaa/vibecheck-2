@@ -1,16 +1,17 @@
+'use client'
+
 import { login, signup, signInWithGoogle } from './actions'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
+
+const VantaBackground = dynamic(() => import('@/components/vanta/VantaBackground'), { ssr: false })
 
 export default function LoginPage() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-[#FDFBF7] text-[#3C3833] selection:bg-[#3C3833] selection:text-[#FDFBF7] p-6 relative overflow-hidden">
 
-            {/* Elegant Atmospheric Background */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-[radial-gradient(circle,rgba(209,195,180,0.3)_0%,transparent_70%)] animate-pulse" style={{ animationDuration: '8s' }}></div>
-                <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-[radial-gradient(circle,rgba(232,221,213,0.5)_0%,transparent_70%)] animate-pulse" style={{ animationDuration: '12s' }}></div>
-                <div className="absolute top-[20%] left-[20%] w-[60%] h-[60%] bg-[radial-gradient(circle,rgba(255,255,255,0.8)_0%,transparent_70%)]"></div>
-            </div>
+            {/* Elegant Atmospheric Vanta Background */}
+            <VantaBackground />
 
             <div className="w-full max-w-[400px] z-10 animate-in slide-in-from-bottom-8 fade-in duration-1000">
 
