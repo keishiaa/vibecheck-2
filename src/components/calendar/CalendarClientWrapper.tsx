@@ -673,7 +673,7 @@ export default function CalendarClientWrapper({
       </div>
       <main className="max-w-md px-4 py-8 mx-auto sm:max-w-2xl">
         {activeTab === "itinerary" && tripShowWeather && weatherData && !weatherData.error && (
-          <div className="mb-10 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col sm:flex-row items-center justify-between p-4 sm:p-5 bg-gradient-to-r from-white to-[#FCFAF8]">
+          <div className="mb-6 bg-white border border-[#EAE5DF] rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden flex flex-col sm:flex-row items-center justify-between p-4 sm:p-5 bg-gradient-to-r from-white to-[#FCFAF8]">
             <div className="flex items-center gap-4">
               <span className="text-3xl">{weatherData.icon}</span>
               <div className="flex flex-col">
@@ -715,7 +715,7 @@ export default function CalendarClientWrapper({
         {activeTab === "itinerary" && (
           <div className="relative">
             {/* Horizontal Day Snapping (Mobile & Desktop) */}
-            <div className="sticky top-[71px] xl:top-[140px] z-20 -mx-4 px-4 xl:mx-0 xl:px-0 py-3 mb-6 bg-white/80 backdrop-blur-xl border-b border-[#EAE5DF]/50 overflow-x-auto flex gap-3 hide-scrollbar snap-x shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
+            <div className="sticky top-[71px] xl:top-[140px] z-20 -mx-4 px-4 xl:mx-0 xl:px-0 py-2 mb-6 bg-white/80 backdrop-blur-xl border-b border-[#EAE5DF]/50 overflow-x-auto flex gap-3 hide-scrollbar snap-x shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
               {days.map((d) => (
                 <a
                   key={d}
