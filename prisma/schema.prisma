@@ -14,8 +14,9 @@ model User {
   email       String       @unique
   name        String?
   avatarUrl   String?
-  role        String       @default("Guest") // Admin/Guest
-  trips       Trip[]
+  role                   String       @default("Guest") // Admin/Guest
+  preferredTemperatureUnit String     @default("C") // C or F
+  trips                  Trip[]
   memberTrips TripMember[]
   outfits     Outfit[]
   products    Product[]

@@ -13,7 +13,7 @@ import { updateDayDetails } from "@/actions/tripActions";
 import CreateTripModal from "@/components/CreateTripModal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { UserPlus, CalendarDays, Shirt, ShoppingBag } from "lucide-react";
+import { UserPlus, CalendarDays, Shirt, ShoppingBag, Sparkles } from "lucide-react";
 import { getOrFetchWeather } from "@/actions/weatherActions";
 
 function getDisplayUrl(url: string | null | undefined): string {
@@ -198,7 +198,8 @@ export default function CalendarClientWrapper({
           tripId,
           tripWeatherLocation as string,
           tripStartDate,
-          tripEndDate
+          tripEndDate,
+          tripOwner?.id || currentUserId || ""
         );
 
         if (weatherObj.error) {
@@ -646,6 +647,10 @@ export default function CalendarClientWrapper({
                 <p className="text-sm text-[#5C564D] leading-relaxed max-w-3xl">
                   {weatherData.aiSummary}
                 </p>
+                <div className="flex items-center gap-1 mt-2.5 text-[10px] text-[#A69B90] font-medium tracking-wide uppercase">
+                  <Sparkles className="w-3 h-3" />
+                  <span>Summarized by Gemini</span>
+                </div>
               </div>
             )}
           </div>
@@ -747,11 +752,7 @@ export default function CalendarClientWrapper({
                       <div className="flex flex-col flex-grow items-start">
                         <h2 className="text-xl font-medium tracking-wide text-[#3C3833] flex items-center gap-2">
                           {formatter.format(currentDate)}
-                          {tripShowWeather && weatherData?.dailyIcons?.[dayNum - 1] && (
-                            <span className="text-lg" title="Daily Forecast">
-                              {weatherData.dailyIcons[dayNum - 1]}
-                            </span>
-                          )}
+
                           {isToday && (
                             <span className="px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase bg-gradient-to-r from-amber-200 to-yellow-400 text-yellow-900 rounded-full shadow-sm">
                               Today

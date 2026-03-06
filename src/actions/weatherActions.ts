@@ -8,7 +8,8 @@ import prisma from "@/lib/prisma";
 export async function getWeatherSummaryV2(
     location: string,
     dailyData: any,
-    isHistorical: boolean
+    isHistorical: boolean,
+    preferredTempUnit: string = "C"
 ) {
     const actualKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim();
     if (!actualKey) {
@@ -31,20 +32,29 @@ export async function getWeatherSummaryV2(
         const codes = dailyData.weather_code;
         const precipHours = dailyData.precipitation_hours;
 
+        const isFahrenheit = preferredTempUnit === "F";
+
         let dataString = `Summary of data over ${days} days for ${location}:\n`;
         for (let i = 0; i < days; i++) {
             const pHours = precipHours ? precipHours[i] : null;
             const pHoursStr = pHours !== null ? `${pHours} hrs of rain` : "unknown";
             const rainTimes = dailyData.rain_times ? dailyData.rain_times[i] : "";
-            dataString += `Day ${i + 1}: High ${maxTemps[i]}°C, Low ${minTemps[i]}°C, WMO Weather Code ${codes[i]}, Precip: ${pHoursStr} ${rainTimes ? `[${rainTimes}]` : ''}\n`;
+
+            // Format temperatures based on unit without decimals
+            const highTempRaw = isFahrenheit ? (maxTemps[i] * 9) / 5 + 32 : maxTemps[i];
+            const lowTempRaw = isFahrenheit ? (minTemps[i] * 9) / 5 + 32 : minTemps[i];
+            const highTempStr = `${Math.round(highTempRaw)}°${preferredTempUnit}`;
+            const lowTempStr = `${Math.round(lowTempRaw)}°${preferredTempUnit}`;
+
+            dataString += `Day ${i + 1}: High ${highTempStr}, Low ${lowTempStr}, WMO Weather Code ${codes[i]}, Precip: ${pHoursStr} ${rainTimes ? `[${rainTimes}]` : ''}\n`;
         }
 
         const historicalNote = isHistorical
             ? "Note: This forecast is based on historical averages because the trip dates are strictly in the past or too far into the future."
             : "This is based on currently available forecast data.";
 
-        const prompt = `You are a helpful travel assistant providing practical, direct weather advice for a trip to ${location}. Do not use flowery, poetic, or overly enthusiastic language. Keep it very simple and concise.
-        Here is the daily temperature data (in Celsius) and weather codes over ${days} days:
+        const prompt = `You are a helpful travel assistant providing practical, direct weather advice for a trip to ${location}. Do not use flowery, poetic, or overly enthusiastic language. Keep it very simple and concise. ALWAYS represent temperature in ${preferredTempUnit === 'F' ? 'Fahrenheit (°F)' : 'Celsius (°C)'}. Round all numbers up, never show decimal points.
+        Here is the daily temperature data and weather codes over ${days} days:
         ${dataString}
         
         CRITICAL INSTRUCTION: Pay very close attention to "Precip" (precipitation hours). If the weather code indicates rain but the precipitation hours are low (e.g., 0 to 3 hours), clarify the rain is brief. Do not say it will rain all day.
@@ -123,13 +133,20 @@ export async function getOrFetchWeather(
     tripId: string,
     tripWeatherLocation: string,
     tripStartDate: Date,
-    tripEndDate: Date
+    tripEndDate: Date,
+    tripOwnerId: string
 ) {
     try {
         const trip = await prisma.trip.findUnique({
             where: { id: tripId },
             select: { weatherCacheData: true, weatherCachedAt: true },
         });
+
+        const owner = await prisma.user.findUnique({
+            where: { id: tripOwnerId },
+            select: { preferredTemperatureUnit: true }
+        });
+        const preferredTempUnit = owner?.preferredTemperatureUnit || "C";
 
         // Check if cache exists and is less than 12 hours old
         if (trip?.weatherCacheData && trip?.weatherCachedAt) {
@@ -242,7 +259,7 @@ export async function getOrFetchWeather(
             return "☀️";
         });
 
-        const aiResult = await getWeatherSummaryV2(tripWeatherLocation, daily, isHistorical);
+        const aiResult = await getWeatherSummaryV2(tripWeatherLocation, daily, isHistorical, preferredTempUnit);
 
         const weatherDataObj = {
             highC, lowC, highF, lowF, conditions, icon, isHistorical,

@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function updateUserProfile(data: { name: string, avatarUrl: string }) {
+export async function updateUserProfile(data: { name: string, avatarUrl: string, preferredTemperatureUnit?: string }) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -20,7 +20,8 @@ export async function updateUserProfile(data: { name: string, avatarUrl: string 
         where: { id: user.id },
         data: {
             name: data.name,
-            avatarUrl: data.avatarUrl
+            avatarUrl: data.avatarUrl,
+            preferredTemperatureUnit: data.preferredTemperatureUnit
         }
     });
 

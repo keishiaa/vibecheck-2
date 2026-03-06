@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 export default function AccountSettingsModal({ isOpen, onClose, user }: { isOpen: boolean, onClose: () => void, user: any }) {
     const [name, setName] = useState(user?.name || "");
     const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl || "");
+    const [preferredTemperatureUnit, setPreferredTemperatureUnit] = useState(user?.preferredTemperatureUnit || "C");
     const [view, setView] = useState<"profile" | "danger">("profile");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -22,7 +23,7 @@ export default function AccountSettingsModal({ isOpen, onClose, user }: { isOpen
         e.preventDefault();
         setLoading(true);
         try {
-            await updateUserProfile({ name, avatarUrl });
+            await updateUserProfile({ name, avatarUrl, preferredTemperatureUnit });
             onClose();
             router.refresh();
         } catch (err: any) {
@@ -121,6 +122,26 @@ export default function AccountSettingsModal({ isOpen, onClose, user }: { isOpen
                                     className="w-full px-4 py-3 bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] focus:border-transparent text-[#3C3833] placeholder:text-[#A69B90] transition-shadow text-sm"
                                     placeholder="Your preferred name"
                                 />
+                            </div>
+
+                            <div>
+                                <label className="block mb-2 text-sm font-medium text-[#5C564D]">Preferred Temperature Unit</label>
+                                <div className="flex bg-[#EAE5DF] rounded-xl p-1 gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => setPreferredTemperatureUnit("C")}
+                                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${preferredTemperatureUnit === "C" ? "bg-white text-[#3C3833] shadow-sm" : "bg-transparent text-[#8A827A] hover:bg-[#F5F2EE]"}`}
+                                    >
+                                        Celsius (°C)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPreferredTemperatureUnit("F")}
+                                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${preferredTemperatureUnit === "F" ? "bg-white text-[#3C3833] shadow-sm" : "bg-transparent text-[#8A827A] hover:bg-[#F5F2EE]"}`}
+                                    >
+                                        Fahrenheit (°F)
+                                    </button>
+                                </div>
                             </div>
 
                             <button
