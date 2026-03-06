@@ -1,15 +1,17 @@
 import { getTrips } from "@/actions/tripActions";
 import DashboardClientView from "@/components/dashboard/DashboardClientView";
-import SignOutButton from "@/components/auth/SignOutButton";
+import UserMenu from "@/components/auth/UserMenu";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
+import prisma from "@/lib/prisma";
 
 export default async function Home() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const trips = user ? await getTrips() : [];
+  const dbUser = user ? await prisma.user.findUnique({ where: { id: user.id } }) : null;
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#3C3833] font-sans selection:bg-[#D1C3B4] selection:text-[#3C3833] flex flex-col">
@@ -25,7 +27,7 @@ export default async function Home() {
               Sign In
             </Link>
           ) : (
-            <SignOutButton />
+            <UserMenu dbUser={dbUser} />
           )}
         </div>
       </nav>
