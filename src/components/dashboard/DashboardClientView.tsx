@@ -110,10 +110,37 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
 
                     const tripDurationDays = Math.ceil((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / (1000 * 3600 * 24)) + 1;
 
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const start = new Date(trip.startDate);
+                    start.setHours(0, 0, 0, 0);
+                    const end = new Date(trip.endDate);
+                    end.setHours(0, 0, 0, 0);
+
+                    const diffStart = Math.ceil((start.getTime() - today.getTime()) / (1000 * 3600 * 24));
+                    const diffEnd = Math.ceil((end.getTime() - today.getTime()) / (1000 * 3600 * 24));
+
+                    let countdownText = "";
+                    if (diffStart > 0) {
+                        countdownText = `In ${diffStart} day${diffStart === 1 ? '' : 's'}`;
+                    } else if (diffStart <= 0 && diffEnd >= 0) {
+                        countdownText = "Happening now";
+                    } else {
+                        countdownText = "Past trip";
+                    }
+
                     return (
                         <div key={trip.id} className="relative group block">
                             <Link href={`/trips/${trip.id}`} className={`relative overflow-hidden h-32 border border-[#EAE5DF] rounded-xl transition-all active:scale-[0.98] shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col ${colorClass} bg-opacity-90 backdrop-blur-sm`}>
-                                <div className={`absolute inset-0 p-3.5 flex flex-col justify-end bg-gradient-to-t from-black/25 via-transparent to-transparent z-10`}>
+
+                                {/* Countdown Timer */}
+                                <div className="absolute top-3 right-3 z-20 group-hover:opacity-0 transition-opacity duration-300">
+                                    <span className="bg-white/60 text-[#3C3833] px-2.5 py-1 rounded-full border border-white/40 text-[9px] font-bold tracking-wider uppercase shadow-sm backdrop-blur-md">
+                                        {countdownText}
+                                    </span>
+                                </div>
+
+                                <div className="absolute inset-0 p-3.5 flex flex-col justify-end bg-gradient-to-t from-black/25 via-transparent to-transparent z-10">
                                     <h3 className={`text-base font-semibold tracking-wide leading-tight text-[#3C3833]`}>{trip.name}</h3>
                                     <span className="text-[9px] mt-0.5 font-bold text-[#5C564D] tracking-wider uppercase bg-white/50 border border-white/30 self-start px-2 py-0.5 rounded-full shadow-sm backdrop-blur-md">
                                         {tripDurationDays} {tripDurationDays === 1 ? 'Day' : 'Days'}
@@ -137,14 +164,14 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                             </Link>
 
                             {/* Edit Button overlay */}
-                            <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <button
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
                                         setEditingTrip(trip);
                                     }}
-                                    className="px-3 py-1.5 text-xs font-medium text-[#8A827A] border border-[#EAE5DF] bg-white rounded-md shadow-sm hover:bg-[#FCFAF8] hover:text-[#3C3833] transition-all active:scale-95"
+                                    className="px-3 py-1 text-[10px] sm:text-[9px] font-bold tracking-wider uppercase text-[#5C564D] border border-white/60 bg-white/90 backdrop-blur-md rounded-full shadow-sm hover:bg-white hover:text-[#3C3833] transition-all active:scale-95"
                                 >
                                     Edit
                                 </button>
