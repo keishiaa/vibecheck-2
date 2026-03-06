@@ -87,66 +87,85 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 w-full md:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="relative w-full">
+                {/* Decorative intertwining flight path background */}
+                <div className="absolute inset-0 z-0 pointer-events-none flex justify-center opacity-25 select-none overflow-hidden mix-blend-multiply">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <pattern id="flight-path" x="0" y="0" width="400" height="600" patternUnits="userSpaceOnUse">
+                            <path d="M 200 0 C 400 150, 0 450, 200 600" fill="transparent" stroke="#A69B90" strokeWidth="2.5" strokeDasharray="8 12" strokeLinecap="round" />
+                            {/* Paper plane or airplane icon leaning into the curve */}
+                            <text x="70" y="310" fontSize="24" style={{ transform: "rotate(-35deg)", transformOrigin: "70px 310px" }}>✈️</text>
+                        </pattern>
+                        <rect x="0" y="0" width="100%" height="100%" fill="url(#flight-path)" />
+                    </svg>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 w-full md:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10 mix-blend-normal">
 
 
-                {/* Dynamic Map of the database trips */}
-                {trips.map((trip) => {
-                    // Generate a deterministic color based on the trip's id string length + name chars
-                    const TRIP_COLORS = [
-                        "bg-[#E8DDD5]", // Warm Sand
-                        "bg-[#D5DCE8]", // Muted Blue
-                        "bg-[#E8D5D5]", // Dusty Rose
-                        "bg-[#D5E8DD]", // Sage Green
-                        "bg-[#E6E8D5]", // Soft Olive
-                        "bg-[#DDD5E8]", // Lavender Gray
-                        "bg-[#E8E2D5]", // Warm Cream
-                        "bg-[#D5E8E8]", // Pale Cyan
-                    ];
-                    let hashCode = 0;
-                    const hashStr = trip.id + trip.name;
-                    for (let i = 0; i < hashStr.length; i++) hashCode += hashStr.charCodeAt(i);
-                    const colorClass = TRIP_COLORS[hashCode % TRIP_COLORS.length];
+                    {/* Dynamic Map of the database trips */}
+                    {trips.map((trip) => {
+                        // Generate a deterministic color based on the trip's id string length + name chars
+                        const TRIP_COLORS = [
+                            "bg-[#E8DDD5]", // Warm Sand
+                            "bg-[#D5DCE8]", // Muted Blue
+                            "bg-[#E8D5D5]", // Dusty Rose
+                            "bg-[#D5E8DD]", // Sage Green
+                            "bg-[#E6E8D5]", // Soft Olive
+                            "bg-[#DDD5E8]", // Lavender Gray
+                            "bg-[#E8E2D5]", // Warm Cream
+                            "bg-[#D5E8E8]", // Pale Cyan
+                        ];
+                        let hashCode = 0;
+                        const hashStr = trip.id + trip.name;
+                        for (let i = 0; i < hashStr.length; i++) hashCode += hashStr.charCodeAt(i);
+                        const colorClass = TRIP_COLORS[hashCode % TRIP_COLORS.length];
 
-                    return (
-                        <div key={trip.id} className="relative group block">
-                            <Link href={`/trips/${trip.id}`} className={`relative overflow-hidden h-28 border border-[#EAE5DF] rounded-xl transition-all active:scale-[0.98] shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col ${colorClass}`}>
-                                <div className={`absolute inset-0 p-3.5 flex flex-col justify-end bg-gradient-to-t from-black/20 to-transparent z-10`}>
-                                    <h3 className={`text-base font-semibold tracking-wide leading-tight mb-1 text-[#3C3833]`}>{trip.name}</h3>
-                                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center justify-between sm:gap-2 w-full mt-1">
-                                        <p className={`text-[10px] sm:text-xs text-[#5C564D] opacity-90 font-medium whitespace-nowrap`}>
-                                            {new Date(trip.startDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} - {new Date(trip.endDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })}
-                                        </p>
+                        const tripDurationDays = Math.ceil((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / (1000 * 3600 * 24)) + 1;
 
-                                        {/* Floating Participant Bubbles */}
-                                        <div className="flex -space-x-1.5 z-20 self-end sm:self-auto">
-                                            <UserBubble user={trip.owner} isOwner={true} />
-                                            {trip.members && trip.members.map((member: any) => (
-                                                <UserBubble key={member.id} user={member.user} isOwner={false} />
-                                            ))}
+                        return (
+                            <div key={trip.id} className="relative group block">
+                                <Link href={`/trips/${trip.id}`} className={`relative overflow-hidden h-32 border border-[#EAE5DF] rounded-xl transition-all active:scale-[0.98] shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col ${colorClass} bg-opacity-90 backdrop-blur-sm`}>
+                                    <div className={`absolute inset-0 p-3.5 flex flex-col justify-end bg-gradient-to-t from-black/25 via-transparent to-transparent z-10`}>
+                                        <h3 className={`text-base font-semibold tracking-wide leading-tight text-[#3C3833]`}>{trip.name}</h3>
+                                        <span className="text-[9px] mt-0.5 font-bold text-[#5C564D] tracking-wider uppercase bg-white/50 border border-white/30 self-start px-2 py-0.5 rounded-full shadow-sm backdrop-blur-md">
+                                            {tripDurationDays} {tripDurationDays === 1 ? 'Day' : 'Days'}
+                                        </span>
+                                        <div className="flex flex-col gap-1 sm:flex-row sm:items-center justify-between sm:gap-2 w-full mt-1">
+                                            <p className={`text-[10px] sm:text-xs text-[#5C564D] opacity-90 font-medium whitespace-nowrap`}>
+                                                {new Date(trip.startDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} - {new Date(trip.endDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })}
+                                            </p>
+
+                                            {/* Floating Participant Bubbles */}
+                                            <div className="flex -space-x-1.5 z-20 self-end sm:self-auto">
+                                                <UserBubble user={trip.owner} isOwner={true} />
+                                                {trip.members && trip.members.map((member: any) => (
+                                                    <UserBubble key={member.id} user={member.user} isOwner={false} />
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                                </Link>
+
+                                {/* Edit Button overlay */}
+                                <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setEditingTrip(trip);
+                                        }}
+                                        className="px-3 py-1.5 text-xs font-medium text-[#8A827A] border border-[#EAE5DF] bg-white rounded-md shadow-sm hover:bg-[#FCFAF8] hover:text-[#3C3833] transition-all active:scale-95"
+                                    >
+                                        Edit
+                                    </button>
                                 </div>
-
-                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                            </Link>
-
-                            {/* Edit Button overlay */}
-                            <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setEditingTrip(trip);
-                                    }}
-                                    className="px-3 py-1.5 text-xs font-medium text-[#8A827A] border border-[#EAE5DF] bg-white rounded-md shadow-sm hover:bg-[#FCFAF8] hover:text-[#3C3833] transition-all active:scale-95"
-                                >
-                                    Edit
-                                </button>
                             </div>
-                        </div>
-                    )
-                })}
+                        )
+                    })}
+                </div>
             </div>
 
             <button
