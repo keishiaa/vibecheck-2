@@ -614,8 +614,8 @@ export default function CalendarClientWrapper({
   return (
     <>
       {/* Sticky Header */}
-      <div className="sticky top-0 z-30 flex items-center justify-between py-3 px-4 sm:p-6 bg-white/80 backdrop-blur-xl border-b border-[#EAE5DF]/50">
-        <div className="flex items-center gap-3">
+      <div className="sticky top-0 z-30 py-3 px-4 sm:p-6 bg-white/80 backdrop-blur-xl border-b border-[#EAE5DF]/50 w-full overflow-hidden">
+        <div className="flex items-center gap-3 w-full max-w-7xl mx-auto">
           <Link
             href="/"
             className="shrink-0 group flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#EAE5DF] bg-white shadow-sm hover:border-[#A69B90] hover:bg-[#F5F2EE] transition-all active:scale-95 relative focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#8A827A] hover:text-[#3C3833]"
@@ -634,61 +634,52 @@ export default function CalendarClientWrapper({
               <path d="m15 18-6-6 6-6" />
             </svg>
           </Link>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-semibold tracking-wide text-[#3C3833] line-clamp-1 group-title flex items-center gap-2">
-              {tripName}
-            </h1>
-            <div className="flex items-center gap-3 mt-1 sm:mt-2">
-              <span className="text-[10px] sm:text-sm text-[#8A827A] font-medium tracking-wide">
+          <div className="flex flex-col flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2 w-full">
+              <h1 className="text-lg sm:text-2xl font-semibold tracking-wide text-[#3C3833] line-clamp-1">
+                {tripName}
+              </h1>
+              <div className="flex gap-1.5 sm:gap-2 shrink-0">
+                <button
+                  onClick={() => setActiveEditTripModal(true)}
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-sm font-medium transition-all active:scale-95 bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm flex items-center gap-1.5"
+                >
+                  <span className="hidden sm:inline">Edit Trip</span>
+                  <span className="sm:hidden">Edit</span>
+                </button>
+                <button
+                  onClick={handleCopyInvite}
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-sm font-medium transition-all active:scale-95 bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm flex items-center gap-1.5"
+                >
+                  <UserPlus size={14} className="sm:w-4 sm:h-4 text-[#8A827A]" />
+                  <span className="hidden sm:inline">Invite Friends</span>
+                  <span className="sm:hidden">Invite</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 mt-1 sm:mt-1.5 overflow-x-auto hide-scrollbar w-full py-0.5">
+              <span className="text-[10px] sm:text-sm text-[#8A827A] font-medium tracking-wide whitespace-nowrap shrink-0">
                 {tripStartDate.toLocaleDateString(undefined, dateOptions)} —{" "}
                 {tripEndDate.toLocaleDateString(undefined, dateOptions)}
               </span>
 
               {(tripOwner || (tripMembers && tripMembers.length > 0)) && (
-                <div className="flex -space-x-1.5 z-20 items-center pl-3 border-l border-[#EAE5DF]">
+                <div className="flex -space-x-1.5 z-20 items-center pl-3 border-l border-[#EAE5DF] shrink-0 pb-0.5 pt-0.5 pr-1">
                   {tripOwner && <UserBubble user={tripOwner} isOwner={true} />}
-                  {(() => {
-                    const otherMembers = tripMembers?.filter((m: any) => m.userId !== tripOwner?.id) || [];
-                    const visibleMembers = otherMembers.slice(0, 2);
-                    const hiddenCount = otherMembers.length - 2;
-                    return (
-                      <>
-                        {visibleMembers.map((member: any) => (
-                          <UserBubble
-                            key={member.id}
-                            user={member.user}
-                            isOwner={false}
-                          />
-                        ))}
-                        {hiddenCount > 0 && (
-                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-[#FDFBF7] flex items-center justify-center text-[10px] sm:text-[11px] font-bold bg-[#FCFAF8] text-[#8A827A] shadow-sm overflow-hidden shrink-0 relative hover:z-30">
-                            +{hiddenCount}
-                          </div>
-                        )}
-                      </>
-                    );
-                  })()}
+                  {tripMembers
+                    ?.filter((m: any) => m.userId !== tripOwner?.id)
+                    .map((member: any) => (
+                      <UserBubble
+                        key={member.id}
+                        user={member.user}
+                        isOwner={false}
+                      />
+                    ))}
                 </div>
               )}
             </div>
           </div>
-        </div>
-        <div className="flex gap-2 ml-4">
-          <button
-            onClick={() => setActiveEditTripModal(true)}
-            className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-all active:scale-95 bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm flex items-center gap-1.5"
-          >
-            <span className="hidden sm:inline">Edit Trip</span>
-            <span className="sm:hidden">Edit</span>
-          </button>
-          <button
-            onClick={handleCopyInvite}
-            className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium transition-all active:scale-95 bg-white border border-[#EAE5DF] rounded-full text-[#3C3833] hover:bg-[#FCFAF8] shadow-sm flex items-center gap-1.5"
-          >
-            <UserPlus size={14} className="sm:w-4 sm:h-4 text-[#8A827A]" />
-            <span className="hidden sm:inline">Invite Friends</span>
-            <span className="sm:hidden">Invite</span>
-          </button>
         </div>
       </div>
       <main className="max-w-md px-4 py-8 mx-auto sm:max-w-2xl">
