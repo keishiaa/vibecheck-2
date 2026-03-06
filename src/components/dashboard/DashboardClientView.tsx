@@ -141,13 +141,10 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
                                 </div>
 
                                 <div className="absolute inset-0 p-3.5 flex flex-col justify-end bg-gradient-to-t from-black/25 via-transparent to-transparent z-10">
-                                    <h3 className={`text-base font-semibold tracking-wide leading-tight text-[#3C3833]`}>{trip.name}</h3>
-                                    <span className="text-[9px] mt-0.5 font-bold text-[#5C564D] tracking-wider uppercase bg-white/50 border border-white/30 self-start px-2 py-0.5 rounded-full shadow-sm backdrop-blur-md">
-                                        {tripDurationDays} {tripDurationDays === 1 ? 'Day' : 'Days'}
-                                    </span>
-                                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center justify-between sm:gap-2 w-full mt-1">
+                                    <h3 className={`text-base font-semibold tracking-wide leading-tight text-[#3C3833] mb-1`}>{trip.name}</h3>
+                                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center justify-between sm:gap-2 w-full">
                                         <p className={`text-[10px] sm:text-xs text-[#5C564D] opacity-90 font-medium whitespace-nowrap`}>
-                                            {new Date(trip.startDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} - {new Date(trip.endDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })}
+                                            {new Date(trip.startDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} - {new Date(trip.endDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} <span className="opacity-50 mx-1">•</span> {tripDurationDays} {tripDurationDays === 1 ? 'Day' : 'Days'}
                                         </p>
 
                                         {/* Floating Participant Bubbles */}

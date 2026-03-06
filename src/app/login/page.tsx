@@ -2,9 +2,7 @@
 
 import { login, signup, signInWithGoogle } from './actions'
 import Image from 'next/image'
-import dynamic from 'next/dynamic'
-
-const VantaBackground = dynamic(() => import('@/components/vanta/VantaBackground'), { ssr: false })
+import VantaBackground from '@/components/vanta/VantaBackground'
 
 export default function LoginPage() {
     return (
