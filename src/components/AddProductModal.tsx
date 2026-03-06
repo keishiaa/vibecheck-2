@@ -114,10 +114,32 @@ export default function AddProductModal({
                             {imageUrl ? (
                                 <div className="relative w-full aspect-square max-h-[250px] bg-[#EAE5DF] rounded-xl overflow-hidden group">
                                     <img src={getDisplayUrl(imageUrl)} onError={(e) => handleImageError(e, imageUrl)} alt="Preview" className="object-cover w-full h-full" />
+                                    <CldUploadWidget
+                                        uploadPreset="vibecheck"
+                                        options={{ multiple: false, cropping: true, clientAllowedFormats: ["image"] }}
+                                        onSuccess={(result) => {
+                                            const info = result.info as any;
+                                            if (info && typeof info !== 'string' && info.secure_url) {
+                                                setImageUrl(info.secure_url);
+                                            }
+                                        }}
+                                    >
+                                        {({ open }) => (
+                                            <button
+                                                type="button"
+                                                onClick={() => open()}
+                                                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <span className="bg-white/90 text-[#3C3833] text-xs font-medium px-4 py-2 rounded-full shadow-sm">
+                                                    Change / Crop Photo
+                                                </span>
+                                            </button>
+                                        )}
+                                    </CldUploadWidget>
                                     <button
                                         type="button"
                                         onClick={() => setImageUrl("")}
-                                        className="absolute top-3 right-3 p-1.5 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                                        className="absolute top-3 right-3 p-1.5 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 z-10"
                                     >
                                         <X className="w-4 h-4" />
                                     </button>

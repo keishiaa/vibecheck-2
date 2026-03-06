@@ -27,6 +27,7 @@ export async function addOutfit(tripId: string, dayNumber: number | null, data: 
         category: p.category,
         tags: p.tags || [],
         notes: p.notes || null,
+        userId,
     })) || [];
 
     // existing product ids to connect
@@ -89,6 +90,7 @@ export async function updateOutfit(outfitId: string, tripId: string, data: { nam
         category: p.category,
         tags: p.tags || [],
         notes: p.notes || null,
+        userId,
     })) || [];
 
     let allProductIdsToConnect = data.existingProductIds || [];
