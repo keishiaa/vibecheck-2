@@ -884,7 +884,7 @@ export default function CalendarClientWrapper({
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-2xl font-light tracking-tight text-[#3C3833]">
-                  Your Products
+                  The Pieces
                 </h3>
                 <p className="text-sm text-[#8A827A]">
                   Individual items you are bringing on this trip.
@@ -896,8 +896,8 @@ export default function CalendarClientWrapper({
                   value={ownerFilter}
                   onChange={(e) => setOwnerFilter(e.target.value)}
                 >
-                  <option value="mine">My Catalog</option>
-                  <option value="all">Everyone's Products</option>
+                  <option value="mine">My Pieces</option>
+                  <option value="all">Everyone's Pieces</option>
                 </select>
                 <select
                   className="w-full sm:w-auto px-3 py-2 text-sm bg-white border border-[#EAE5DF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#3C3833]"
