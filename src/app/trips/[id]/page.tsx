@@ -56,7 +56,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
     const userEmail = user?.email;
 
     return (
-        <div className="min-h-screen bg-[#FDFBF7] text-[#3C3833] font-sans pb-24 selection:bg-[#D1C3B4] selection:text-[#3C3833]">
+        <div className="min-h-dvh bg-[#FDFBF7] text-[#3C3833] font-sans pb-24 selection:bg-[#D1C3B4] selection:text-[#3C3833]">
             <CalendarClientWrapper
                 tripId={trip.id}
                 tripName={trip.name}

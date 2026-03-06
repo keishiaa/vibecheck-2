@@ -1,26 +1,33 @@
 export async function uploadToCloudinary(file: File | Blob | string): Promise<string> {
-    const formData = new FormData();
+    // Determine the base64 string to upload
+    let base64String = "";
     if (typeof file === "string") {
-        formData.append("file", file);
+        base64String = file;
     } else {
-        formData.append("file", file, "upload.jpg");
+        // Fallback converter if passed a raw Blob
+        const reader = new FileReader();
+        base64String = await new Promise((resolve, reject) => {
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+        });
     }
-    formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "vibecheck");
 
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    if (!cloudName) throw new Error("Cloudinary configuration missing");
-
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    const res = await fetch("/api/upload", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64String }),
     });
 
     if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Cloudinary upload failed:", errorText);
-        throw new Error(`Failed to upload image. Cloudinary says: ${errorText}`);
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to upload image securely.");
     }
 
     const data = await res.json();
+    if (!data.secure_url) {
+        throw new Error("No secure URL returned from server.");
+    }
+
     return data.secure_url;
 }
