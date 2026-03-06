@@ -1,6 +1,10 @@
-export async function uploadToCloudinary(file: File | Blob): Promise<string> {
+export async function uploadToCloudinary(file: File | Blob | string): Promise<string> {
     const formData = new FormData();
-    formData.append("file", file, "upload.jpg");
+    if (typeof file === "string") {
+        formData.append("file", file);
+    } else {
+        formData.append("file", file, "upload.jpg");
+    }
     formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_PRESET || "vibecheck");
 
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;

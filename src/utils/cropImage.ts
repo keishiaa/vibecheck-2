@@ -3,7 +3,7 @@ export const createImage = (url: string): Promise<HTMLImageElement> =>
         const image = new Image()
         image.addEventListener('load', () => resolve(image))
         image.addEventListener('error', (error) => reject(error))
-        if (!url.startsWith('blob:')) {
+        if (!url.startsWith('blob:') && !url.startsWith('data:')) {
             image.setAttribute('crossOrigin', 'anonymous') // needed to avoid cross-origin issues on external URLs
         }
         image.src = url
@@ -18,7 +18,7 @@ export default async function getCroppedImg(
     pixelCrop: { x: number; y: number; width: number; height: number },
     rotation = 0,
     flip = { horizontal: false, vertical: false }
-): Promise<Blob | null> {
+): Promise<string | null> {
     const image = await createImage(imageSrc)
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
@@ -54,9 +54,11 @@ export default async function getCroppedImg(
         Math.round(0 - safeArea / 2 + image.height / 2 - pixelCrop.y)
     )
 
-    return new Promise((resolve, reject) => {
-        canvas.toBlob((file) => {
-            resolve(file)
-        }, 'image/jpeg', 0.9)
-    })
+    try {
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        return dataUrl;
+    } catch (e: any) {
+        console.error("Canvas export failed", e);
+        throw new Error("Canvas export failed: " + e.message);
+    }
 }

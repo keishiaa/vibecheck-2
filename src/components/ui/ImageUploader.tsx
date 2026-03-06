@@ -19,8 +19,15 @@ export default function ImageUploader({
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             const file = e.target.files[0];
-            const imageUrl = URL.createObjectURL(file);
-            setSelectedImageStr(imageUrl);
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                setSelectedImageStr(reader.result as string);
+            };
+            reader.onerror = () => {
+                console.error("FileReader failed");
+                alert("Could not load local image file.");
+            };
         }
         // reset input so the exact same file can be selected again
         if (fileInputRef.current) fileInputRef.current.value = "";
@@ -44,11 +51,9 @@ export default function ImageUploader({
                 <ImageCropperModal
                     imageSrc={selectedImageStr}
                     onClose={() => {
-                        URL.revokeObjectURL(selectedImageStr);
                         setSelectedImageStr(null);
                     }}
                     onUploadComplete={(url) => {
-                        URL.revokeObjectURL(selectedImageStr);
                         setSelectedImageStr(null);
                         onUploadSuccess(url);
                     }}

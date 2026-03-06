@@ -27,10 +27,10 @@ export default function ImageCropperModal({
         if (!croppedAreaPixels) return;
         setIsUploading(true);
         try {
-            const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels, 0);
-            if (!croppedBlob) throw new Error("Failed to crop image");
+            const croppedBase64 = await getCroppedImg(imageSrc, croppedAreaPixels, 0);
+            if (!croppedBase64) throw new Error("Failed to crop image (null context)");
 
-            const url = await uploadToCloudinary(croppedBlob);
+            const url = await uploadToCloudinary(croppedBase64);
             onUploadComplete(url);
         } catch (e: any) {
             console.error("Cropping/upload failed", e);
