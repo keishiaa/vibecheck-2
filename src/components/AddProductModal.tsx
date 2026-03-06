@@ -135,36 +135,20 @@ export default function AddProductModal({
                                                 <ImagePlus className="w-6 h-6" />
                                             </div>
                                             <span className="text-sm font-medium text-[#8A827A]">Upload Image</span>
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                                onChange={async (e) => {
-                                                    const file = e.target.files?.[0];
-                                                    if (!file) return;
-                                                    try {
-                                                        setIsUploadingImage(true);
-
-                                                        const supabase = createClient();
-                                                        const fileExt = file.name ? file.name.split('.').pop() : 'jpg';
-                                                        const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-                                                        const { data, error } = await supabase.storage.from('vibecheck-images').upload(fileName, file);
-
-                                                        if (error) {
-                                                            alert("Upload failed: " + error.message);
-                                                        } else if (data) {
-                                                            const { data: publicUrlData } = supabase.storage.from('vibecheck-images').getPublicUrl(data.path);
-                                                            setImageUrl(publicUrlData.publicUrl);
-                                                        }
-                                                    } catch (err: any) {
-                                                        console.error("Upload failed", err);
-                                                        alert("Upload failed. Please check your connection.");
-                                                    } finally {
-                                                        setIsUploadingImage(false);
-                                                        e.target.value = "";
+                                            <CldUploadWidget
+                                                uploadPreset="vibecheck"
+                                                options={{ multiple: false, cropping: true, clientAllowedFormats: ["image"] }}
+                                                onSuccess={(result) => {
+                                                    const info = result.info as any;
+                                                    if (info && typeof info !== 'string' && info.secure_url) {
+                                                        setImageUrl(info.secure_url);
                                                     }
                                                 }}
-                                            />
+                                            >
+                                                {({ open }) => (
+                                                    <button type="button" onClick={() => open()} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                                )}
+                                            </CldUploadWidget>
                                         </>
                                     )}
                                 </div>

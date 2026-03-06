@@ -447,41 +447,24 @@ export default function AddLookModal({
                                                             )}
                                                         </>
                                                     )}
-                                                    <input
-                                                        type="file"
-                                                        accept="image/*"
-                                                        capture="environment"
-                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                                        onChange={async (e) => {
-                                                            const file = e.target.files?.[0];
-                                                            if (!file) return;
-                                                            try {
-                                                                setUploadingImageIdx(idx);
-
-                                                                const supabase = createClient();
-                                                                const fileExt = file.name ? file.name.split('.').pop() : 'jpg';
-                                                                const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-                                                                const { data, error } = await supabase.storage.from('vibecheck-images').upload(fileName, file);
-
-                                                                if (error) {
-                                                                    alert("Upload failed: " + error.message);
-                                                                } else if (data) {
-                                                                    const { data: publicUrlData } = supabase.storage.from('vibecheck-images').getPublicUrl(data.path);
-                                                                    setProducts(prev => {
-                                                                        const updated = [...prev];
-                                                                        updated[idx].imageUrl = publicUrlData.publicUrl;
-                                                                        return updated;
-                                                                    });
-                                                                }
-                                                            } catch (err: any) {
-                                                                console.error("Upload failed", err);
-                                                                alert("Upload failed. Please check your connection.");
-                                                            } finally {
-                                                                setUploadingImageIdx(null);
-                                                                e.target.value = "";
+                                                    <CldUploadWidget
+                                                        uploadPreset="vibecheck"
+                                                        options={{ multiple: false, cropping: true, clientAllowedFormats: ["image"] }}
+                                                        onSuccess={(result) => {
+                                                            const info = result.info as any;
+                                                            if (info && typeof info !== 'string' && info.secure_url) {
+                                                                setProducts(prev => {
+                                                                    const updated = [...prev];
+                                                                    updated[idx].imageUrl = info.secure_url;
+                                                                    return updated;
+                                                                });
                                                             }
                                                         }}
-                                                    />
+                                                    >
+                                                        {({ open }) => (
+                                                            <button type="button" onClick={() => open()} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                                        )}
+                                                    </CldUploadWidget>
                                                 </div>
                                             </div>
 
