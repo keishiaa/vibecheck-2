@@ -8,7 +8,7 @@ export async function getWeatherSummaryV2(
     dailyData: any,
     isHistorical: boolean
 ) {
-    const actualKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    const actualKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim();
     if (!actualKey) {
         return "⚠️ Google Generative AI API Key is missing. Please add GOOGLE_GENERATIVE_AI_API_KEY to your .env files to enable AI weather summaries. For now, expect a mix of the following conditions: " +
             getFrequentConditions(dailyData.weather_code) + ".";
