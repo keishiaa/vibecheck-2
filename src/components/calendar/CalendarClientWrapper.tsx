@@ -1042,6 +1042,7 @@ export default function CalendarClientWrapper({
         catalogProducts={products || []}
         savedOutfits={savedOutfits}
         existingOutfit={editingOutfit}
+        currentUserId={currentUserId}
         dayActivities={
           activeDayModal !== null && activeDayModal > 0
             ? (dayDetails[activeDayModal]?.activities || "").split(" ||| ").filter(Boolean)

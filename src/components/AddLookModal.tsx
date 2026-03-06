@@ -40,7 +40,8 @@ export default function AddLookModal({
     catalogProducts = [],
     savedOutfits = [],
     existingOutfit,
-    dayActivities = []
+    dayActivities = [],
+    currentUserId
 }: {
     isOpen: boolean;
     onClose: () => void;
@@ -50,6 +51,7 @@ export default function AddLookModal({
     savedOutfits?: any[];
     existingOutfit?: any;
     dayActivities?: string[];
+    currentUserId?: string;
 }) {
     const [name, setName] = useState(existingOutfit?.name || "");
     const [description, setDescription] = useState(existingOutfit?.description || "");
@@ -377,9 +379,20 @@ export default function AddLookModal({
                                                 defaultValue=""
                                             >
                                                 <option value="" disabled>From Catalog...</option>
-                                                {catalogProducts.map(p => (
-                                                    <option key={p.id} value={p.id}>{p.name}</option>
-                                                ))}
+                                                {catalogProducts.filter(p => !currentUserId || p.userId === currentUserId).length > 0 && (
+                                                    <optgroup label="Your Pieces">
+                                                        {catalogProducts.filter(p => !currentUserId || p.userId === currentUserId).map(p => (
+                                                            <option key={p.id} value={p.id}>{p.name}</option>
+                                                        ))}
+                                                    </optgroup>
+                                                )}
+                                                {catalogProducts.filter(p => currentUserId && p.userId !== currentUserId).length > 0 && (
+                                                    <optgroup label="Everyone Else's Pieces">
+                                                        {catalogProducts.filter(p => currentUserId && p.userId !== currentUserId).map(p => (
+                                                            <option key={p.id} value={p.id}>{p.name}</option>
+                                                        ))}
+                                                    </optgroup>
+                                                )}
                                             </select>
                                         )}
                                         <button
