@@ -202,7 +202,7 @@ export default function CalendarClientWrapper({
         if (start >= minForecastDate && end <= maxForecastDate) {
           startStr = start.toISOString().split("T")[0];
           endStr = end.toISOString().split("T")[0];
-          apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
+          apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_hours&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
         } else {
           isHistorical = true;
           // Shift dates back year by year until they are safe for the archive API (5 day lag)
@@ -216,7 +216,7 @@ export default function CalendarClientWrapper({
 
           startStr = start.toISOString().split("T")[0];
           endStr = end.toISOString().split("T")[0];
-          apiUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
+          apiUrl = `https://archive-api.open-meteo.com/v1/archive?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_hours&start_date=${startStr}&end_date=${endStr}&temperature_unit=celsius`;
         }
 
         const wxRes = await fetch(apiUrl);
@@ -277,14 +277,29 @@ export default function CalendarClientWrapper({
           icon = "⛈️";
         }
 
-        // Generate daily icons based on each day's code
-        const dailyIcons = daily.weather_code.map((c: number) => {
+        // Generate daily icons based on each day's code and precip hours
+        const dailyIcons = daily.weather_code.map((c: number, idx: number) => {
+          const precipHours = daily.precipitation_hours ? (daily.precipitation_hours[idx] || 0) : 0;
+
           if (c >= 1 && c <= 3) return "🌤️";
           if (c >= 45 && c <= 48) return "🌫️";
-          if (c >= 51 && c <= 67) return "🌧️";
+
+          if (c >= 51 && c <= 67) {
+            // It's raining, but if it's less than 3 hours of rain in the day, consider it brief showers
+            if (precipHours > 0 && precipHours <= 3) return "🌦️";
+            return "🌧️";
+          }
           if (c >= 71 && c <= 77) return "❄️";
-          if (c >= 80 && c <= 82) return "🌦️";
-          if (c >= 95) return "⛈️";
+
+          if (c >= 80 && c <= 82) {
+            if (precipHours > 0 && precipHours <= 3) return "🌦️";
+            return "🌧️";
+          }
+
+          if (c >= 95) {
+            if (precipHours > 0 && precipHours <= 3) return "🌦️";
+            return "⛈️";
+          }
           return "☀️";
         });
 

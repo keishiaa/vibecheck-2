@@ -23,10 +23,13 @@ export async function getWeatherSummary(
         const maxTemps = dailyData.temperature_2m_max;
         const minTemps = dailyData.temperature_2m_min;
         const codes = dailyData.weather_code;
+        const precipHours = dailyData.precipitation_hours;
 
         let dataString = `Summary of data over ${days} days for ${location}:\n`;
         for (let i = 0; i < days; i++) {
-            dataString += `Day ${i + 1}: High ${maxTemps[i]}°C, Low ${minTemps[i]}°C, WMO Weather Code ${codes[i]}\n`;
+            const pHours = precipHours ? precipHours[i] : null;
+            const pHoursStr = pHours !== null ? `${pHours} hrs of rain` : "unknown";
+            dataString += `Day ${i + 1}: High ${maxTemps[i]}°C, Low ${minTemps[i]}°C, WMO Weather Code ${codes[i]}, Precip: ${pHoursStr}\n`;
         }
 
         const historicalNote = isHistorical
@@ -37,7 +40,9 @@ export async function getWeatherSummary(
         Here is the daily temperature data (in Celsius) and weather codes:
         ${dataString}
         
-        Make sure to weave in what the high/low ranges generally look like, and mention the predominant weather conditions (e.g. sunny most days, chances of rain, etc) based on the WMO codes. Keep it concise, friendly, and helpful for someone packing clothes.
+        CRITICAL INSTRUCTION: Pay very close attention to "Precip" (precipitation hours). If the weather code indicates rain but the precipitation hours are low (e.g., 0 to 3 hours), you MUST explicitly reassure the reader that the rain is only brief/passing showers and the day is otherwise fine for outdoor activities! Do not say it will rain all day.
+        
+        Make sure to weave in what the high/low ranges generally look like, and mention the predominant weather conditions based on the WMO codes and precip hours. Keep it concise, friendly, and helpful for someone packing clothes.
         ${historicalNote}
         `;
 
