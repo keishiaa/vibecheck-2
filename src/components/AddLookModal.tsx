@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { addOutfit, assignOutfitToDay, updateOutfit, copyOutfitToWardrobe, deleteOutfit } from "@/actions/outfitActions";
 import { useRouter } from "next/navigation";
-import { CldUploadWidget } from "next-cloudinary";
+import ImageUploader from "@/components/ui/ImageUploader";
 import { ImagePlus, X, GripVertical } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 
@@ -460,46 +460,20 @@ export default function AddLookModal({
                                                             )}
                                                         </>
                                                     )}
-                                                    <CldUploadWidget
-                                                        uploadPreset="vibecheck"
-                                                        options={{
-                                                            multiple: false,
-                                                            cropping: true,
-                                                            clientAllowedFormats: ["image"],
-                                                            sources: ["local", "url", "camera"],
-                                                            styles: {
-                                                                palette: {
-                                                                    window: "#FFFFFF",
-                                                                    windowBorder: "#EAE5DF",
-                                                                    tabIcon: "#3C3833",
-                                                                    menuIcons: "#8A827A",
-                                                                    textDark: "#3C3833",
-                                                                    textLight: "#FFFFFF",
-                                                                    link: "#3C3833",
-                                                                    action: "#3C3833",
-                                                                    inactiveTabIcon: "#8A827A",
-                                                                    error: "#EF4444",
-                                                                    inProgress: "#D1C3B4",
-                                                                    complete: "#22C55E",
-                                                                    sourceBg: "#F5F2EE"
-                                                                }
-                                                            }
-                                                        }}
-                                                        onSuccess={(result) => {
-                                                            const info = result.info as any;
-                                                            if (info && typeof info !== 'string' && info.secure_url) {
-                                                                setProducts(prev => {
-                                                                    const updated = [...prev];
-                                                                    updated[idx].imageUrl = info.secure_url;
-                                                                    return updated;
-                                                                });
-                                                            }
-                                                        }}
+                                                    <ImageUploader
+                                                        onUploadSuccess={(url) => handleUpdateProduct(idx, "imageUrl", url)}
+                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                                     >
-                                                        {({ open }) => (
-                                                            <button type="button" onClick={() => open()} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                                        {p.imageUrl ? (
+                                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
+                                                                <span className="bg-white/90 text-[#3C3833] text-[10px] font-medium px-3 py-1.5 rounded-full shadow-sm">
+                                                                    Change Photo
+                                                                </span>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="absolute inset-0 w-full h-full" />
                                                         )}
-                                                    </CldUploadWidget>
+                                                    </ImageUploader>
                                                 </div>
                                             </div>
 

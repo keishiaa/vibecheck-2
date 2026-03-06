@@ -5,7 +5,7 @@ import { updateProductInTrip, deleteProduct } from "@/actions/outfitActions";
 import { useRouter } from "next/navigation";
 import { ImagePlus, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
-import { CldUploadWidget } from "next-cloudinary";
+import ImageUploader from "@/components/ui/ImageUploader";
 
 function getDisplayUrl(url: string | null | undefined): string {
     if (!url) return "";
@@ -140,50 +140,14 @@ export default function EditProductModal({
                             {imageUrl ? (
                                 <div className="relative w-full aspect-square max-h-[250px] bg-[#EAE5DF] rounded-xl overflow-hidden group">
                                     <img src={getDisplayUrl(imageUrl)} onError={(e) => handleImageError(e, imageUrl)} alt="Preview" className="object-cover w-full h-full" />
-                                    <CldUploadWidget
-                                        uploadPreset="vibecheck"
-                                        options={{
-                                            multiple: false,
-                                            cropping: true,
-                                            clientAllowedFormats: ["image"],
-                                            sources: ["local", "url", "camera"],
-                                            styles: {
-                                                palette: {
-                                                    window: "#FFFFFF",
-                                                    windowBorder: "#EAE5DF",
-                                                    tabIcon: "#3C3833",
-                                                    menuIcons: "#8A827A",
-                                                    textDark: "#3C3833",
-                                                    textLight: "#FFFFFF",
-                                                    link: "#3C3833",
-                                                    action: "#3C3833",
-                                                    inactiveTabIcon: "#8A827A",
-                                                    error: "#EF4444",
-                                                    inProgress: "#D1C3B4",
-                                                    complete: "#22C55E",
-                                                    sourceBg: "#F5F2EE"
-                                                }
-                                            }
-                                        }}
-                                        onSuccess={(result) => {
-                                            const info = result.info as any;
-                                            if (info && typeof info !== 'string' && info.secure_url) {
-                                                setImageUrl(info.secure_url);
-                                            }
-                                        }}
+                                    <ImageUploader
+                                        onUploadSuccess={(url) => setImageUrl(url)}
+                                        className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                                     >
-                                        {({ open }) => (
-                                            <button
-                                                type="button"
-                                                onClick={() => open()}
-                                                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <span className="bg-white/90 text-[#3C3833] text-xs font-medium px-4 py-2 rounded-full shadow-sm">
-                                                    Change / Crop Photo
-                                                </span>
-                                            </button>
-                                        )}
-                                    </CldUploadWidget>
+                                        <span className="bg-white/90 text-[#3C3833] text-xs font-medium px-4 py-2 rounded-full shadow-sm">
+                                            Change / Crop Photo
+                                        </span>
+                                    </ImageUploader>
                                     <button
                                         type="button"
                                         onClick={() => setImageUrl("")}
@@ -205,42 +169,10 @@ export default function EditProductModal({
                                                 <ImagePlus className="w-6 h-6" />
                                             </div>
                                             <span className="text-sm font-medium text-[#8A827A]">Upload Image</span>
-                                            <CldUploadWidget
-                                                uploadPreset="vibecheck"
-                                                options={{
-                                                    multiple: false,
-                                                    cropping: true,
-                                                    clientAllowedFormats: ["image"],
-                                                    sources: ["local", "url", "camera"],
-                                                    styles: {
-                                                        palette: {
-                                                            window: "#FFFFFF",
-                                                            windowBorder: "#EAE5DF",
-                                                            tabIcon: "#3C3833",
-                                                            menuIcons: "#8A827A",
-                                                            textDark: "#3C3833",
-                                                            textLight: "#FFFFFF",
-                                                            link: "#3C3833",
-                                                            action: "#3C3833",
-                                                            inactiveTabIcon: "#8A827A",
-                                                            error: "#EF4444",
-                                                            inProgress: "#D1C3B4",
-                                                            complete: "#22C55E",
-                                                            sourceBg: "#F5F2EE"
-                                                        }
-                                                    }
-                                                }}
-                                                onSuccess={(result) => {
-                                                    const info = result.info as any;
-                                                    if (info && typeof info !== 'string' && info.secure_url) {
-                                                        setImageUrl(info.secure_url);
-                                                    }
-                                                }}
-                                            >
-                                                {({ open }) => (
-                                                    <button type="button" onClick={() => open()} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                                                )}
-                                            </CldUploadWidget>
+                                            <ImageUploader
+                                                onUploadSuccess={(url) => setImageUrl(url)}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 block"
+                                            />
                                         </>
                                     )}
                                 </div>

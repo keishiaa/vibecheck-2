@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { updateUserProfile, deleteUserAccount } from "@/actions/accountActions";
-import { CldUploadWidget } from "next-cloudinary";
+import ImageUploader from "@/components/ui/ImageUploader";
 import { X, User2, TriangleAlert } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
@@ -100,50 +100,14 @@ export default function AccountSettingsModal({ isOpen, onClose, user }: { isOpen
                                     ) : (
                                         <User2 className="w-10 h-10 text-[#C4BCB3]" />
                                     )}
-                                    <CldUploadWidget
-                                        uploadPreset="vibecheck"
-                                        options={{
-                                            multiple: false,
-                                            cropping: true,
-                                            clientAllowedFormats: ["image"],
-                                            sources: ["local", "url", "camera"],
-                                            styles: {
-                                                palette: {
-                                                    window: "#FFFFFF",
-                                                    windowBorder: "#EAE5DF",
-                                                    tabIcon: "#3C3833",
-                                                    menuIcons: "#8A827A",
-                                                    textDark: "#3C3833",
-                                                    textLight: "#FFFFFF",
-                                                    link: "#3C3833",
-                                                    action: "#3C3833",
-                                                    inactiveTabIcon: "#8A827A",
-                                                    error: "#EF4444",
-                                                    inProgress: "#D1C3B4",
-                                                    complete: "#22C55E",
-                                                    sourceBg: "#F5F2EE"
-                                                }
-                                            }
-                                        }}
-                                        onSuccess={(result) => {
-                                            const info = result.info as any;
-                                            if (info && typeof info !== 'string' && info.secure_url) {
-                                                setAvatarUrl(info.secure_url);
-                                            }
-                                        }}
+                                    <ImageUploader
+                                        onUploadSuccess={(url) => setAvatarUrl(url)}
+                                        className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10"
                                     >
-                                        {({ open }) => (
-                                            <button
-                                                type="button"
-                                                onClick={() => open()}
-                                                className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <span className="text-[10px] font-medium text-white px-2 py-1 bg-black/60 rounded-full">
-                                                    {avatarUrl ? "Change" : "Upload"}
-                                                </span>
-                                            </button>
-                                        )}
-                                    </CldUploadWidget>
+                                        <span className="text-[10px] font-medium text-white px-2 py-1 bg-black/60 rounded-full">
+                                            {avatarUrl ? "Change" : "Upload"}
+                                        </span>
+                                    </ImageUploader>
                                 </div>
                             </div>
 
