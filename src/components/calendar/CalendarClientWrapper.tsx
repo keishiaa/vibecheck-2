@@ -645,15 +645,27 @@ export default function CalendarClientWrapper({
               {(tripOwner || (tripMembers && tripMembers.length > 0)) && (
                 <div className="flex -space-x-1.5 z-20 items-center pl-3 border-l border-[#EAE5DF]">
                   {tripOwner && <UserBubble user={tripOwner} isOwner={true} />}
-                  {tripMembers
-                    ?.filter((m: any) => m.userId !== tripOwner?.id)
-                    .map((member: any) => (
-                      <UserBubble
-                        key={member.id}
-                        user={member.user}
-                        isOwner={false}
-                      />
-                    ))}
+                  {(() => {
+                    const otherMembers = tripMembers?.filter((m: any) => m.userId !== tripOwner?.id) || [];
+                    const visibleMembers = otherMembers.slice(0, 2);
+                    const hiddenCount = otherMembers.length - 2;
+                    return (
+                      <>
+                        {visibleMembers.map((member: any) => (
+                          <UserBubble
+                            key={member.id}
+                            user={member.user}
+                            isOwner={false}
+                          />
+                        ))}
+                        {hiddenCount > 0 && (
+                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-[#FDFBF7] flex items-center justify-center text-[10px] sm:text-[11px] font-bold bg-[#FCFAF8] text-[#8A827A] shadow-sm overflow-hidden shrink-0 relative hover:z-30">
+                            +{hiddenCount}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
             </div>
