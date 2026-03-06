@@ -651,6 +651,7 @@ export default function CalendarClientWrapper({
         <div className="flex items-center gap-3 w-full max-w-7xl mx-auto">
           <Link
             href="/"
+            replace
             className="shrink-0 group flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#EAE5DF] bg-white shadow-sm hover:border-[#A69B90] hover:bg-[#F5F2EE] transition-all active:scale-95 relative focus:outline-none focus:ring-2 focus:ring-[#D1C3B4] text-[#8A827A] hover:text-[#3C3833]"
           >
             <svg
