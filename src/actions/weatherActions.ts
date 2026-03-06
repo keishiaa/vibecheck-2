@@ -8,14 +8,15 @@ export async function getWeatherSummaryV2(
     dailyData: any,
     isHistorical: boolean
 ) {
-    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
-        return "⚠️ Google Generative AI API Key is missing. Please add GOOGLE_GENERATIVE_AI_API_KEY to your .env files to enable AI weather summaries. For now, expect a mix of the following conditions: " +
+    const actualKey = process.env['GOOGLE_GENERATIVE_AI_API_KEY'];
+    if (!actualKey) {
+        return "⚠️ Next.js failed to load the Key correctly. Check server logs. For now, expect a mix of the following conditions: " +
             getFrequentConditions(dailyData.weather_code) + ".";
     }
 
     try {
         const google = createGoogleGenerativeAI({
-            apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+            apiKey: actualKey,
         });
 
         // Prepare the raw data summary
