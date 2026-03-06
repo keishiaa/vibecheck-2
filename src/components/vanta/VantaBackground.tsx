@@ -1,87 +1,67 @@
-import React from 'react'
+"use client"
+import React, { useState, useEffect, useRef } from 'react'
+import * as THREE from 'three'
 
 export default function VantaBackground() {
+    const [vantaEffect, setVantaEffect] = useState<any>(null)
+    const vantaRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        let effect: any = null;
+
+        const initVanta = async () => {
+            if (!vantaEffect && vantaRef.current) {
+                try {
+                    // Attach THREE to window so Vanta can find it when importing dynamically
+                    if (typeof window !== 'undefined') {
+                        // @ts-ignore
+                        window.THREE = THREE;
+                    }
+
+                    // Import vanta dynamically to avoid SSR "window not defined" errors
+                    // @ts-ignore
+                    const FOG = (await import('vanta/dist/vanta.fog.min')).default
+
+                    effect = FOG({
+                        el: vantaRef.current,
+                        THREE: THREE,
+                        mouseControls: true,
+                        touchControls: true,
+                        gyroControls: false,
+                        minHeight: 200.00,
+                        minWidth: 200.00,
+
+                        // Vibrant complimentary colors based on the painting:
+                        // Warm Gold, Terra Cotta, Plum, Cream
+                        highlightColor: 0xf4a261, // Warm Gold / Amber highlight (brightest spots)
+                        midtoneColor: 0xe07a5f,   // Terra Cotta / Orange midtone (body of the mist)
+                        lowlightColor: 0x8b7d9e,  // Muted Plum / Lilac lowlight (shadows)
+                        baseColor: 0xfdfbf7,      // Cream / Off-white base
+
+                        // "Fog" Parameters
+                        blurFactor: 0.85,  // Very high (to keep it from looking like solid blobs)
+                        zoom: 0.5,         // Large-scale noise patterns (so the clouds feel massive)
+                        speed: 1.5         // Low to Medium (it should feel calming)
+                    })
+                    setVantaEffect(effect)
+                } catch (error) {
+                    console.error("Vanta initialization failed:", error);
+                }
+            }
+        }
+
+        initVanta();
+
+        return () => {
+            if (effect) effect.destroy()
+            if (vantaEffect) vantaEffect.destroy()
+        }
+    }, [vantaEffect])
+
     return (
-        <div className="absolute inset-0 z-0 overflow-hidden bg-[#FDFBF7] pointer-events-none">
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                @keyframes fog-float-1 {
-                    0% { transform: translate(0, 0) scale(1); }
-                    33% { transform: translate(25vw, 15vh) scale(1.2); }
-                    66% { transform: translate(-15vw, 30vh) scale(0.9); }
-                    100% { transform: translate(0, 0) scale(1); }
-                }
-                @keyframes fog-float-2 {
-                    0% { transform: translate(0, 0) scale(1); }
-                    33% { transform: translate(-25vw, -15vh) scale(1.25); }
-                    66% { transform: translate(15vw, -30vh) scale(0.75); }
-                    100% { transform: translate(0, 0) scale(1); }
-                }
-                @keyframes fog-float-3 {
-                    0% { transform: translate(0, 0) scale(1.1); }
-                    33% { transform: translate(15vw, -25vh) scale(0.9); }
-                    66% { transform: translate(25vw, 25vh) scale(1.25); }
-                    100% { transform: translate(0, 0) scale(1.1); }
-                }
-                @keyframes fog-float-4 {
-                    0% { transform: translate(0, 0) scale(0.9); }
-                    33% { transform: translate(-30vw, 25vh) scale(1.15); }
-                    66% { transform: translate(-10vw, -25vh) scale(1.05); }
-                    100% { transform: translate(0, 0) scale(0.9); }
-                }
-                @keyframes fog-float-5 {
-                    0% { transform: translate(0, 0) scale(1); }
-                    50% { transform: translate(20vw, -20vh) scale(1.3); }
-                    100% { transform: translate(0, 0) scale(1); }
-                }
-            `}} />
-
-            <div className="absolute inset-0 filter blur-[70px] md:blur-[90px] opacity-90 transform scale-125">
-                {/* Deep Blue / Sky */}
-                <div
-                    className="absolute top-[-10%] left-[-10%] w-[80vw] h-[80vh] rounded-full mix-blend-multiply"
-                    style={{
-                        background: "radial-gradient(circle, rgba(60,160,255,0.7) 0%, rgba(60,160,255,0) 75%)",
-                        animation: "fog-float-1 20s infinite ease-in-out"
-                    }}
-                />
-
-                {/* Vibrant Coral / Peach */}
-                <div
-                    className="absolute top-[20%] right-[-10%] w-[80vw] h-[90vh] rounded-full mix-blend-multiply"
-                    style={{
-                        background: "radial-gradient(circle, rgba(255,140,100,0.65) 0%, rgba(255,140,100,0) 75%)",
-                        animation: "fog-float-2 25s infinite ease-in-out"
-                    }}
-                />
-
-                {/* Luminous Lilac */}
-                <div
-                    className="absolute bottom-[-20%] left-[10%] w-[90vw] h-[80vh] rounded-full mix-blend-multiply"
-                    style={{
-                        background: "radial-gradient(circle, rgba(180,100,255,0.6) 0%, rgba(180,100,255,0) 75%)",
-                        animation: "fog-float-3 22s infinite ease-in-out"
-                    }}
-                />
-
-                {/* Bright Amber / Gold */}
-                <div
-                    className="absolute top-[30%] left-[30%] w-[70vw] h-[70vh] rounded-full mix-blend-multiply"
-                    style={{
-                        background: "radial-gradient(circle, rgba(255,200,80,0.6) 0%, rgba(255,200,80,0) 75%)",
-                        animation: "fog-float-4 28s infinite ease-in-out"
-                    }}
-                />
-
-                {/* Cool Cyan / Mint */}
-                <div
-                    className="absolute bottom-[0%] right-[0%] w-[75vw] h-[75vh] rounded-full mix-blend-multiply"
-                    style={{
-                        background: "radial-gradient(circle, rgba(40,220,180,0.65) 0%, rgba(40,220,180,0) 75%)",
-                        animation: "fog-float-5 26s infinite ease-in-out"
-                    }}
-                />
-            </div>
-        </div>
+        <div
+            ref={vantaRef}
+            className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-1000 opacity-90"
+        />
     )
 }

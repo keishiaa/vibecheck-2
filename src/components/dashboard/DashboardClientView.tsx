@@ -131,40 +131,50 @@ export default function DashboardClientView({ trips }: { trips: any[] }) {
 
                     return (
                         <div key={trip.id} className="relative group block">
-                            <Link href={`/trips/${trip.id}`} className={`relative overflow-hidden h-32 border border-[#EAE5DF] rounded-xl transition-all active:scale-[0.98] shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col ${colorClass} bg-opacity-90 backdrop-blur-sm`}>
+                            <Link href={`/trips/${trip.id}`} className={`relative overflow-hidden h-40 border border-[#EAE5DF] rounded-2xl transition-all active:scale-[0.98] shadow-sm hover:shadow-md hover:border-[#C4BCB3] cursor-pointer group flex flex-col ${colorClass} bg-opacity-90 backdrop-blur-sm`}>
 
-                                {/* Countdown Timer */}
-                                <div className="absolute top-3 right-3 z-20 group-hover:opacity-0 transition-opacity duration-300">
+                                {/* Soft Glassmorphic Bottom Gradient */}
+                                <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/10 to-transparent pointer-events-none z-0" />
+
+                                {/* Top Left: Dates & Duration */}
+                                <div className="absolute top-3.5 left-4 z-20 pointer-events-none">
+                                    <p className="text-[10px] sm:text-[11px] text-[#5C564D] opacity-80 font-medium tracking-wide">
+                                        {new Date(trip.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                        <span className="opacity-50 mx-1">-</span>
+                                        {new Date(trip.endDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                        <span className="opacity-60 ml-1.5 tracking-normal font-normal hidden sm:inline-block">({tripDurationDays} Days)</span>
+                                    </p>
+                                </div>
+
+                                {/* Top Right: Countdown Timer */}
+                                <div className="absolute top-3 right-3 z-30 group-hover:opacity-0 transition-opacity duration-300">
                                     <span className="bg-white/60 text-[#3C3833] px-2.5 py-1 rounded-full border border-white/40 text-[9px] font-bold tracking-wider uppercase shadow-sm backdrop-blur-md">
                                         {countdownText}
                                     </span>
                                 </div>
 
-                                <div className="absolute inset-0 p-4 flex flex-col justify-end bg-gradient-to-t from-black/20 via-transparent to-transparent z-10">
-                                    <h3 className={`text-lg font-semibold tracking-tight text-[#3C3833] mb-1`}>{trip.name}</h3>
-                                    <div className="flex items-center justify-between w-full">
-                                        <p className={`text-[10px] sm:text-[11px] text-[#5C564D] opacity-75 font-medium tracking-wide whitespace-nowrap`}>
-                                            {new Date(trip.startDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} - {new Date(trip.endDate).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })}
-                                            <span className="opacity-40 mx-1.5">•</span>
-                                            {tripDurationDays} {tripDurationDays === 1 ? 'Day' : 'Days'}
-                                        </p>
+                                {/* Center: Large Trip Title */}
+                                <div className="absolute inset-0 flex items-center justify-center p-6 z-10 pointer-events-none">
+                                    <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#3C3833] text-center drop-shadow-[0_2px_10px_rgba(255,255,255,0.4)] line-clamp-2 leading-tight px-4">{trip.name}</h3>
+                                </div>
 
-                                        {/* Floating Participant Bubbles with Scale Fallback */}
-                                        <div className="flex -space-x-1.5 z-20 shrink-0 ml-3">
-                                            <UserBubble user={trip.owner} isOwner={true} />
-                                            {trip.members && trip.members.slice(0, 3).map((member: any) => (
-                                                <UserBubble key={member.id} user={member.user} isOwner={false} />
-                                            ))}
-                                            {trip.members && trip.members.length > 3 && (
-                                                <div className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[9px] font-bold bg-[#FCFAF8] text-[#8A827A] shadow-sm shrink-0 relative z-10">
-                                                    +{trip.members.length - 3}
-                                                </div>
-                                            )}
-                                        </div>
+                                {/* Bottom Right: Scaled User Bubbles */}
+                                <div className="absolute bottom-3 right-3 z-20 pointer-events-none">
+                                    <div className="flex -space-x-1.5 shrink-0 scale-90 origin-bottom-right drop-shadow-sm">
+                                        <UserBubble user={trip.owner} isOwner={true} />
+                                        {trip.members && trip.members.slice(0, 3).map((member: any) => (
+                                            <UserBubble key={member.id} user={member.user} isOwner={false} />
+                                        ))}
+                                        {trip.members && trip.members.length > 3 && (
+                                            <div className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[9px] font-bold bg-[#FCFAF8] text-[#8A827A] shadow-sm shrink-0 relative z-10">
+                                                +{trip.members.length - 3}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
-                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                                {/* Hover Overlay */}
+                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none" />
                             </Link>
 
                             {/* Edit Button overlay */}
